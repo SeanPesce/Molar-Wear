@@ -1,0 +1,105 @@
+<!-- Language strings: English (US) -->
+<resources>
+    <string name="app_name">MolarWear</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- |||||||||||||||||||||||||||||||||||||   GENERAL   ||||||||||||||||||||||||||||||||||||| -->
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <string name="unknown">Unknown</string>
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <!-- _______________________________________________________________________________________ -->
+
+
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- |||||||||||||||||||||||||||||||||||||   RUNTIME   ||||||||||||||||||||||||||||||||||||| -->
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+
+    <!-- |||||||||||||||||||||||||||||   General Runtime Strings   ||||||||||||||||||||||||||||| -->
+    <string name="no_data">No data</string>
+
+    <!-- ||||||||||||||||||||||||||   Error-related Runtime Strings   |||||||||||||||||||||||||| -->
+    <string name="error">Error</string>
+    <string name="invalid_type_not_molar">Invalid type (must be Tooth.Type.MOLAR)</string>
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <!-- _______________________________________________________________________________________ -->
+
+
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- |||||||||||||||||||||||||||||||||||||   DEFAULTS   |||||||||||||||||||||||||||||||||||| -->
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+
+    <string name="default_project_title">Untitled Project</string>
+
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <!-- _______________________________________________________________________________________ -->
+
+
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- |||||||||||||||||||||||||||||||||||   DESCRIPTORS   ||||||||||||||||||||||||||||||||||| -->
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+
+    <!-- |||||||||||||||||||||||||||||||   General Descriptors   ||||||||||||||||||||||||||||||| -->
+    <string name="left"  >Left</string>
+    <string name="right" >Right</string>
+
+    <string name="inner" >Inner</string>
+    <string name="outer" >Outer</string>
+
+    <string name="upper" >Upper</string>
+    <string name="lower" >Lower</string>
+
+    <string name="first" >First</string>
+    <string name="second">Second</string>
+    <string name="third" >Third</string>
+
+
+    <!-- ||||||||||||||||||||||||||||||||   Dental Descriptors   ||||||||||||||||||||||||||||||| -->
+    <string name="central">Central</string>
+    <string name="lateral">Lateral</string>
+
+    <string name="molar"   >Molar</string>
+    <string name="premolar">Premolar</string>
+    <string name="cuspid"  >Cuspid</string>
+    <string name="incisor" >Incisor</string>
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <!-- _______________________________________________________________________________________ -->
+
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- |||||||||||||||||||||||||||||||||||   DESCRIPTIONS   |||||||||||||||||||||||||||||||||| -->
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+
+    <!-- ||||||||||||||||||||||||||||||   General Descriptions   ||||||||||||||||||||||||||||||| -->
+    <!--                  @TODO                  -->
+
+
+    <!-- ||||||||||||||||||||||||||||||||  Dental Descriptions  |||||||||||||||||||||||||||||||| -->
+    <string name="desc_wear_lvl_0"  >Condition of least wear; cusp may be worn/wear facets present but no dentine exposed.</string>
+    <string name="desc_wear_lvl_1"  >Surface is worn flat, and a pinprick up to a small "dot" of dentine is visible.</string>
+    <string name="desc_wear_lvl_2"  >Surface is worn flat, and dentine exposure covers ¼ of quadrant or less.</string>
+    <string name="desc_wear_lvl_3"  >Greater dentine exposure with more than ¼ of quadrant exposed. Much enamel is still present within the quadrant (if each quadrant can be visualized with three "sides," the enamel fully surrounds the dentine exposed)</string>
+    <string name="desc_wear_lvl_4"  >Use this score as an intermediary, when the dentine engages one of two sides (less than ⅓) to coalesce with a neighbouring quadrant</string>
+    <string name="desc_wear_lvl_5"  >Enamel is found on only two "sides" of the quadrant; usually suggests it has coalesced with a neighboring quadrant).</string>
+    <string name="desc_wear_lvl_6"  >Enamel is only found on one "side" of the quadrant (typically outer rim). Enamel is thick to medium.</string>
+    <string name="desc_wear_lvl_7"  >Enamel is only found on one "side" of quadrant (typically outer rim); however, enamel is thin. Sections may be worn through.</string>
+    <string name="desc_wear_lvl_8"  >Condition of most wear; full dentine exposure. No enamel present.</string>
+    <string name="desc_wear_lvl_unk">No data.</string>
+
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <!-- _______________________________________________________________________________________ -->
+
+</resources>
