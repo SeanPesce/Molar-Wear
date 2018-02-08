@@ -1,13 +1,14 @@
-package mw.molarwear.classes.dental.molar;
+package mw.molarwear.data.classes.dental.molar;
 
-import mw.molarwear.classes.dental.molar.enums.Quadrant;
-import mw.molarwear.classes.dental.molar.enums.Wear;
+import mw.molarwear.data.classes.dental.molar.enums.Quadrant;
+import mw.molarwear.data.classes.dental.molar.enums.Wear;
 
 /**
  * This class contains data about wear on one of four {@link Quadrant} that make up the {@link Surface}
  * of a human {@link Molar} (Bottom surface of upper molars, or top surface of lower molars).
  *
  * @author Sean Pesce
+ *
  * @see    Molar
  * @see    Surface
  * @see    Quadrant

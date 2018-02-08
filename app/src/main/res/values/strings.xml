@@ -1,6 +1,6 @@
 <!-- Language strings: English (US) -->
 <resources>
-    <string name="app_name">MolarWear</string>
+    <string name="app_name">MolWear</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -20,35 +20,63 @@
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |||||||||||||||||||||||||||||||||||||   RUNTIME   ||||||||||||||||||||||||||||||||||||| -->
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
 
     <!-- |||||||||||||||||||||||||||||   General Runtime Strings   ||||||||||||||||||||||||||||| -->
     <string name="no_data">No data</string>
+    <string name="no_projects">No projects</string>
+    <string name="title_choose_proj">Projects</string>
+
+    <!-- ||||||||||||||||||||||||||   Action-related Runtime Strings   ||||||||||||||||||||||||| -->
+    <string name="act_delete">Delete</string>
+    <string name="act_edit"  >Edit</string>
+    <string name="act_open"  >Open</string>
+    <string name="act_share" >Share</string>
+    <string name="act_view_details">Details</string>
 
     <!-- ||||||||||||||||||||||||||   Error-related Runtime Strings   |||||||||||||||||||||||||| -->
     <string name="error">Error</string>
-    <string name="invalid_type_not_molar">Invalid type (must be Tooth.Type.MOLAR)</string>
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+    <string name="err_invalid_type_not_molar">Invalid type (must be Tooth.Type.MOLAR)</string>
+    <string name="err_unsupported_os_new_proj_dlg">Failed to create "New Project" dialog builder (minimum supported: Android Lollipop)</string>
     <!-- _______________________________________________________________________________________ -->
 
 
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |||||||||||||||||||||||||||||||||||||   DEFAULTS   |||||||||||||||||||||||||||||||||||| -->
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
-
     <string name="default_project_title">Untitled Project</string>
+    <string name="default_dlg_title"></string>
+    <string name="default_dlg_msg"></string>
+    <string name="default_dlg_bt_pos_txt">@string/dlg_bt_ok</string>
+    <string name="default_dlg_bt_neg_txt">@string/dlg_bt_cancel</string>
+    <string name="default_dlg_bt_txt_input_hint"></string>
+    <!-- _______________________________________________________________________________________ -->
 
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- |||||||||||||||||||||||||||||||||||||   DIALOGS   ||||||||||||||||||||||||||||||||||||| -->
+
+    <!-- ||||||||||||||||||||||||||   General Dialog Button Strings   |||||||||||||||||||||||||| -->
+    <string name="dlg_bt_ok">OK</string>
+    <string name="dlg_bt_cancel">Cancel</string>
+    <string name="dlg_bt_yes">Yes</string>
+    <string name="dlg_bt_no">No</string>
+    <string name="dlg_bt_close">Close</string>
+    <string name="dlg_bt_create">Create</string>
+    <string name="dlg_bt_continue">Continue</string>
+    <string name="dlg_bt_accept">Accept</string>
+    <string name="dlg_bt_decline">Decline</string>
+    <string name="dlg_bt_submit">Submit</string>
+
+    <!-- |||||||||||||||||||||||||||||||   Titles and Messages   ||||||||||||||||||||||||||||||| -->
+    <string name="dlg_title_new_project">New Project</string>
+    <string name="dlg_msg_new_project"  >Project title:</string>
+    <string name="dlg_hint_new_project" >@string/default_project_title</string>
     <!-- _______________________________________________________________________________________ -->
 
 
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |||||||||||||||||||||||||||||||||||   DESCRIPTORS   ||||||||||||||||||||||||||||||||||| -->
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
 
     <!-- |||||||||||||||||||||||||||||||   General Descriptors   ||||||||||||||||||||||||||||||| -->
     <string name="left"  >Left</string>
@@ -73,18 +101,14 @@
     <string name="premolar">Premolar</string>
     <string name="cuspid"  >Cuspid</string>
     <string name="incisor" >Incisor</string>
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
     <!-- _______________________________________________________________________________________ -->
 
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |||||||||||||||||||||||||||||||||||   DESCRIPTIONS   |||||||||||||||||||||||||||||||||| -->
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
 
     <!-- ||||||||||||||||||||||||||||||   General Descriptions   ||||||||||||||||||||||||||||||| -->
-    <!--                  @TODO                  -->
-
+    <!--                  (None yet)                  -->
 
     <!-- ||||||||||||||||||||||||||||||||  Dental Descriptions  |||||||||||||||||||||||||||||||| -->
     <string name="desc_wear_lvl_0"  >Condition of least wear; cusp may be worn/wear facets present but no dentine exposed.</string>
@@ -97,9 +121,6 @@
     <string name="desc_wear_lvl_7"  >Enamel is only found on one "side" of quadrant (typically outer rim); however, enamel is thin. Sections may be worn through.</string>
     <string name="desc_wear_lvl_8"  >Condition of most wear; full dentine exposure. No enamel present.</string>
     <string name="desc_wear_lvl_unk">No data.</string>
-
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
-    <!-- ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| -->
     <!-- _______________________________________________________________________________________ -->
 
 </resources>

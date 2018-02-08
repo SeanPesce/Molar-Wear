@@ -1,4 +1,4 @@
-package mw.molarwear.classes.dental.molar.enums;
+package mw.molarwear.data.classes.dental.molar.enums;
 
 /**
  * This enum represents the four quadrants that make up the surface of a human molar
@@ -12,9 +12,10 @@ package mw.molarwear.classes.dental.molar.enums;
  * </ul>
  *
  * @author Sean Pesce
- * @see    mw.molarwear.classes.dental.molar.SurfaceQuadrant
- * @see    mw.molarwear.classes.dental.molar.Surface
- * @see    mw.molarwear.classes.dental.molar.Molar
+ *
+ * @see    mw.molarwear.data.classes.dental.molar.SurfaceQuadrant
+ * @see    mw.molarwear.data.classes.dental.molar.Surface
+ * @see    mw.molarwear.data.classes.dental.molar.Molar
  */
 
 public enum Quadrant {

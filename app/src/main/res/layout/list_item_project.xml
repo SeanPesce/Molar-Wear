@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_listitem_proj"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:orientation="horizontal"
+        android:descendantFocusability="blocksDescendants"
+        android:focusable="false"
+        android:focusableInTouchMode="false">
+
+        <TextView
+            android:id="@+id/lbl_listitem_proj_title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight=".9"
+            android:text="@string/default_project_title"
+            android:textSize="32sp"
+            android:textColor="@color/gray"
+            android:singleLine="true"
+            android:ellipsize="end" />
+
+        <ImageButton
+            android:id="@+id/bt_listitem_proj_open"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_weight=".1"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:tint="@color/colorPrimaryDark"
+            android:backgroundTint="@android:color/transparent"
+            android:text="@string/act_open"
+            android:src="@drawable/ic_keyboard_arrow_right"
+            android:foreground="?android:attr/selectableItemBackground"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/layout_listitem_proj_buttons"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:orientation="horizontal"
+        android:descendantFocusability="blocksDescendants"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:visibility="gone"
+        android:divider="@color/colorPrimary"
+        android:gravity="center">
+
+
+        <ImageButton
+            android:id="@+id/bt_listitem_proj_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:tint="@color/colorPrimaryDark"
+            android:backgroundTint="@android:color/transparent"
+            android:text="@string/act_share"
+            android:src="@drawable/ic_share"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/bt_listitem_proj_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:tint="@color/colorPrimaryDark"
+            android:backgroundTint="@android:color/transparent"
+            android:text="@string/act_delete"
+            android:src="@drawable/ic_delete"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/bt_listitem_proj_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:tint="@color/colorPrimaryDark"
+            android:backgroundTint="@android:color/transparent"
+            android:text="@string/act_view_details"
+            android:src="@drawable/ic_info"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+        <ImageButton
+            android:id="@+id/bt_listitem_proj_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".25"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:tint="@color/colorPrimaryDark"
+            android:backgroundTint="@android:color/transparent"
+            android:text="@string/act_edit"
+            android:src="@drawable/ic_edit"
+            android:foreground="?android:attr/selectableItemBackground" />
+
+    </LinearLayout>
+
+</LinearLayout>

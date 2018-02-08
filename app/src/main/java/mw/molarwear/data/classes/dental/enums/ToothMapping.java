@@ -1,6 +1,6 @@
-package mw.molarwear.classes.dental.enums;
+package mw.molarwear.data.classes.dental.enums;
 
-import mw.molarwear.classes.dental.Tooth;
+import mw.molarwear.data.classes.dental.Tooth;
 
 /**
  * This enum is used for referencing each of the 32 teeth that make up a typical human dental structure.
@@ -42,11 +42,12 @@ import mw.molarwear.classes.dental.Tooth;
  *
  * <p>References:</p>
  * <ul>
- *     <li><a href="https://d1mpuhcnuqykh7.cloudfront.net/uploads/2013/08/Teeth-Chart.jpg"></a>Quadrants & indices</li>
- *     <li><a href="https://i.pinimg.com/originals/f8/44/98/f844983dac1493acf74f8f8af0f4ae4b.jpg"></a>Tooth names</li>
+ *     <li><a href="https://d1mpuhcnuqykh7.cloudfront.net/uploads/2013/08/Teeth-Chart.jpg">Quadrants & indices</a></li>
+ *     <li><a href="https://i.pinimg.com/originals/f8/44/98/f844983dac1493acf74f8f8af0f4ae4b.jpg">Tooth names</a></li>
  * </ul>
  *
  * @author Sean Pesce
+ *
  * @see    Tooth
  */
 
@@ -268,7 +269,7 @@ public enum ToothMapping {
     public boolean incisorCentral()  { return this.equals(INCISOR_CENTRAL_L_L) || this.equals(INCISOR_CENTRAL_L_R) || this.equals(INCISOR_CENTRAL_U_L) || this.equals(INCISOR_CENTRAL_U_R); }
     public boolean incisorLateral()  { return this.equals(INCISOR_LATERAL_L_L) || this.equals(INCISOR_LATERAL_L_R) || this.equals(INCISOR_LATERAL_U_L) || this.equals(INCISOR_LATERAL_U_R); }
 
-    public  String nameFull()         { return this.nameShort() + " (" + this.positionToString() + ")";                     }
+    public  String nameFull()         { return this.nameShort() + " (" + this.positionToString() + ")";             }
     public  String nameShort()        { return ToothMapping.NAME_PREFIX[_index] + " " + _type.toString();           }
     public  String positionToString() { return ((_upper) ? "Upper" : "Lower") + " " + ((_left) ? "left" : "right"); }
 

@@ -1,4 +1,4 @@
-package mw.molarwear.classes.dental.molar.enums;
+package mw.molarwear.data.classes.dental.molar.enums;
 
 /**
  * This enum represents varying levels (or "scores") of wear for describing the physical condition of
@@ -19,8 +19,9 @@ package mw.molarwear.classes.dental.molar.enums;
  * </ul>
  *
  * @author Sean Pesce
- * @see    mw.molarwear.classes.dental.molar.SurfaceQuadrant
- * @see    mw.molarwear.classes.dental.molar.Molar
+ *
+ * @see    mw.molarwear.data.classes.dental.molar.SurfaceQuadrant
+ * @see    mw.molarwear.data.classes.dental.molar.Molar
  */
 
 public enum Wear {
@@ -127,7 +128,7 @@ public enum Wear {
         _score = score;
     }
 
-    public int    score()       { return _score;       }
+    public    int score()       { return _score;       }
     public String description() { return _description; }
 
     public boolean equals(Wear other) { return _score == other.score(); }

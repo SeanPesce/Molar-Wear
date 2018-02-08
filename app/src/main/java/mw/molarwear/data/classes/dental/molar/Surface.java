@@ -1,12 +1,10 @@
-package mw.molarwear.classes.dental.molar;
+package mw.molarwear.data.classes.dental.molar;
 
 import java.util.Arrays;
 import java.util.List;
 
-import mw.molarwear.classes.dental.Tooth;
-import mw.molarwear.classes.dental.enums.ToothMapping;
-import mw.molarwear.classes.dental.molar.enums.Quadrant;
-import mw.molarwear.classes.dental.molar.enums.Wear;
+import mw.molarwear.data.classes.dental.molar.enums.Quadrant;
+import mw.molarwear.data.classes.dental.molar.enums.Wear;
 
 /**
  * This class contains data about wear on the surface of a human molar (Bottom surface of upper molars,
@@ -15,6 +13,7 @@ import mw.molarwear.classes.dental.molar.enums.Wear;
  *  outer front, outer back).
  *
  * @author Sean Pesce
+ *
  * @see    Molar
  * @see    SurfaceQuadrant
  * @see    Quadrant

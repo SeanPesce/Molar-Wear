@@ -1,8 +1,10 @@
-package mw.molarwear.classes;
+package mw.molarwear.data.classes;
 
-import mw.molarwear.classes.dental.enums.ToothMapping;
-import mw.molarwear.classes.dental.molar.Molar;
-import mw.molarwear.classes.dental.molar.Surface;
+import java.io.Serializable;
+
+import mw.molarwear.data.classes.dental.enums.ToothMapping;
+import mw.molarwear.data.classes.dental.molar.Molar;
+import mw.molarwear.data.classes.dental.molar.Surface;
 
 /**
  * This class holds molar wear data for a single human subject (generally a deceased individual).
@@ -13,12 +15,13 @@ import mw.molarwear.classes.dental.molar.Surface;
  * </p>
  *
  * @author Sean Pesce
+ *
  * @see    Molar
  * @see    Surface
- * @see    mw.molarwear.classes.dental.molar.enums.Wear
+ * @see    mw.molarwear.data.classes.dental.molar.enums.Wear
  */
 
-public class MolarWearSubject implements Comparable<MolarWearSubject> {
+public class MolarWearSubject implements Comparable<MolarWearSubject>, Serializable {
 
     ///////////////////////////////////////////////////////////////
     ///////////////////////// STATIC DATA /////////////////////////

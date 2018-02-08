@@ -1,13 +1,14 @@
-package mw.molarwear.classes.dental;
+package mw.molarwear.data.classes.dental;
 
-import mw.molarwear.classes.dental.enums.ToothMapping;
+import mw.molarwear.data.classes.dental.enums.ToothMapping;
 
 /**
  * This class is used for recording and editing data pertaining to human teeth.
  *
  * @author Sean Pesce
+ *
  * @see    ToothMapping
- * @see    mw.molarwear.classes.dental.molar.Molar
+ * @see    mw.molarwear.data.classes.dental.molar.Molar
  */
 
 public class Tooth {

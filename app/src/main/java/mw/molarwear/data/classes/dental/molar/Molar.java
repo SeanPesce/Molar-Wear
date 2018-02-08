@@ -1,17 +1,14 @@
-package mw.molarwear.classes.dental.molar;
+package mw.molarwear.data.classes.dental.molar;
 
-import java.util.Arrays;
-import java.util.List;
-
-import mw.molarwear.classes.dental.Tooth;
-import mw.molarwear.classes.dental.enums.ToothMapping;
-import mw.molarwear.classes.dental.molar.enums.Wear;
-import mw.molarwear.classes.dental.molar.enums.Quadrant;
+import mw.molarwear.data.classes.dental.Tooth;
+import mw.molarwear.data.classes.dental.enums.ToothMapping;
+import mw.molarwear.data.classes.dental.molar.enums.Wear;
 
 /**
  * This class is used for recording and editing dental data pertaining to human molar wear.
  *
  * @author Sean Pesce
+ *
  * @see    Tooth
  * @see    Surface
  * @see    Wear
