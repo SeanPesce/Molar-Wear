@@ -10,6 +10,7 @@ MolarWear is an Android app that aims to simplify the recording and sharing of o
 
  * **[Android Studio](https://developer.android.com/studio/)** - Official IDE for Android  
  * **[Gradle](https://gradle.org/)** - Build tools  
+ * **[Material Design Icons](https://material.io/icons)** - Official icon set from Google
 
  
 ## Authors  
