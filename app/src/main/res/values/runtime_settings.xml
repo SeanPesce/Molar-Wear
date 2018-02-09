@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--  Types:
+
+    <array name="NAME">
+        <item>VALUE1</item>
+        <item>VALUE2</item>
+    </array>
+
+    <bool name="NAME">VALUE</bool>
+
+    <color name="NAME">VALUE</color>
+
+    <dimen name="NAME">VALUE</dimen>
+
+    <id name="NAME">VALUE</id>
+
+    <integer name="NAME">VALUE</integer>
+
+    <integer-array name="NAME">
+        <item>VALUE1</item>
+        <item>VALUE2</item>
+    </integer-array>
+
+    <string name="NAME">VALUE</string>
+
+    -->
+
+    <integer name="rt_cfg_splash_screen_wait_time">0</integer>
+
+    <string name="file_ext_serialized_data">.mwsd</string>
+    <string name="file_ext_json_data">.json</string>
+
+
+</resources>

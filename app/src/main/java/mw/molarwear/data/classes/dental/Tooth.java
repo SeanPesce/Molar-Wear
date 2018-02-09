@@ -17,11 +17,41 @@ public class Tooth {
     ///////////////////////// STATIC DATA /////////////////////////
     ///////////////////////////////////////////////////////////////
 
+    /**
+     * Static subclass of Tooth for accessing descriptor strings.
+     */
+    public static class Descriptor {
+        public static String UNKNOWN = "Unknown";
+
+        public static String UPPER   = "Upper";
+        public static String LOWER   = "Lower";
+        public static String INNER   = "Inner";
+        public static String LINGUAL = "Lingual";
+        public static String OUTER   = "Outer";
+        public static String BUCCAL  = "Buccal";
+        public static String FRONT   = "Front";
+        public static String MESIAL  = "Mesial";
+        public static String BACK    = "Back";
+        public static String DISTAL  = "Distal";
+        public static String LEFT    = "Left";
+        public static String RIGHT   = "Right";
+        public static String CENTRAL = "Central";
+        public static String LATERAL = "Lateral";
+        public static String FIRST   = "First";
+        public static String SECOND  = "Second";
+        public static String THIRD   = "Third";
+
+        public static String MOLAR    = "Molar";
+        public static String PREMOLAR = "Premolar";
+        public static String CUSPID   = "Cuspid";
+        public static String INCISOR  = "Incisor";
+    }
+
     public enum Type {
-        MOLAR    ("Molar"),
-        PREMOLAR ("Premolar"),
-        CUSPID   ("Cuspid"),
-        INCISOR  ("Incisor");
+        MOLAR    (Descriptor.MOLAR),
+        PREMOLAR (Descriptor.PREMOLAR),
+        CUSPID   (Descriptor.CUSPID),
+        INCISOR  (Descriptor.INCISOR);
 
         private final String _name;
 

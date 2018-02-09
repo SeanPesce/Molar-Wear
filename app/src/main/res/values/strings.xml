@@ -17,7 +17,6 @@
     <!-- _______________________________________________________________________________________ -->
 
 
-
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |||||||||||||||||||||||||||||||||||||   RUNTIME   ||||||||||||||||||||||||||||||||||||| -->
 
@@ -28,17 +27,19 @@
 
     <!-- ||||||||||||||||||||||||||   Action-related Runtime Strings   ||||||||||||||||||||||||| -->
     <string name="act_delete">Delete</string>
-    <string name="act_edit"  >Edit</string>
-    <string name="act_open"  >Open</string>
-    <string name="act_share" >Share</string>
+    <string name="act_edit">Edit</string>
+    <string name="act_open">Open</string>
+    <string name="act_share">Share</string>
     <string name="act_view_details">Details</string>
 
     <!-- ||||||||||||||||||||||||||   Error-related Runtime Strings   |||||||||||||||||||||||||| -->
     <string name="error">Error</string>
     <string name="err_invalid_type_not_molar">Invalid type (must be Tooth.Type.MOLAR)</string>
-    <string name="err_unsupported_os_new_proj_dlg">Failed to create "New Project" dialog builder (minimum supported: Android Lollipop)</string>
+    <string name="err_unsupported_os_new_proj_dlg">Failed to create \"New Project\" dialog builder (minimum supported: Android Lollipop)</string>
+    <string name="err_app_util_context_null">AppUtility.CONTEXT was null</string>
+    <string name="err_proj_create_fail">Failed to create project</string>
+    <string name="err_proj_create_fail_exists">A project with the specified title already exists.</string>
     <!-- _______________________________________________________________________________________ -->
-
 
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -48,7 +49,7 @@
     <string name="default_dlg_msg"></string>
     <string name="default_dlg_bt_pos_txt">@string/dlg_bt_ok</string>
     <string name="default_dlg_bt_neg_txt">@string/dlg_bt_cancel</string>
-    <string name="default_dlg_bt_txt_input_hint"></string>
+    <string name="default_dlg_txt_input_hint"></string>
     <!-- _______________________________________________________________________________________ -->
 
 
@@ -69,38 +70,41 @@
 
     <!-- |||||||||||||||||||||||||||||||   Titles and Messages   ||||||||||||||||||||||||||||||| -->
     <string name="dlg_title_new_project">New Project</string>
-    <string name="dlg_msg_new_project"  >Project title:</string>
-    <string name="dlg_hint_new_project" >@string/default_project_title</string>
+    <string name="dlg_msg_new_project">Project title:</string>
+    <string name="dlg_hint_new_project">@string/default_project_title</string>
+    <string name="dlg_title_del_proj_conf">Delete project?</string>
+    <string name="dlg_msg_del_proj_conf">Are you sure you want to delete this project?</string>
+    <string name="dlg_title_del_proj_conf2">Confirm project deletion</string>
+    <string name="dlg_msg_del_proj_conf2">Press \"Continue\" to permanently delete this project.</string>
     <!-- _______________________________________________________________________________________ -->
-
 
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |||||||||||||||||||||||||||||||||||   DESCRIPTORS   ||||||||||||||||||||||||||||||||||| -->
 
     <!-- |||||||||||||||||||||||||||||||   General Descriptors   ||||||||||||||||||||||||||||||| -->
-    <string name="left"  >Left</string>
-    <string name="right" >Right</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
 
-    <string name="inner" >Inner</string>
-    <string name="outer" >Outer</string>
+    <string name="inner">Inner</string>
+    <string name="outer">Outer</string>
 
-    <string name="upper" >Upper</string>
-    <string name="lower" >Lower</string>
+    <string name="upper">Upper</string>
+    <string name="lower">Lower</string>
 
-    <string name="first" >First</string>
+    <string name="first">First</string>
     <string name="second">Second</string>
-    <string name="third" >Third</string>
+    <string name="third">Third</string>
 
 
     <!-- ||||||||||||||||||||||||||||||||   Dental Descriptors   ||||||||||||||||||||||||||||||| -->
     <string name="central">Central</string>
     <string name="lateral">Lateral</string>
 
-    <string name="molar"   >Molar</string>
+    <string name="molar">Molar</string>
     <string name="premolar">Premolar</string>
-    <string name="cuspid"  >Cuspid</string>
-    <string name="incisor" >Incisor</string>
+    <string name="cuspid">Cuspid</string>
+    <string name="incisor">Incisor</string>
     <!-- _______________________________________________________________________________________ -->
 
 
@@ -111,15 +115,15 @@
     <!--                  (None yet)                  -->
 
     <!-- ||||||||||||||||||||||||||||||||  Dental Descriptions  |||||||||||||||||||||||||||||||| -->
-    <string name="desc_wear_lvl_0"  >Condition of least wear; cusp may be worn/wear facets present but no dentine exposed.</string>
-    <string name="desc_wear_lvl_1"  >Surface is worn flat, and a pinprick up to a small "dot" of dentine is visible.</string>
-    <string name="desc_wear_lvl_2"  >Surface is worn flat, and dentine exposure covers ¼ of quadrant or less.</string>
-    <string name="desc_wear_lvl_3"  >Greater dentine exposure with more than ¼ of quadrant exposed. Much enamel is still present within the quadrant (if each quadrant can be visualized with three "sides," the enamel fully surrounds the dentine exposed)</string>
-    <string name="desc_wear_lvl_4"  >Use this score as an intermediary, when the dentine engages one of two sides (less than ⅓) to coalesce with a neighbouring quadrant</string>
-    <string name="desc_wear_lvl_5"  >Enamel is found on only two "sides" of the quadrant; usually suggests it has coalesced with a neighboring quadrant).</string>
-    <string name="desc_wear_lvl_6"  >Enamel is only found on one "side" of the quadrant (typically outer rim). Enamel is thick to medium.</string>
-    <string name="desc_wear_lvl_7"  >Enamel is only found on one "side" of quadrant (typically outer rim); however, enamel is thin. Sections may be worn through.</string>
-    <string name="desc_wear_lvl_8"  >Condition of most wear; full dentine exposure. No enamel present.</string>
+    <string name="desc_wear_lvl_0">Condition of least wear; cusp may be worn/wear facets present but no dentine exposed.</string>
+    <string name="desc_wear_lvl_1">Surface is worn flat, and a pinprick up to a small \"dot\" of dentine is visible.</string>
+    <string name="desc_wear_lvl_2">Surface is worn flat, and dentine exposure covers ¼ of quadrant or less.</string>
+    <string name="desc_wear_lvl_3">Greater dentine exposure with more than ¼ of quadrant exposed. Much enamel is still present within the quadrant (if each quadrant can be visualized with three \"sides,\" the enamel fully surrounds the dentine exposed)</string>
+    <string name="desc_wear_lvl_4">Use this score as an intermediary, when the dentine engages one of two sides (less than ⅓) to coalesce with a neighbouring quadrant</string>
+    <string name="desc_wear_lvl_5">Enamel is found on only two \"sides\" of the quadrant; usually suggests it has coalesced with a neighboring quadrant).</string>
+    <string name="desc_wear_lvl_6">Enamel is only found on one \"side\" of the quadrant (typically outer rim). Enamel is thick to medium.</string>
+    <string name="desc_wear_lvl_7">Enamel is only found on one \"side\" of quadrant (typically outer rim); however, enamel is thin. Sections may be worn through.</string>
+    <string name="desc_wear_lvl_8">Condition of most wear; full dentine exposure. No enamel present.</string>
     <string name="desc_wear_lvl_unk">No data.</string>
     <!-- _______________________________________________________________________________________ -->
 

@@ -6,12 +6,16 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="mw.molarwear.gui.activity.ChooseProjectActivity"
-    tools:showIn="@layout/app_bar_choose_project">
+    tools:showIn="@layout/app_bar_choose_project"
+    android:animateLayoutChanges="true">
 
     <mw.molarwear.gui.list.ProjectListView
         android:id="@+id/listview_projects"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:background="@android:color/transparent"
+        android:backgroundTint="@android:color/transparent" />
     <TextView
         android:id="@+id/lbl_listview_projects_empty"
         android:layout_width="match_parent"

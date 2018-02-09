@@ -2,8 +2,6 @@ package mw.molarwear.gui.activity;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,11 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-
+import android.view.View;
 
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
 import mw.molarwear.data.handlers.ProjectsHandler;
+import mw.molarwear.util.AppUtility;
 
 /**
  * This is the initial app activity screen (excluding the loader). This activity page allows
@@ -38,6 +37,8 @@ public class ChooseProjectActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppUtility.CONTEXT = getApplicationContext();
+
         setContentView(R.layout.activity_choose_project);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

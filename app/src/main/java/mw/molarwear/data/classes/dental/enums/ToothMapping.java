@@ -194,8 +194,6 @@ public enum ToothMapping {
     MOLAR3_L_R          (32, false, false, Tooth.Type.MOLAR    );
 
 
-
-
     private static final String[] NAME_PREFIX =
         {
             /*  0 */ "UNKNOWN",
@@ -271,7 +269,7 @@ public enum ToothMapping {
 
     public  String nameFull()         { return this.nameShort() + " (" + this.positionToString() + ")";             }
     public  String nameShort()        { return ToothMapping.NAME_PREFIX[_index] + " " + _type.toString();           }
-    public  String positionToString() { return ((_upper) ? "Upper" : "Lower") + " " + ((_left) ? "left" : "right"); }
+    public  String positionToString() { return ((_upper) ? Tooth.Descriptor.UPPER : Tooth.Descriptor.LOWER) + " " + ((_left) ? Tooth.Descriptor.LEFT.toLowerCase() : Tooth.Descriptor.RIGHT.toLowerCase()); }
 
     public boolean equals(ToothMapping other) { return _index == other.index(); }
     public boolean equals(         int other) { return _index == other;         }

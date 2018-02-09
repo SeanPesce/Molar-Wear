@@ -8,7 +8,6 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import mw.molarwear.R;
 
@@ -34,10 +33,10 @@ public class TwoButtonDialog {
     protected               AlertDialog _dialog;
 
 
-    protected String _title     = "",
-                     _message   = "",
-                     _posBtText = "",
-                     _negBtText = "";
+    protected String _title     = DialogStringData.DEFAULT_TITLE,
+                     _message   = DialogStringData.DEFAULT_MESSAGE,
+                     _posBtText = DialogStringData.DEFAULT_POS_BT_TXT,
+                     _negBtText = DialogStringData.DEFAULT_NEG_BT_TXT;
 
     protected DialogInterface.OnClickListener _posBtClickListener = null, _negBtClickListener = null;
     protected DialogInterface.OnShowListener  _onShowListener     = null;
@@ -172,14 +171,14 @@ public class TwoButtonDialog {
 
 
 
-    private void updateBuilder() {
+    protected void updateBuilder() {
         _builder.setTitle(_title).setMessage(_message);
         _builder.setPositiveButton(_posBtText, _posBtClickListener);
         _builder.setNegativeButton(_negBtText, _negBtClickListener);
         updateDialog();
     }
 
-    private void updateDialog() {
+    protected void updateDialog() {
         _dialog = _builder.create();
         _dialog.setOnShowListener(_onShowListener);
     }

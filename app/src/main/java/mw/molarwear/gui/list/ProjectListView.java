@@ -107,12 +107,12 @@ public class ProjectListView extends ListView {
 //            }
 //        });
 //
-//        btDeleteProj.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(final View view) {
-//
-//            }
-//        });
+        btDeleteProj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                _projectsHandler.deleteProject(index);
+            }
+        });
 
         if (_expandNextNewChild) {
             _expandNextNewChild = false;

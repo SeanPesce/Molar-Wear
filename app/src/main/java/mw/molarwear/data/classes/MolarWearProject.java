@@ -2,7 +2,6 @@ package mw.molarwear.data.classes;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class holds data for a molar wear research project.
@@ -21,7 +20,7 @@ public class MolarWearProject implements Comparable<MolarWearProject>, Serializa
     ///////////////////////// STATIC DATA /////////////////////////
     ///////////////////////////////////////////////////////////////
 
-    public static final String DEFAULT_TITLE = "Untitled Project";
+    public static String DEFAULT_TITLE = "Untitled Project";
 
 
 

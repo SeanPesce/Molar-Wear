@@ -20,7 +20,7 @@ public class Molar extends Tooth {
     ///////////////////////// STATIC DATA /////////////////////////
     ///////////////////////////////////////////////////////////////
 
-    private static final String ERROR_MSG_INVALID_TYPE = "Invalid type (must be Tooth.Type.MOLAR)";
+    public static String ERROR_MSG_INVALID_TYPE = "Invalid type (must be Tooth.Type.MOLAR)";
 
 
     ///////////////////////////////////////////////////////////////

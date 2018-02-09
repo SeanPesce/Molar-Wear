@@ -3,13 +3,15 @@ package mw.molarwear.data.handlers;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.graphics.Color;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,12 @@ import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
 import mw.molarwear.gui.dialog.DialogStringData;
 import mw.molarwear.gui.dialog.TextInputDialog;
+import mw.molarwear.gui.dialog.TwoButtonDialog;
 import mw.molarwear.gui.list.ProjectListView;
+import mw.molarwear.util.AppUtility;
+import mw.molarwear.util.FileUtility;
+
+import static java.io.File.separator;
 
 /**
  * This handler class allows the user to view, organize, create, modify, etc. sets of
@@ -97,11 +104,18 @@ public class ProjectsHandler {
             }
         });
 
-        // @TODO: Delete the test code below when it's no longer needed
-        addProject(new MolarWearProject("Test Project 1"));
-        addProject(new MolarWearProject("Test Project 2"));
-        addProject(new MolarWearProject("Test Project 3 (long title) Test Test Test Test Test Test Test"));
-        // End of test code
+        // Load existing projects from internal storage
+        String [] projs = AppUtility.CONTEXT.fileList();
+        for (String s : projs) {
+            if (s.endsWith(FileUtility.FILE_EXT_SERIALIZED_DATA)) {
+                MolarWearProject p = (MolarWearProject) FileUtility.readSerializable(s);
+                if (p == null) {
+                    Snackbar.make(_listView, "Error loading " + s, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                } else {
+                    addProject(p);
+                }
+            }
+        }
 
         // "New project" dialog
         initCreateProjDialog();
@@ -117,14 +131,26 @@ public class ProjectsHandler {
                                                           R.string.dlg_bt_cancel),
                                      R.string.dlg_hint_new_project);
 
-        _dlgCreateProject.setPositiveButton(R.string.dlg_bt_create, new DialogInterface.OnClickListener() {
+        _dlgCreateProject.setPositiveButton(new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked "Create" button
-                addProject(new MolarWearProject(_dlgCreateProject.text()), true);
+                boolean created = createProject(new MolarWearProject((!_dlgCreateProject.text().isEmpty()) ? _dlgCreateProject.text() : _dlgCreateProject.textInputHint()));
                 _dlgCreateProject.eraseText();
-                // @TODO: Create file
+                _dlgCreateProject.setTextInputHint(R.string.dlg_hint_new_project);
+                if (created) {
+                    // @TODO: Open new project
+                }
             }
         });
+
+        _dlgCreateProject.setNegativeButton(new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked "Cancel" button
+                _dlgCreateProject.eraseText();
+                _dlgCreateProject.setTextInputHint(R.string.dlg_hint_new_project);
+            }
+        });
+
     }
 
 
@@ -211,13 +237,26 @@ public class ProjectsHandler {
         LinearLayout layoutButtonBar = (LinearLayout) childView.findViewById(R.id.layout_listitem_proj_buttons);
         TextView     lblTitle        = (TextView)     childView.findViewById(R.id.lbl_listitem_proj_title);
 
+        ImageButton    btEditProj = (ImageButton) layoutButtonBar.findViewById(R.id.bt_listitem_proj_edit);
+        ImageButton   btShareProj = (ImageButton) layoutButtonBar.findViewById(R.id.bt_listitem_proj_share);
+        ImageButton btDetailsProj = (ImageButton) layoutButtonBar.findViewById(R.id.bt_listitem_proj_details);
+        ImageButton  btDeleteProj = (ImageButton) layoutButtonBar.findViewById(R.id.bt_listitem_proj_delete);
+
         // Select new item
         _selectedItem = index;
         if (layoutButtonBar.getVisibility() == View.GONE) {
             if (expandChild) {
                 layoutButtonBar.setVisibility(View.VISIBLE);
+                btEditProj.setVisibility(View.VISIBLE);
+                btShareProj.setVisibility(View.VISIBLE);
+                btDetailsProj.setVisibility(View.VISIBLE);
+                btDeleteProj.setVisibility(View.VISIBLE);
             }
         } else {
+            btEditProj.setVisibility(View.GONE);
+            btShareProj.setVisibility(View.GONE);
+            btDetailsProj.setVisibility(View.GONE);
+            btDeleteProj.setVisibility(View.GONE);
             layoutButtonBar.setVisibility(View.GONE);
         }
         lblTitle.setTextColor(_activity.getResources().getColor(R.color.grayDark));
@@ -231,7 +270,7 @@ public class ProjectsHandler {
             LinearLayout prevSelButtons = (LinearLayout) _listView.getChildAt(_selectedItem).findViewById(R.id.layout_listitem_proj_buttons);
             TextView prevSelLabel       = (TextView)     _listView.getChildAt(_selectedItem).findViewById(R.id.lbl_listitem_proj_title);
             prevSelButtons.setVisibility(View.GONE);
-            prevSelection.setBackgroundColor(Color.WHITE);
+            prevSelection.setBackgroundColor(getResources().getColor(R.color.background_light));
             prevSelLabel.setTextColor(_activity.getResources().getColor(R.color.gray));
         }
         _selectedItem = NO_SELECTION_INDEX;
@@ -247,12 +286,60 @@ public class ProjectsHandler {
         this.notifyDataSetChanged(expandNewChild);
     }
 
-    public void deleteProject(int index) {
+    public void removeProject(int index) {
+        FileUtility.deletePrivate(PROJECTS.get(index).title() + FileUtility.FILE_EXT_SERIALIZED_DATA);
+        PROJECTS.remove(index);
+        TITLES.remove(index);
+        notifyDataSetChanged();
+    }
+
+    public boolean createProject(MolarWearProject newProject) {
+        String fileName = newProject.title() + FileUtility.FILE_EXT_SERIALIZED_DATA;
+        if (new File(AppUtility.CONTEXT.getFilesDir().toString() + separator + fileName).exists()) {
+            // Failed to create project (one with same name already exists)
+            TwoButtonDialog existsDlg = new TwoButtonDialog(new DialogStringData(_activity,
+                                        getResources().getString(R.string.err_proj_create_fail),
+                                        getResources().getString(R.string.err_proj_create_fail_exists)));
+            existsDlg.show();
+            return false;
+        }
+        if (FileUtility.saveSerializable(newProject, fileName)) {
+            addProject(newProject, true);
+        } else {
+            // Failed to create project (unknown reason)
+            Snackbar.make(_listView, getResources().getString(R.string.err_proj_create_fail),
+                          Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            return false;
+        }
+        return true;
+    }
+
+    public void deleteProject(final int index) {
         if (index >= 0 && index < PROJECTS.size()) {
-            PROJECTS.remove(index);
-            TITLES.remove(index);
-            this.notifyDataSetChanged();
-            // @TODO: Delete file
+            TwoButtonDialog confirmDlg1 = new TwoButtonDialog(new DialogStringData(_activity,
+                                          R.string.dlg_title_del_proj_conf,
+                                          R.string.dlg_msg_del_proj_conf,
+                                          R.string.dlg_bt_yes,
+                                          R.string.dlg_bt_no));
+
+            confirmDlg1.setPositiveButton(new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // Second confirmation dialog
+                    TwoButtonDialog confirmDlg2 = new TwoButtonDialog(new DialogStringData(_activity,
+                                                  R.string.dlg_title_del_proj_conf2,
+                                                  R.string.dlg_msg_del_proj_conf2,
+                                                  R.string.dlg_bt_continue,
+                                                  R.string.dlg_bt_cancel));
+
+                    confirmDlg2.setPositiveButton(new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            removeProject(index);
+                        }
+                    });
+                    confirmDlg2.show();
+                }
+            });
+            confirmDlg1.show();
         }
     }
 
@@ -265,6 +352,18 @@ public class ProjectsHandler {
     //////////// Utility ////////////
 
     public void openCreateProjectDialog() {
+        String baseFileName = AppUtility.CONTEXT.getFilesDir().toString()
+                              + separator
+                              + getResources().getString(R.string.dlg_hint_new_project);
+        File checkExists = new File(baseFileName + FileUtility.FILE_EXT_SERIALIZED_DATA);
+        if (checkExists.exists()) {
+            int i = 1;
+            checkExists = new File(baseFileName + "(" + i + ")" + FileUtility.FILE_EXT_SERIALIZED_DATA);
+            while (checkExists.exists()) {
+                checkExists = new File(baseFileName + "(" + ++i + ")" + FileUtility.FILE_EXT_SERIALIZED_DATA);
+            }
+            _dlgCreateProject.setTextInputHint(getResources().getString(R.string.dlg_hint_new_project) + "(" + i + ")");
+        }
         _dlgCreateProject.show();
     }
 

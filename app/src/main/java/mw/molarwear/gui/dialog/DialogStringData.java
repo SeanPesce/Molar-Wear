@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Resources;
 
-import mw.molarwear.R;
-
 /**
  * This class is a container for holding basic dialog strings (window title, message, button texts).
  *
@@ -18,6 +16,11 @@ import mw.molarwear.R;
 
 public class DialogStringData {
 
+    public static String DEFAULT_TITLE      = "",
+                         DEFAULT_MESSAGE    = "",
+                         DEFAULT_POS_BT_TXT = "",
+                         DEFAULT_NEG_BT_TXT = "";
+
     private final Activity _activity;
 
     private String _title, _message, _posBtText, _negBtText;
@@ -27,58 +30,58 @@ public class DialogStringData {
 
     public DialogStringData(Activity activity) {
         _activity  = activity;
-        _title     = getDefaultTitle(_activity);
-        _message   = getDefaultMessage(_activity);
-        _posBtText = getDefaultPosBtText(_activity);
-        _negBtText = getDefaultNegBtText(_activity);
+        _title     = DEFAULT_TITLE;
+        _message   = DEFAULT_MESSAGE;
+        _posBtText = DEFAULT_POS_BT_TXT;
+        _negBtText = DEFAULT_NEG_BT_TXT;
     }
 
     public DialogStringData(Activity activity, String title) {
         _activity  = activity;
         _title     = (title != null) ? title : "";
-        _message   = getDefaultMessage(_activity);
-        _posBtText = getDefaultPosBtText(_activity);
-        _negBtText = getDefaultNegBtText(_activity);
+        _message   = DEFAULT_MESSAGE;
+        _posBtText = DEFAULT_POS_BT_TXT;
+        _negBtText = DEFAULT_NEG_BT_TXT;
     }
 
     public DialogStringData(Activity activity, int titleId) {
         _activity  = activity;
-        try { _title = _activity.getResources().getString(titleId); } catch (Resources.NotFoundException e) { _title = getDefaultTitle(_activity); }
-        _message   = getDefaultMessage(_activity);
-        _posBtText = getDefaultPosBtText(_activity);
-        _negBtText = getDefaultNegBtText(_activity);
+        try { _title = _activity.getResources().getString(titleId); } catch (Resources.NotFoundException e) { _title = DEFAULT_TITLE; }
+        _message   = DEFAULT_MESSAGE;
+        _posBtText = DEFAULT_POS_BT_TXT;
+        _negBtText = DEFAULT_NEG_BT_TXT;
     }
 
     public DialogStringData(Activity activity, String title, String message) {
         _activity  = activity;
         _title     = (title   != null) ? title   : "";
         _message   = (message != null) ? message : "";
-        _posBtText = getDefaultPosBtText(_activity);
-        _negBtText = getDefaultNegBtText(_activity);
+        _posBtText = DEFAULT_POS_BT_TXT;
+        _negBtText = DEFAULT_NEG_BT_TXT;
     }
 
     public DialogStringData(Activity activity, int titleId, String message) {
         _activity  = activity;
-        try { _title = _activity.getResources().getString(titleId); } catch (Resources.NotFoundException e) { _title = getDefaultTitle(_activity); }
+        try { _title = _activity.getResources().getString(titleId); } catch (Resources.NotFoundException e) { _title = DEFAULT_TITLE; }
         _message   = (message != null) ? message : "";
-        _posBtText = getDefaultPosBtText(_activity);
-        _negBtText = getDefaultNegBtText(_activity);
+        _posBtText = DEFAULT_POS_BT_TXT;
+        _negBtText = DEFAULT_NEG_BT_TXT;
     }
 
     public DialogStringData(Activity activity, String title, int messageId) {
         _activity  = activity;
         _title     = (title != null) ? title : "";
-        try { _message = _activity.getResources().getString(messageId); } catch (Resources.NotFoundException e) { _message = getDefaultMessage(_activity); }
-        _posBtText = getDefaultPosBtText(_activity);
-        _negBtText = getDefaultNegBtText(_activity);
+        try { _message = _activity.getResources().getString(messageId); } catch (Resources.NotFoundException e) { _message = DEFAULT_MESSAGE; }
+        _posBtText = DEFAULT_POS_BT_TXT;
+        _negBtText = DEFAULT_NEG_BT_TXT;
     }
 
     public DialogStringData(Activity activity, int titleId, int messageId) {
         _activity  = activity;
-        try { _title   = _activity.getResources().getString(titleId);   } catch (Resources.NotFoundException e) { _title   = getDefaultTitle(_activity);   }
-        try { _message = _activity.getResources().getString(messageId); } catch (Resources.NotFoundException e) { _message = getDefaultMessage(_activity); }
-        _posBtText = getDefaultPosBtText(_activity);
-        _negBtText = getDefaultNegBtText(_activity);
+        try { _title   = _activity.getResources().getString(titleId);   } catch (Resources.NotFoundException e) { _title   = DEFAULT_TITLE;   }
+        try { _message = _activity.getResources().getString(messageId); } catch (Resources.NotFoundException e) { _message = DEFAULT_MESSAGE; }
+        _posBtText = DEFAULT_POS_BT_TXT;
+        _negBtText = DEFAULT_NEG_BT_TXT;
     }
 
     public DialogStringData(Activity activity, String title, String message, String posBtText, String negBtText) {
@@ -91,8 +94,8 @@ public class DialogStringData {
 
     public DialogStringData(Activity activity, int titleId, int messageId, String posBtText, String negBtText) {
         _activity  = activity;
-        try { _title   = _activity.getResources().getString(titleId);   } catch (Resources.NotFoundException e) { _title   = getDefaultTitle(_activity);   }
-        try { _message = _activity.getResources().getString(messageId); } catch (Resources.NotFoundException e) { _message = getDefaultMessage(_activity); }
+        try { _title   = _activity.getResources().getString(titleId);   } catch (Resources.NotFoundException e) { _title   = DEFAULT_TITLE;   }
+        try { _message = _activity.getResources().getString(messageId); } catch (Resources.NotFoundException e) { _message = DEFAULT_MESSAGE; }
         _posBtText = (posBtText != null) ? posBtText : "";
         _negBtText = (negBtText != null) ? negBtText : "";
     }
@@ -100,14 +103,14 @@ public class DialogStringData {
     public DialogStringData(Activity activity, String title, int messageId, String posBtText, String negBtText) {
         _activity  = activity;
         _title     = (title != null)     ? title     : "";
-        try { _message = _activity.getResources().getString(messageId); } catch (Resources.NotFoundException e) { _message = getDefaultMessage(_activity); }
+        try { _message = _activity.getResources().getString(messageId); } catch (Resources.NotFoundException e) { _message = DEFAULT_MESSAGE; }
         _posBtText = (posBtText != null) ? posBtText : "";
         _negBtText = (negBtText != null) ? negBtText : "";
     }
 
     public DialogStringData(Activity activity, int titleId, String message, String posBtText, String negBtText) {
         _activity  = activity;
-        try { _title   = _activity.getResources().getString(titleId);   } catch (Resources.NotFoundException e) { _title   = getDefaultTitle(_activity);   }
+        try { _title   = _activity.getResources().getString(titleId);   } catch (Resources.NotFoundException e) { _title   = DEFAULT_TITLE;   }
         _message   = (message   != null) ? message   : "";
         _posBtText = (posBtText != null) ? posBtText : "";
         _negBtText = (negBtText != null) ? negBtText : "";
@@ -115,50 +118,50 @@ public class DialogStringData {
 
     public DialogStringData(Activity activity, int titleId, int messageId, int posBtTextId, String negBtText) {
         _activity  = activity;
-        try { _title     = _activity.getResources().getString(titleId);     } catch (Resources.NotFoundException e) { _title     = getDefaultTitle(_activity);     }
-        try { _message   = _activity.getResources().getString(messageId);   } catch (Resources.NotFoundException e) { _message   = getDefaultMessage(_activity);   }
-        try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) { _posBtText = getDefaultPosBtText(_activity); }
+        try { _title     = _activity.getResources().getString(titleId);     } catch (Resources.NotFoundException e) { _title     = DEFAULT_TITLE;     }
+        try { _message   = _activity.getResources().getString(messageId);   } catch (Resources.NotFoundException e) { _message   = DEFAULT_MESSAGE;   }
+        try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) { _posBtText = DEFAULT_POS_BT_TXT; }
         _negBtText = (negBtText != null) ? negBtText : "";
     }
 
     public DialogStringData(Activity activity, int titleId, int messageId, String posBtText, int negBtTextId) {
         _activity  = activity;
-        try { _title     = _activity.getResources().getString(titleId);     } catch (Resources.NotFoundException e) { _title     = getDefaultTitle(_activity);     }
-        try { _message   = _activity.getResources().getString(messageId);   } catch (Resources.NotFoundException e) { _message   = getDefaultMessage(_activity);   }
+        try { _title     = _activity.getResources().getString(titleId);     } catch (Resources.NotFoundException e) { _title     = DEFAULT_TITLE;     }
+        try { _message   = _activity.getResources().getString(messageId);   } catch (Resources.NotFoundException e) { _message   = DEFAULT_MESSAGE;   }
         _posBtText = (posBtText != null) ? posBtText : "";
-        try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) { _negBtText = getDefaultNegBtText(_activity); }
+        try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) { _negBtText = DEFAULT_NEG_BT_TXT; }
     }
 
     public DialogStringData(Activity activity, String title, String message, int posBtTextId, int negBtTextId) {
         _activity  = activity;
         _title     = (title   != null) ? title   : "";
         _message   = (message != null) ? message : "";
-        try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) { _posBtText = getDefaultPosBtText(_activity); }
-        try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) { _negBtText = getDefaultNegBtText(_activity); }
+        try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) { _posBtText = DEFAULT_POS_BT_TXT; }
+        try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) { _negBtText = DEFAULT_NEG_BT_TXT; }
     }
 
     public DialogStringData(Activity activity, int titleId, String message, int posBtTextId, int negBtTextId) {
         _activity  = activity;
-        try { _title     = _activity.getResources().getString(titleId);     } catch (Resources.NotFoundException e) { _title     = getDefaultTitle(_activity);     }
+        try { _title     = _activity.getResources().getString(titleId);     } catch (Resources.NotFoundException e) { _title     = DEFAULT_TITLE;     }
         _message   = (message != null) ? message : "";
-        try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) { _posBtText = getDefaultPosBtText(_activity); }
-        try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) { _negBtText = getDefaultNegBtText(_activity); }
+        try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) { _posBtText = DEFAULT_POS_BT_TXT; }
+        try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) { _negBtText = DEFAULT_NEG_BT_TXT; }
     }
 
     public DialogStringData(Activity activity, String title, int messageId, int posBtTextId, int negBtTextId) {
         _activity  = activity;
         _title     = (title   != null) ? title   : "";
-        try { _message   = _activity.getResources().getString(messageId);   } catch (Resources.NotFoundException e) { _message   = getDefaultMessage(_activity);   }
-        try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) { _posBtText = getDefaultPosBtText(_activity); }
-        try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) { _negBtText = getDefaultNegBtText(_activity); }
+        try { _message   = _activity.getResources().getString(messageId);   } catch (Resources.NotFoundException e) { _message   = DEFAULT_MESSAGE;   }
+        try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) { _posBtText = DEFAULT_POS_BT_TXT; }
+        try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) { _negBtText = DEFAULT_NEG_BT_TXT; }
     }
 
     public DialogStringData(Activity activity, int titleId, int messageId, int posBtTextId, int negBtTextId) {
         _activity  = activity;
-        try { _title     = _activity.getResources().getString(titleId);     } catch (Resources.NotFoundException e) { _title     = getDefaultTitle(_activity);     }
-        try { _message   = _activity.getResources().getString(messageId);   } catch (Resources.NotFoundException e) { _message   = getDefaultMessage(_activity);   }
-        try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) { _posBtText = getDefaultPosBtText(_activity); }
-        try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) { _negBtText = getDefaultNegBtText(_activity); }
+        try { _title     = _activity.getResources().getString(titleId);     } catch (Resources.NotFoundException e) { _title     = DEFAULT_TITLE;     }
+        try { _message   = _activity.getResources().getString(messageId);   } catch (Resources.NotFoundException e) { _message   = DEFAULT_MESSAGE;   }
+        try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) { _posBtText = DEFAULT_POS_BT_TXT; }
+        try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) { _negBtText = DEFAULT_NEG_BT_TXT; }
     }
 
 
@@ -184,12 +187,4 @@ public class DialogStringData {
     public void setMessage(int messageId)     { try { _message   = _activity.getResources().getString(messageId);   } catch (Resources.NotFoundException e) {} }
     public void setPosBtText(int posBtTextId) { try { _posBtText = _activity.getResources().getString(posBtTextId); } catch (Resources.NotFoundException e) {} }
     public void setNegBtText(int negBtTextId) { try { _negBtText = _activity.getResources().getString(negBtTextId); } catch (Resources.NotFoundException e) {} }
-
-
-
-    //////////// Static Accessors ////////////
-    private static String getDefaultTitle(Activity activity)     { return activity.getResources().getString(R.string.default_dlg_title);      }
-    private static String getDefaultMessage(Activity activity)   { return activity.getResources().getString(R.string.default_dlg_msg);        }
-    private static String getDefaultPosBtText(Activity activity) { return activity.getResources().getString(R.string.default_dlg_bt_pos_txt); }
-    private static String getDefaultNegBtText(Activity activity) { return activity.getResources().getString(R.string.default_dlg_bt_neg_txt); }
 }
