@@ -298,8 +298,8 @@ public class ProjectsHandler {
         if (new File(AppUtility.CONTEXT.getFilesDir().toString() + separator + fileName).exists()) {
             // Failed to create project (one with same name already exists)
             TwoButtonDialog existsDlg = new TwoButtonDialog(new DialogStringData(_activity,
-                                        getResources().getString(R.string.err_proj_create_fail),
-                                        getResources().getString(R.string.err_proj_create_fail_exists)));
+                                        R.string.err_proj_create_fail,
+                                        R.string.err_proj_create_fail_exists));
             existsDlg.show();
             return false;
         }

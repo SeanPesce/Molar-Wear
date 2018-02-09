@@ -1,5 +1,6 @@
 package mw.molarwear.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -9,6 +10,7 @@ import mw.molarwear.data.classes.dental.molar.Molar;
 import mw.molarwear.gui.activity.SplashActivity;
 import mw.molarwear.gui.dialog.DialogStringData;
 import mw.molarwear.gui.dialog.TextInputDialog;
+import mw.molarwear.gui.dialog.TwoButtonDialog;
 
 /**
  * Utility class for handling global app data.
@@ -21,7 +23,7 @@ public class AppUtility {
     // Note: All methods and member data are static; this instance just allows for aliasing
     private static final AppUtility _INSTANCE = new AppUtility();
 
-    public  static Context CONTEXT = null;
+    public  static Activity CONTEXT = null;
 
 
     private AppUtility() {
@@ -70,5 +72,13 @@ public class AppUtility {
         DialogStringData.DEFAULT_NEG_BT_TXT = STRING(R.string.default_dlg_bt_neg_txt);
 
         TextInputDialog.DEFAULT_TEXT_INPUT_HINT = STRING(R.string.default_dlg_txt_input_hint);
+    }
+
+
+    public  static final void featureNotImplementedYet() {
+        TwoButtonDialog dialog = new TwoButtonDialog(new DialogStringData(CONTEXT,
+                                                        R.string.dlg_title_feature_not_implemented,
+                                                        R.string.dlg_msg_feature_not_implemented));
+        dialog.show();
     }
 }

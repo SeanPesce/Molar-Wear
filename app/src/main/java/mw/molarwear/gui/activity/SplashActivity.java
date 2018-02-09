@@ -28,7 +28,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppUtility.CONTEXT = getApplicationContext();
+        AppUtility.CONTEXT = this;
         AppUtility.initializeRuntimeSettings();
 
         try {

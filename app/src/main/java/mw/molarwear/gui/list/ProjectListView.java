@@ -8,6 +8,7 @@ import android.widget.ListView;
 
 import mw.molarwear.R;
 import mw.molarwear.data.handlers.ProjectsHandler;
+import mw.molarwear.util.AppUtility;
 
 /**
  * Custom {@link ListView} class for organizing a list of {@link mw.molarwear.data.classes.MolarWearProject}
@@ -86,27 +87,27 @@ public class ProjectListView extends ListView {
         });
 
         // @TODO: Button listeners
-//        btEditProj.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(final View view) {
-//
-//            }
-//        });
-//
-//        btShareProj.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(final View view) {
-//
-//            }
-//        });
-//
-//        btDetailsProj.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(final View view) {
-//
-//            }
-//        });
-//
+        btEditProj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                AppUtility.featureNotImplementedYet();
+            }
+        });
+
+        btShareProj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                AppUtility.featureNotImplementedYet();
+            }
+        });
+
+        btDetailsProj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                AppUtility.featureNotImplementedYet();
+            }
+        });
+
         btDeleteProj.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {

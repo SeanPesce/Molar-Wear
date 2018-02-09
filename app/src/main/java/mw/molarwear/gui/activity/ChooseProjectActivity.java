@@ -37,7 +37,7 @@ public class ChooseProjectActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppUtility.CONTEXT = getApplicationContext();
+        AppUtility.CONTEXT = this;
 
         setContentView(R.layout.activity_choose_project);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
