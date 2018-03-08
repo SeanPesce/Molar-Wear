@@ -1,5 +1,7 @@
 package mw.molarwear.data.classes.dental;
 
+import java.io.Serializable;
+
 import mw.molarwear.data.classes.dental.enums.ToothMapping;
 
 /**
@@ -11,7 +13,7 @@ import mw.molarwear.data.classes.dental.enums.ToothMapping;
  * @see    mw.molarwear.data.classes.dental.molar.Molar
  */
 
-public class Tooth {
+public class Tooth implements Serializable {
 
     ///////////////////////////////////////////////////////////////
     ///////////////////////// STATIC DATA /////////////////////////

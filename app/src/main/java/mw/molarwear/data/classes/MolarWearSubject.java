@@ -33,7 +33,9 @@ public class MolarWearSubject implements Comparable<MolarWearSubject>, Serializa
         UNKNOWN
     }
 
-    public static final int UNKNOWN_AGE = -1;
+    public static final int    UNKNOWN_AGE = -1;
+    public static final int        MAX_AGE = 150;
+    public static       String  DEFAULT_ID = "Unknown Subject";
 
 
     ///////////////////////////////////////////////////////////////
@@ -51,9 +53,15 @@ public class MolarWearSubject implements Comparable<MolarWearSubject>, Serializa
     //////////// Constructors ////////////
 
     public MolarWearSubject() {
-        this.initialize("", "", UNKNOWN_AGE, SEX.UNKNOWN, "",
+        this.initialize(DEFAULT_ID, "", UNKNOWN_AGE, SEX.UNKNOWN, "",
                         new Surface(), new Surface(), new Surface(),
                         new Surface(), new Surface(), new Surface()    );
+    }
+
+    public MolarWearSubject(String id) {
+        this.initialize(id, "", UNKNOWN_AGE, SEX.UNKNOWN, "",
+            new Surface(), new Surface(), new Surface(),
+            new Surface(), new Surface(), new Surface()    );
     }
 
     public MolarWearSubject(String id, String siteId, int age, SEX sex, String notes) {

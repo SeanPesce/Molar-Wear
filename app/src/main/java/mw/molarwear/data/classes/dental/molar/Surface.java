@@ -1,5 +1,6 @@
 package mw.molarwear.data.classes.dental.molar;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,10 +8,10 @@ import mw.molarwear.data.classes.dental.molar.enums.Quadrant;
 import mw.molarwear.data.classes.dental.molar.enums.Wear;
 
 /**
- * This class contains data about wear on the surface of a human molar (Bottom surface of upper molars,
- *  or top surface of lower molars). Wear data is stored in four {@link SurfaceQuadrant} objects, each
- *  representing the condition of the tooth surface in a different area (inner front, inner back,
- *  outer front, outer back).
+ * This class contains data about wear on the Occlusal surface of a human molar (Bottom surface of
+ *  upper molars, or top surface of lower molars). Wear data is stored in four {@link SurfaceQuadrant}
+ *  objects, each representing the condition of the tooth surface in a different area (inner front,
+ *  inner back, outer front, outer back).
  *
  * @author Sean Pesce
  *
@@ -20,7 +21,7 @@ import mw.molarwear.data.classes.dental.molar.enums.Wear;
  * @see    Wear
  */
 
-public class Surface {
+public class Surface implements Serializable {
 
 
     ///////////////////////////////////////////////////////////////

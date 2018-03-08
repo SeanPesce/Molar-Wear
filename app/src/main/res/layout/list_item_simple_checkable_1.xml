@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2011 The Android Open Source Project
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+          http://www.apache.org/licenses/LICENSE-2.0
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<!--
+    Source: https://github.com/linuxjava/Support4Demos/blob/master/app/src/main/res/layout/simple_list_item_checkable_1.xml
+
+    (Originally from Android SDK samples)
+-->
+<!--
+    Author: Sean Pesce
+-->
+<mw.molarwear.gui.layout.CheckableLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_listitem_subject"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:descendantFocusability="blocksDescendants"
+    android:background="@android:color/transparent"
+    android:foreground="?android:attr/selectableItemBackground">
+    <TextView
+        android:id="@+id/lbl_listitem_checkable_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:layout_weight=".9"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:minHeight="?android:attr/listPreferredItemHeight"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:text="@string/default_project_title" />
+    <ImageButton
+        android:id="@+id/bt_listitem_checkable_1"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_weight=".1"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:tint="@color/colorPrimaryDark"
+        app:backgroundTint="@android:color/transparent"
+        android:text="@string/act_open"
+        android:src="@drawable/ic_keyboard_arrow_right"
+        android:foreground="?android:attr/selectableItemBackground" />
+</mw.molarwear.gui.layout.CheckableLinearLayout>

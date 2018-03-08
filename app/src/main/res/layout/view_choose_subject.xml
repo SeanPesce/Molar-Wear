@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Author: Sean Pesce
+-->
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/view_list_subjects"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/lbl_subjects_list_header"
+            android:layout_width="fill_parent"
+            android:layout_height="?android:attr/listPreferredItemHeightSmall"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/title_list_section_subjects"
+            android:gravity="start|center_vertical"
+            android:textAlignment="viewStart"
+            />
+
+        <View
+            android:id="@+id/border_bottom_subjects_list_header"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            android:visibility="gone"
+            />
+
+        <fragment
+            android:id="@+id/fragment_list_subjects"
+            class="mw.molarwear.gui.fragment.SubjectsListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/bt_new_subject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:tint="@android:color/background_light"
+        app:backgroundTint="@color/colorPrimary"
+        app:rippleColor="@color/colorPrimaryLight2"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        android:src="@drawable/ic_person_add" />
+
+</android.support.design.widget.CoordinatorLayout>

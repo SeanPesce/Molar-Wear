@@ -1,6 +1,6 @@
-# MolarWear  
+# MolWear  
 
-MolarWear is an Android app that aims to simplify the recording and sharing of observational/descriptive data about dental wear on molars for anthropological research purposes.  
+MolWear is an Android app that aims to simplify the recording and sharing of observational/descriptive data about dental wear on molars for anthropological research purposes.  
 
 ## About  
 
@@ -12,6 +12,8 @@ MolarWear is an Android app that aims to simplify the recording and sharing of o
  * **[Android Studio](https://developer.android.com/studio/)** - Official IDE for Android  
  * **[Gradle](https://gradle.org/)** - Build tools  
  * **[Material Design Icons](https://material.io/icons)** - Official icon set from Google  
+ * **[MaterialNumberPicker](https://github.com/KasualBusiness/MaterialNumberPicker)** - Customizable [Android NumberPicker](https://developer.android.com/reference/android/widget/NumberPicker.html) that follows [Material Design Guidelines](https://developer.android.com/design/index.html)  
+ * **[Apache Commons CSV™](https://commons.apache.org/proper/commons-csv)** - Apache Commons library for reading & writing CSV files  
 
  
 ## Authors  
@@ -23,7 +25,7 @@ MolarWear is an Android app that aims to simplify the recording and sharing of o
 
 ## Acknowledgments  
 
-*@TODO*  
+ * **[Kasual Business](http://www.kasual.biz/)** - Creators of [MaterialNumberPicker](https://github.com/KasualBusiness/MaterialNumberPicker)  
 
 
 ## License  

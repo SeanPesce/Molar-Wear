@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     package="mw.molarwear">
 
     <application
@@ -9,7 +11,6 @@
         android:roundIcon="@mipmap/ic_molwear_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".gui.activity.SplashActivity"
             android:label="@string/app_name"
@@ -20,13 +21,35 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name=".gui.activity.ChooseProjectActivity"
+            android:name=".gui.activity.MolWearMainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/MainActivityTheme">
 
+            <!--
+            Unfinished filetype filter for project files
+            <intent-filter
+             android:icon="@drawable/ic_molwear_inverted"
+             android:label="@string/project_file_description">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.mwsd" />
+            </intent-filter>
+            -->
+        </activity>
+        <activity
+            android:name=".gui.activity.ViewProjectActivity"
+            android:label=""
+            android:parentActivityName=".gui.activity.MolWearMainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustPan" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="mw.molarwear.gui.activity.MolWearMainActivity" />
+        </activity>
     </application>
 
 </manifest>

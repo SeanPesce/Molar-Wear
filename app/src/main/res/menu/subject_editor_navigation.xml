@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Author: Sean Pesce
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_basic_info"
+        android:icon="@drawable/ic_info"
+        android:title="@string/lbl_subject_nav_basic_info" />
+
+    <item
+        android:id="@+id/navigation_molar_data"
+        android:icon="@drawable/ic_dashboard"
+        android:title="@string/lbl_subject_nav_molar_data" />
+
+    <item
+        android:id="@+id/navigation_notes"
+        android:icon="@drawable/ic_speaker_notes"
+        android:title="@string/lbl_subject_nav_notes" />
+
+</menu>

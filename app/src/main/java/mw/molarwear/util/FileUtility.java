@@ -1,6 +1,10 @@
 package mw.molarwear.util;
 
 import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import static java.io.File.separator;
 
 /**
  * Utility class for tasks related to file I/O.
@@ -91,7 +97,7 @@ public class FileUtility {
     }
 
     /**
-     * Loads a serializable object.
+     * Loads a serializable object from a file in internal storage.
      *
      *  <p>
      *      Source: <a href="https://stackoverflow.com/a/33896724/7891239">Stack Overflow</a> post by
@@ -103,11 +109,41 @@ public class FileUtility {
      *
      * @return the serializable object.
      */
-    public static<T extends Serializable> T readSerializable(String fileName) {
+    public static<T extends Serializable> T readInternalSerializable(String fileName) {
         T objectToReturn = null;
 
         try {
             FileInputStream fileInputStream = AppUtility.CONTEXT.openFileInput(fileName);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            objectToReturn = (T) objectInputStream.readObject();
+
+            objectInputStream.close();
+            fileInputStream.close();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return objectToReturn;
+    }
+
+    /**
+     * Loads a serializable object from a file in external storage.
+     *
+     *  <p>
+     *      Source: <a href="https://stackoverflow.com/a/33896724/7891239">Stack Overflow</a> post by
+     *       <a href="https://stackoverflow.com/users/3482000/sandro-machado">Sandro Machado</a>
+     *  </p>
+     *
+     * @param fileName The filename.
+     * @param <T> The object type.
+     *
+     * @return the serializable object.
+     */
+    public static<T extends Serializable> T readExternalSerializable(String fileName) {
+        T objectToReturn = null;
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream (new File(fileName));
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             objectToReturn = (T) objectInputStream.readObject();
 
@@ -221,6 +257,43 @@ public class FileUtility {
      */
     public static ArrayList<File> getFilesInFolder(File dir, String fileExtFilter) {
         return getFilesInDir(dir, false, fileExtFilter);
+    }
+
+    /**
+     * Obtains the fully resolved internal storage path for a given file.
+     *
+     * @param  fileName the file name of (or relative path to) the file.
+     *
+     * @return the fully resolved internal storage path for the given file (or the path to the
+     *          internal storage folder if fileName is empty or null)
+     */
+    public static String getInternalPath(String fileName) {
+        if (fileName == null || fileName.length() == 0) {
+            return AppUtility.CONTEXT.getFilesDir().toString() + separator;
+        }
+        return AppUtility.CONTEXT.getFilesDir().toString() + separator + fileName;
+    }
+
+    /**
+     * Returns the absolute file path of the file specified by the given URI.
+     *
+     * @param uri the URI of the specified file.
+     *
+     * @return    the resolved file path as a {@link String}, or an empty string if the file path
+     *             could not be determined.
+     *
+     * @see Uri
+     */
+    public static String getPathFromURI(Uri uri) {
+        // Reference: https://gist.github.com/asifmujteba/d89ba9074bc941de1eaa
+        if (Build.VERSION.SDK_INT >= 19) {
+            final String docId = DocumentsContract.getDocumentId(uri);
+            final String[] split = docId.split(":");
+            return Environment.getExternalStorageDirectory() + separator + split[1];
+        }
+        // @TODO: Add support for pre-19 Android builds?
+        AppUtility.printSnackBarMsg("Error: Unsupported Android build");
+        return "";
     }
 
 }

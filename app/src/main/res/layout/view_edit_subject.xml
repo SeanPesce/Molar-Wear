@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Author: Sean Pesce
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_edit_subject"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="mw.molarwear.gui.activity.ViewProjectActivity">
+
+
+        <FrameLayout
+            android:id="@+id/fragment_edit_subject_basic_info_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+        <FrameLayout
+            android:id="@+id/fragment_edit_subject_molar_data_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+             />
+
+        <FrameLayout
+            android:id="@+id/fragment_edit_subject_notes_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+             />
+
+
+        <android.support.design.widget.BottomNavigationView
+            android:id="@+id/navigation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="0dp"
+            android:background="?android:attr/windowBackground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:menu="@menu/subject_editor_navigation" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</LinearLayout>

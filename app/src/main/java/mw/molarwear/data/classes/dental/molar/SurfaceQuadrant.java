@@ -1,5 +1,7 @@
 package mw.molarwear.data.classes.dental.molar;
 
+import java.io.Serializable;
+
 import mw.molarwear.data.classes.dental.molar.enums.Quadrant;
 import mw.molarwear.data.classes.dental.molar.enums.Wear;
 
@@ -15,7 +17,7 @@ import mw.molarwear.data.classes.dental.molar.enums.Wear;
  * @see    Wear
  */
 
-public class SurfaceQuadrant {
+public class SurfaceQuadrant implements Serializable {
 
     ///////////////////////////////////////////////////////////////
     //////////////////////// INSTANCE DATA ////////////////////////

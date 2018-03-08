@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.support.annotation.StringRes;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -46,7 +47,7 @@ public class TextInputDialog extends TwoButtonDialog {
         initialize();
     }
 
-    public TextInputDialog(Activity activity, int textInputHintId) {
+    public TextInputDialog(Activity activity, @StringRes int textInputHintId) {
         super(activity, R.layout.dialog_text_input);
         _textInput = (EditText) this.linearLayout().findViewById(R.id.txt_input_dlg);
         try { _textInputHint = _activity.getResources().getString(textInputHintId); } catch (Resources.NotFoundException e) { _textInputHint = DEFAULT_TEXT_INPUT_HINT; }
@@ -70,7 +71,7 @@ public class TextInputDialog extends TwoButtonDialog {
         initialize();
     }
 
-    public TextInputDialog(Activity activity, DialogStringData strings, int textInputHintId) {
+    public TextInputDialog(Activity activity, DialogStringData strings, @StringRes int textInputHintId) {
         super(activity, strings, R.layout.dialog_text_input);
         _textInput = (EditText) this.linearLayout().findViewById(R.id.txt_input_dlg);
         try { _textInputHint = _activity.getResources().getString(textInputHintId); } catch (Resources.NotFoundException e) { _textInputHint = DEFAULT_TEXT_INPUT_HINT; }
@@ -94,7 +95,7 @@ public class TextInputDialog extends TwoButtonDialog {
         initialize();
     }
 
-    public TextInputDialog(DialogStringData strings, int textInputHintId) {
+    public TextInputDialog(DialogStringData strings, @StringRes int textInputHintId) {
         super(strings, R.layout.dialog_text_input);
         _textInput = (EditText) this.linearLayout().findViewById(R.id.txt_input_dlg);
         try { _textInputHint = _activity.getResources().getString(textInputHintId); } catch (Resources.NotFoundException e) { _textInputHint = DEFAULT_TEXT_INPUT_HINT; }
@@ -118,7 +119,7 @@ public class TextInputDialog extends TwoButtonDialog {
         initialize();
     }
 
-    public TextInputDialog(Activity activity, AlertDialog.Builder builder, int textInputHintId) {
+    public TextInputDialog(Activity activity, AlertDialog.Builder builder, @StringRes int textInputHintId) {
         super(activity, builder, R.layout.dialog_text_input);
         _textInput = (EditText) this.linearLayout().findViewById(R.id.txt_input_dlg);
         try { _textInputHint = _activity.getResources().getString(textInputHintId); } catch (Resources.NotFoundException e) { _textInputHint = DEFAULT_TEXT_INPUT_HINT; }
@@ -142,7 +143,7 @@ public class TextInputDialog extends TwoButtonDialog {
         initialize();
     }
 
-    public TextInputDialog(Activity activity, DialogStringData strings, AlertDialog.Builder builder, int textInputHintId) {
+    public TextInputDialog(Activity activity, DialogStringData strings, AlertDialog.Builder builder, @StringRes int textInputHintId) {
         super(activity, strings, builder, R.layout.dialog_text_input);
         _textInput = (EditText) this.linearLayout().findViewById(R.id.txt_input_dlg);
         try { _textInputHint = _activity.getResources().getString(textInputHintId); } catch (Resources.NotFoundException e) { _textInputHint = DEFAULT_TEXT_INPUT_HINT; }
@@ -166,7 +167,7 @@ public class TextInputDialog extends TwoButtonDialog {
         initialize();
     }
 
-    public TextInputDialog(DialogStringData strings, AlertDialog.Builder builder, int textInputHintId) {
+    public TextInputDialog(DialogStringData strings, AlertDialog.Builder builder, @StringRes int textInputHintId) {
         super(strings, builder, R.layout.dialog_text_input);
         _textInput = (EditText) this.linearLayout().findViewById(R.id.txt_input_dlg);
         try { _textInputHint = _activity.getResources().getString(textInputHintId); } catch (Resources.NotFoundException e) { _textInputHint = DEFAULT_TEXT_INPUT_HINT; }
@@ -215,7 +216,7 @@ public class TextInputDialog extends TwoButtonDialog {
         updateDialog();
     }
 
-    public void setText(int textId) {
+    public void setText(@StringRes int textId) {
         try {
             setText(_activity.getResources().getString(textId));
         } catch (Resources.NotFoundException e) {}
@@ -229,7 +230,7 @@ public class TextInputDialog extends TwoButtonDialog {
         }
     }
 
-    public void setTextInputHint(int textInputHintId) {
+    public void setTextInputHint(@StringRes int textInputHintId) {
         try {
             setTextInputHint(_activity.getResources().getString(textInputHintId));
         } catch (Resources.NotFoundException e) {}

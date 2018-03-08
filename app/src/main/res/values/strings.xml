@@ -1,6 +1,12 @@
-<!-- Language strings: English (US) -->
+<!--
+    Author: Sean Pesce
+--><!-- Language strings: English (US) -->
 <resources>
     <string name="app_name">MolWear</string>
+    <string name="project_file_description">MolWear Project</string>
+    <string name="github">https://github.com/SeanPesce/Molar-Wear</string>
+    <string name="github_view">View on GitHub</string>
+    <string name="github_view_url">View on GitHub: <b>goo.gl/BnqZ38</b></string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -23,28 +29,73 @@
     <!-- |||||||||||||||||||||||||||||   General Runtime Strings   ||||||||||||||||||||||||||||| -->
     <string name="no_data">No data</string>
     <string name="no_projects">No projects</string>
+    <string name="no_subjects">@string/no_data</string>
     <string name="title_choose_proj">Projects</string>
+    <string name="title_activity_edit_subject">Edit Subject</string>
+    <string name="title_list_section_subjects">Research Subjects</string>
 
     <!-- ||||||||||||||||||||||||||   Action-related Runtime Strings   ||||||||||||||||||||||||| -->
+    <string name="import_project">Import project</string>
     <string name="act_delete">Delete</string>
     <string name="act_edit">Edit</string>
     <string name="act_open">Open</string>
+    <string name="act_close">Close</string>
+    <string name="act_save">Save</string>
     <string name="act_share">Share</string>
     <string name="act_view_details">Details</string>
+    <string name="act_options">Options</string>
+    <string name="act_photo">Photo</string>
+    <string name="act_gallery">Gallery</string>
+    <string name="act_notes">Notes</string>
+    <string name="act_move_up">Move Up</string>
+    <string name="act_move_down">Move Down</string>
 
     <!-- ||||||||||||||||||||||||||   Error-related Runtime Strings   |||||||||||||||||||||||||| -->
     <string name="error">Error</string>
     <string name="err_invalid_type_not_molar">Invalid type (must be Tooth.Type.MOLAR)</string>
     <string name="err_unsupported_os_new_proj_dlg">Failed to create \"New Project\" dialog builder (minimum supported: Android Lollipop)</string>
     <string name="err_app_util_context_null">AppUtility.CONTEXT was null</string>
+    <string name="err_app_util_view_null">AppUtility.VIEW was null</string>
     <string name="err_proj_create_fail">Failed to create project</string>
     <string name="err_proj_create_fail_exists">A project with the specified title already exists.</string>
+    <string name="err_proj_edit_title_fail">Failed to rename project</string>
+    <string name="err_proj_edit_title_fail_exists">@string/err_proj_create_fail_exists</string>
+    <string name="err_proj_edit_title_fail_rename_file">Unable to rename project file; no changes were made.</string>
+    <!-- _______________________________________________________________________________________ -->
+
+
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- |||||||||||||||||||||||||||||||||   LABELS & PROMPTS   |||||||||||||||||||||||||||||||| -->
+    <string name="lbl_subject_id">Subject ID</string>
+    <string name="lbl_site_id">Site ID</string>
+    <string name="lbl_subject_age">Age</string>
+    <string name="lbl_subject_sex">Sex</string>
+    <string name="lbl_subject_notes">Additional notes</string>
+    <string name="lbl_subject_molars">Molars</string>
+    <string name="lbl_subject_molar_m1">M1</string>
+    <string name="lbl_subject_molar_m2">M2</string>
+    <string name="lbl_subject_molar_m3">M3</string>
+    <string name="lbl_subject_molar_l1">M1 (L)</string>
+    <string name="lbl_subject_molar_l2">M2 (L)</string>
+    <string name="lbl_subject_molar_l3">M3 (L)</string>
+    <string name="lbl_subject_molar_r1">M1 (R)</string>
+    <string name="lbl_subject_molar_r2">M2 (R)</string>
+    <string name="lbl_subject_molar_r3">M3 (R)</string>
+    <string name="lbl_subject_molar_q1">Q1</string>
+    <string name="lbl_subject_molar_q2">Q2</string>
+    <string name="lbl_subject_molar_q3">Q3</string>
+    <string name="lbl_subject_molar_q4">Q4</string>
+
+    <string name="lbl_subject_nav_basic_info">Basic Info</string>
+    <string name="lbl_subject_nav_molar_data">Molar Data</string>
+    <string name="lbl_subject_nav_notes">Notes</string>
     <!-- _______________________________________________________________________________________ -->
 
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |||||||||||||||||||||||||||||||||||||   DEFAULTS   |||||||||||||||||||||||||||||||||||| -->
     <string name="default_project_title">Untitled Project</string>
+    <string name="default_subject_id">Unknown Subject</string>
     <string name="default_dlg_title"></string>
     <string name="default_dlg_msg"></string>
     <string name="default_dlg_bt_pos_txt">@string/dlg_bt_ok</string>
@@ -67,17 +118,32 @@
     <string name="dlg_bt_accept">Accept</string>
     <string name="dlg_bt_decline">Decline</string>
     <string name="dlg_bt_submit">Submit</string>
+    <string name="dlg_bt_save">Save</string>
+    <string name="dlg_bt_add">Add</string>
 
-    <!-- |||||||||||||||||||||||||||||||   Titles and Messages   ||||||||||||||||||||||||||||||| -->
+    <!-- |||||||||||||||   Titles, Messages, & Context-specific Button Strings   ||||||||||||||| -->
     <string name="dlg_title_new_project">New Project</string>
     <string name="dlg_msg_new_project">Project title:</string>
     <string name="dlg_hint_new_project">@string/default_project_title</string>
+    <string name="dlg_title_edit_project">Rename Project</string>
     <string name="dlg_title_del_proj_conf">Delete project?</string>
     <string name="dlg_msg_del_proj_conf">Are you sure you want to delete this project?</string>
     <string name="dlg_title_del_proj_conf2">Confirm project deletion</string>
-    <string name="dlg_msg_del_proj_conf2">Press \"Continue\" to permanently delete this project.</string>
+    <string name="dlg_msg_del_proj_conf2">Press \"Continue\" to permanently delete the following project:</string>
     <string name="dlg_title_feature_not_implemented">Feature not available</string>
     <string name="dlg_msg_feature_not_implemented">This feature hasn\'t been implemented yet.</string>
+
+    <string name="dlg_title_new_subject">New Research Subject</string>
+    <string name="dlg_msg_new_subject">Subject ID:</string>
+    <string name="dlg_hint_new_subject">@string/default_subject_id</string>
+    <string name="dlg_title_edit_subject">Rename Entry</string>
+    <string name="dlg_title_del_subj_conf">Delete data?</string>
+    <string name="dlg_msg_del_subj_conf">Are you sure you want to delete this entry?</string>
+    <string name="dlg_title_del_subj_conf2">Confirm data deletion</string>
+    <string name="dlg_msg_del_subj_conf2">Press \"Continue\" to delete the following entry:</string>
+
+    <string name="dlg_title_set_wear_lvl">Wear level</string>
+    <string name="dlg_msg_set_wear_lvl"></string>
     <!-- _______________________________________________________________________________________ -->
 
 
@@ -110,6 +176,14 @@
     <!-- _______________________________________________________________________________________ -->
 
 
+    <!-- |||||||||||||||||||||||||||||||   Subject Descriptors   ||||||||||||||||||||||||||||||| -->
+    <string name="desc_sex_m">Male</string>
+    <string name="desc_sex_f">Female</string>
+    <string name="desc_sex_u">@string/unknown</string>
+    <string name="desc_age_unknown">@string/unknown</string>
+    <!-- _______________________________________________________________________________________ -->
+
+
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |||||||||||||||||||||||||||||||||||   DESCRIPTIONS   |||||||||||||||||||||||||||||||||| -->
 
@@ -127,6 +201,8 @@
     <string name="desc_wear_lvl_7">Enamel is only found on one \"side\" of quadrant (typically outer rim); however, enamel is thin. Sections may be worn through.</string>
     <string name="desc_wear_lvl_8">Condition of most wear; full dentine exposure. No enamel present.</string>
     <string name="desc_wear_lvl_unk">No data.</string>
+    <string name="title_activity_tabbed">TabbedActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
     <!-- _______________________________________________________________________________________ -->
 
 </resources>

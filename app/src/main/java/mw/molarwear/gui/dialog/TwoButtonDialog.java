@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Build;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.StringRes;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -78,7 +80,7 @@ public class TwoButtonDialog {
         setStrings(new DialogStringData(_activity));
     }
 
-    public TwoButtonDialog(Activity activity, int layoutId) {
+    public TwoButtonDialog(Activity activity, @LayoutRes int layoutId) {
         _activity = activity;
         _builder  = new AlertDialog.Builder(_activity);
         _layout   = _activity.getLayoutInflater().inflate(layoutId, null);
@@ -106,7 +108,7 @@ public class TwoButtonDialog {
         setStrings(strings);
     }
 
-    public TwoButtonDialog(Activity activity, DialogStringData strings, int layoutId) {
+    public TwoButtonDialog(Activity activity, DialogStringData strings, @LayoutRes int layoutId) {
         _activity = activity;
         _builder  = new AlertDialog.Builder(_activity);
         _layout   = _activity.getLayoutInflater().inflate(layoutId, null);
@@ -120,7 +122,7 @@ public class TwoButtonDialog {
         setStrings(strings);
     }
 
-    public TwoButtonDialog(DialogStringData strings, int layoutId) {
+    public TwoButtonDialog(DialogStringData strings, @LayoutRes int layoutId) {
         _activity = strings.activity();
         _builder  = new AlertDialog.Builder(_activity);
         _layout   = _activity.getLayoutInflater().inflate(layoutId, null);
@@ -134,7 +136,7 @@ public class TwoButtonDialog {
         setStrings(strings);
     }
 
-    public TwoButtonDialog(Activity activity, DialogStringData strings, AlertDialog.Builder builder, int layoutId) {
+    public TwoButtonDialog(Activity activity, DialogStringData strings, AlertDialog.Builder builder, @LayoutRes int layoutId) {
         _activity = activity;
         _builder  = builder;
         _layout   = _activity.getLayoutInflater().inflate(layoutId, null);
@@ -148,7 +150,7 @@ public class TwoButtonDialog {
         setStrings(strings);
     }
 
-    public TwoButtonDialog(DialogStringData strings, AlertDialog.Builder builder, int layoutId) {
+    public TwoButtonDialog(DialogStringData strings, AlertDialog.Builder builder, @LayoutRes int layoutId) {
         _activity = strings.activity();
         _builder  = builder;
         _layout   = _activity.getLayoutInflater().inflate(layoutId, null);
@@ -162,7 +164,7 @@ public class TwoButtonDialog {
         setStrings(new DialogStringData(_activity));
     }
 
-    public TwoButtonDialog(Activity activity, AlertDialog.Builder builder, int layoutId) {
+    public TwoButtonDialog(Activity activity, AlertDialog.Builder builder, @LayoutRes int layoutId) {
         _activity = activity;
         _builder  = builder;
         _layout   = _activity.getLayoutInflater().inflate(layoutId, null);
@@ -280,37 +282,37 @@ public class TwoButtonDialog {
         _dialog = _builder.create();
     }
 
-    public void setTitle(int titleId) {
+    public void setTitle(@StringRes int titleId) {
         try {
             setTitle(_activity.getResources().getString(titleId));
         } catch (Resources.NotFoundException e) {}
     }
 
-    public void setMessage(int messageId) {
+    public void setMessage(@StringRes int messageId) {
         try {
             setMessage(_activity.getResources().getString(messageId));
         } catch (Resources.NotFoundException e) {}
     }
 
-    public void setPositiveButton(int posBtTextId) {
+    public void setPositiveButton(@StringRes int posBtTextId) {
         try {
             setPositiveButton(_activity.getResources().getString(posBtTextId));
         } catch (Resources.NotFoundException e) {}
     }
 
-    public void setNegativeButton(int negBtTextId) {
+    public void setNegativeButton(@StringRes int negBtTextId) {
         try {
             setNegativeButton(_activity.getResources().getString(negBtTextId));
         } catch (Resources.NotFoundException e) {}
     }
 
-    public void setPositiveButton(int posBtTextId, DialogInterface.OnClickListener posBtClickListener) {
+    public void setPositiveButton(@StringRes int posBtTextId, DialogInterface.OnClickListener posBtClickListener) {
         try {
             setPositiveButton(_activity.getResources().getString(posBtTextId), posBtClickListener);
         } catch (Resources.NotFoundException e) {}
     }
 
-    public void setNegativeButton(int negBtTextId, DialogInterface.OnClickListener negBtClickListener) {
+    public void setNegativeButton(@StringRes int negBtTextId, DialogInterface.OnClickListener negBtClickListener) {
         try {
             setNegativeButton(_activity.getResources().getString(negBtTextId), negBtClickListener);
         } catch (Resources.NotFoundException e) {}
