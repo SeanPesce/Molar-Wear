@@ -61,9 +61,6 @@ public class ViewProjectActivity extends AppCompatActivity {
     private int _projectIndex = AdapterView.INVALID_POSITION;
     private MolarWearProject _project = null;
 
-    private History<Integer> _editorViewHistory = new History<>(2);
-    private boolean _saveCurrentEditorView = true;
-
     // GUI
     private Toolbar  _toolbarSecondary;
     private Drawable _icClose;
@@ -211,14 +208,31 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // @TODO: Check if project is saved
-        if (showingSubjectEditor() && _editorViewHistory.isEmpty()) {
+        if (showingSubjectEditor()) {
             closeSubjectEditor();
-        } else if (showingSubjectEditor()) {
-            _saveCurrentEditorView = false;
-            _bottomNav.setSelectedItemId(_editorViewHistory.goBack());
         } else {
-            finish();
+            if (!getProject().isSaved()) {
+                final TwoButtonDialog dlg
+                    = new TwoButtonDialog(new DialogStringData(this,
+                    R.string.dlg_title_unsaved_changes,
+                    R.string.dlg_msg_unsaved_changes,
+                    R.string.dlg_bt_save,
+                    R.string.dlg_bt_no_save));
+                dlg.setPositiveButton(new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        save();
+                        finish();
+                    }
+                });
+                dlg.setNegativeButton(new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                });
+                dlg.show();
+            } else {
+                finish();
+            }
         }
     }
 
@@ -226,7 +240,6 @@ public class ViewProjectActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                //NavUtils.navigateUpFromSameTask(this);
                 onBackPressed();
                 return true;
             default:
@@ -343,7 +356,6 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public void openSubjectEditor() {
         if (_viewSwitcher != null && !showingSubjectEditor()) {
-            _editorViewHistory.clear();
             updateEditorView();
             _viewSwitcher.showNext();
             updateNavBar();
@@ -353,7 +365,6 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public void closeSubjectEditor() {
         if (_viewSwitcher != null && !showingSubjectsList()) {
-            _editorViewHistory.clear();
             _viewSwitcher.showPrevious();
             updateNavBar();
             updateToolbar();
@@ -362,16 +373,11 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public boolean onBottomNavigationItemSelected(int itemId) {
         ScrollView scrollView = null;
-        boolean saveHistory = _saveCurrentEditorView;
-        _saveCurrentEditorView = true;
         switch (itemId) {
             case R.id.navigation_basic_info:
                 scrollView = findViewById(R.id.scrollview_subject_basic_info);
                 if (scrollView != null) {
                     if (_bottomNav.getSelectedItemId() != R.id.navigation_basic_info) {
-                        if (saveHistory) {
-                            _editorViewHistory.add(_bottomNav.getSelectedItemId());
-                        }
                         scrollView.scrollTo(0, 0);
                     } else {
                         scrollView.smoothScrollTo(0, 0);
@@ -384,14 +390,8 @@ public class ViewProjectActivity extends AppCompatActivity {
 
             case R.id.navigation_molar_data:
                 scrollView = findViewById(R.id.scrollview_subject_molar_data);
-                if (scrollView != null) {
-                    if (_bottomNav.getSelectedItemId() != R.id.navigation_molar_data) {
-                        if (saveHistory) {
-                            _editorViewHistory.add(_bottomNav.getSelectedItemId());
-                        }
-                    } else {
-                        scrollView.smoothScrollTo(0, 0);
-                    }
+                if (scrollView != null && _bottomNav.getSelectedItemId() == R.id.navigation_molar_data) {
+                    scrollView.smoothScrollTo(0, 0);
                 }
                 _editorBasicInfo.setVisibility(View.GONE);
                 _editorNotes.setVisibility(View.GONE);
@@ -402,9 +402,6 @@ public class ViewProjectActivity extends AppCompatActivity {
                 scrollView = findViewById(R.id.scrollview_subject_notes);
                 if (scrollView != null) {
                     if (_bottomNav.getSelectedItemId() != R.id.navigation_notes) {
-                        if (saveHistory) {
-                            _editorViewHistory.add(_bottomNav.getSelectedItemId());
-                        }
                         scrollView.scrollTo(0, 0);
                     } else {
                         scrollView.smoothScrollTo(0, 0);
@@ -427,7 +424,7 @@ public class ViewProjectActivity extends AppCompatActivity {
             case R.id.bt_export:
                 final TwoButtonDialog dlg
                     = new TwoButtonDialog(new DialogStringData(this,
-                    getString(R.string.dlg_title_export_csv_raw),
+                    R.string.dlg_title_export_csv_raw,
                     R.string.dlg_msg_export_csv_raw,
                     R.string.dlg_bt_csv,
                     R.string.dlg_bt_raw));
