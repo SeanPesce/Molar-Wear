@@ -1,6 +1,7 @@
 package mw.molarwear.data.handlers;
 
 import android.content.DialogInterface;
+import android.text.InputFilter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,25 +57,59 @@ public class ProjectHandler {
     }
 
     public static boolean importProject(String filePath) {
-        MolarWearProject p = (MolarWearProject) FileUtility.readExternalSerializable(filePath);
+        final MolarWearProject p =
+            (filePath.toLowerCase().endsWith(FileUtility.FILE_EXT_CSV)) ? MolarWearProject.fromCsv(filePath)
+                                    : ((MolarWearProject)FileUtility.readExternalSerializable(filePath));
         if (p == null) {
-            AppUtility.printSnackBarMsg("Error loading " + filePath);
+            AppUtility.printSnackBarMsg(AppUtility.getResources().getString(R.string.err_file_read_fail) + ":\n" + filePath);
             return false;
         } else {
-            if (new File(FileUtility.getInternalPath(p.title() + FileUtility.FILE_EXT_SERIALIZED_DATA)).exists()) {
-                // @TODO: Open dialog to change name of imported project
-                AppUtility.printSnackBarMsg(R.string.err_proj_create_fail_exists);
-                return false;
+            final String internalPath = FileUtility.getInternalPath(p.title() + FileUtility.FILE_EXT_SERIALIZED_DATA);
+            if (new File(internalPath).exists()) {
+                final TextInputDialog dlgEdit = new TextInputDialog(
+                    new DialogStringData(AppUtility.CONTEXT,
+                        R.string.dlg_title_rename_proj_import,
+                        R.string.dlg_msg_rename_proj_import,
+                        R.string.dlg_bt_submit,
+                        R.string.dlg_bt_cancel),
+                    p.title()
+                );
+                dlgEdit.textInput().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
+                dlgEdit.setText(p.title());
+                dlgEdit.setPositiveButton(new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked "Submit" button
+                        if (dlgEdit.text().length() > 0 && !dlgEdit.text().equals(dlgEdit.textInputHint())) {
+                            if (new File(FileUtility.getInternalPath(dlgEdit.text() + FileUtility.FILE_EXT_SERIALIZED_DATA)).exists()) {
+                                // Another project with the specified title already exists
+                                AppUtility.printSnackBarMsg(R.string.err_proj_create_fail_exists);
+                            } else {
+                                // Rename the project
+                                p.setTitle(dlgEdit.text());
+                                addProject(p);
+                                p.save();
+                                AppUtility.printSnackBarMsg(R.string.out_msg_import_success);
+                            }
+                        }
+                    }
+                });
+                dlgEdit.setNegativeButton(new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked "Cancel" button
+                        AppUtility.printSnackBarMsg(R.string.out_msg_cancelled);
+                    }
+                });
+                dlgEdit.show();
+                return true;
             }
             addProject(p);
+            AppUtility.printSnackBarMsg(R.string.out_msg_import_success);
         }
         return true;
     }
 
     public static boolean saveProject(int index) {
         return PROJECTS.get(index).save();
-//        return FileUtility.saveSerializable(PROJECTS.get(index),
-//                                   PROJECTS.get(index).title() + FileUtility.FILE_EXT_SERIALIZED_DATA);
     }
 
     public static void addProject(MolarWearProject project) {
@@ -164,6 +199,7 @@ public class ProjectHandler {
                 R.string.dlg_bt_cancel),
             PROJECTS.get(index).title()
         );
+        dlgEdit.textInput().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
         dlgEdit.setText(PROJECTS.get(index).title());
         dlgEdit.setPositiveButton(new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -224,7 +260,7 @@ public class ProjectHandler {
                                                                 R.string.dlg_bt_create,
                                                                 R.string.dlg_bt_cancel),
                                                         R.string.dlg_hint_new_project);
-
+        dlg.textInput().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
         dlg.setText(MolarWearProject.DEFAULT_TITLE);
         dlg.setPositiveButton(new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -259,18 +295,20 @@ public class ProjectHandler {
         }
     }
 
-
     public static void loadProjects() {
         // Load existing projects from internal storage
+        PROJECTS.clear();
+        AppUtility.clearLoadErrors();
         String [] projs = AppUtility.CONTEXT.fileList();
         for (String s : projs) {
             if (s.endsWith(FileUtility.FILE_EXT_SERIALIZED_DATA)) {
                 MolarWearProject p = (MolarWearProject) FileUtility.readInternalSerializable(s);
                 if (p == null) {
                     if (AppUtility.VIEW != null) {
-                        AppUtility.printSnackBarMsg("Error loading " + s);
+                        AppUtility.printSnackBarMsg(String.format(AppUtility.getResources().getString(R.string.err_proj_load_fail), s));
                     } else {
-                        // @TODO: Handle case where AppUtility.VIEW is null
+                        AppUtility.addLoadError();
+                        AppUtility.log("Error loading project: " + s);
                     }
                 } else {
                     PROJECTS.add(p);

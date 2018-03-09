@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.InputType;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,8 @@ import mw.molarwear.data.classes.dental.molar.SurfaceQuadrant;
 import mw.molarwear.data.classes.dental.molar.enums.Wear;
 import mw.molarwear.data.handlers.ProjectHandler;
 import mw.molarwear.gui.activity.ViewProjectActivity;
+import mw.molarwear.gui.dialog.DialogStringData;
+import mw.molarwear.gui.dialog.TextInputDialog;
 import mw.molarwear.gui.dialog.WearPickerDialog;
 
 /**
@@ -136,21 +140,6 @@ public class MolarDataFragment extends Fragment {
 
             ImageButton btNotes = view.findViewById(R.id.bt_molar_notes);
             ImageButton btPhoto = view.findViewById(R.id.bt_molar_photo);
-
-            btNotes.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // @TODO
-                }
-            });
-
-            btPhoto.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // @TODO
-                }
-            });
-
 
             final TextView label = view.findViewById(R.id.lbl_molar);
 
@@ -289,6 +278,48 @@ public class MolarDataFragment extends Fragment {
                         }
                     });
                     dlg.show();
+                }
+            });
+
+            btNotes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final TextInputDialog dlg = new TextInputDialog(
+                        new DialogStringData(getActivity(),
+                            R.string.dlg_title_molar_note,
+                            R.string.dlg_msg_molar_note,
+                            R.string.dlg_bt_ok,
+                            R.string.dlg_bt_cancel),
+                        R.string.dlg_hint_molar_note );
+
+                    dlg.textInput().setInputType(InputType.TYPE_CLASS_TEXT);
+                    dlg.textInput().setSingleLine(false);
+                    dlg.textInput().setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
+                    dlg.textInput().setVerticalScrollBarEnabled(true);
+                    dlg.textInput().setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
+                    dlg.textInput().setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryLight5));
+                    dlg.textInput().setPadding(6, 0, 6, 6);
+                    dlg.textInput().setLines(3);
+                    dlg.textInput().setGravity(Gravity.TOP);
+                    dlg.textInput().setMaxHeight(250);
+                    dlg.setText(_molar.notes());
+                    dlg.setPositiveButton(new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User clicked "Ok" button
+                            if (!_molar.notes().equals(dlg.text())) {
+                                _molar.setNotes(dlg.text());
+                                getActivityDerived().setEdited();
+                            }
+                        }
+                    });
+                    dlg.show();
+                }
+            });
+
+            btPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // @TODO
                 }
             });
 

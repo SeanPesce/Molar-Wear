@@ -1,5 +1,8 @@
 package mw.molarwear.gui.activity;
 
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,7 +13,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,15 +26,22 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import net.rdrei.android.dirchooser.DirectoryChooserActivity;
+
+import java.io.File;
+
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
 import mw.molarwear.data.handlers.ProjectHandler;
+import mw.molarwear.gui.dialog.DialogStringData;
+import mw.molarwear.gui.dialog.TwoButtonDialog;
 import mw.molarwear.gui.fragment.SubjectBasicInfoFragment;
 import mw.molarwear.gui.fragment.SubjectMolarsViewFragment;
 import mw.molarwear.gui.fragment.SubjectNotesFragment;
 import mw.molarwear.gui.fragment.SubjectsListFragment;
 import mw.molarwear.gui.list.SubjectArrayAdapter;
 import mw.molarwear.util.AppUtility;
+import mw.molarwear.util.FileUtility;
 import mw.molarwear.util.History;
 
 /**
@@ -41,6 +54,9 @@ public class ViewProjectActivity extends AppCompatActivity {
     public static final String PROJECT_INDEX_ARG_KEY = "projectIndex";
     public static final String SUBJECT_INDEX_ARG_KEY = "subjectIndex";
     public static final String SUBJECT_MOLAR_ARG_KEY = "molarId";
+
+    public static final int REQUEST_EXPORT_CSV = 102;
+    public static final int REQUEST_EXPORT_SERIALIZED = 1995;
 
     private int _projectIndex = AdapterView.INVALID_POSITION;
     private MolarWearProject _project = null;
@@ -59,8 +75,10 @@ public class ViewProjectActivity extends AppCompatActivity {
     private BottomNavigationView _bottomNav;
 
     private FloatingActionButton _btNewSubject;
+    private          ImageButton _btOptions;
     private          ImageButton _btSaveProject;
     private          ImageButton _btEditSubject;
+    private          ImageButton _btEditSubject2;
     private          ImageButton _btDeleteSubject;
 
     private TextView _lblListHeader;
@@ -93,7 +111,7 @@ public class ViewProjectActivity extends AppCompatActivity {
 
         _listFragment = (SubjectsListFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_list_subjects);
 
-        _viewSwitcher     = findViewById(R.id.view_switcher);
+        _viewSwitcher     = findViewById(R.id.project_view_switcher);
         _subjectsView     = findViewById(R.id.view_list_subjects);
         _editorView       = findViewById(R.id.view_edit_subject);
         _editorBasicInfo  = findViewById(R.id.fragment_edit_subject_basic_info_container);
@@ -103,18 +121,40 @@ public class ViewProjectActivity extends AppCompatActivity {
         _toolbarSecondary = findViewById(R.id.toolbar_secondary);
         _lblTitle         = findViewById(R.id.lbl_proj_view_title);
         _lblSubjTitle     = findViewById(R.id.lbl_subj_view_title);
+        _btOptions        = findViewById(R.id.bt_proj_view_options);
         _btSaveProject    = findViewById(R.id.bt_toolbar_save_proj);
         _btNewSubject     = findViewById(R.id.bt_new_subject);
         _btEditSubject    = findViewById(R.id.bt_toolbar_edit_subj);
+        _btEditSubject2   = findViewById(R.id.bt_toolbar_secondary_edit_subj);
         _btDeleteSubject  = findViewById(R.id.bt_toolbar_delete_subj);
 
         _lblListHeader    = findViewById(R.id.lbl_subjects_list_header);
         _listHeaderDiv    = findViewById(R.id.border_bottom_subjects_list_header);
 
+        AppUtility.VIEW = _viewSwitcher;
+
         _btSaveProject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 save();
+            }
+        });
+
+        _btOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu optionsMenu = new PopupMenu(AppUtility.CONTEXT, view);
+                optionsMenu.setGravity(Gravity.TOP);
+                optionsMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        onOptionsMenuItemClick(item);
+                        return true;
+                    }
+                });
+                MenuInflater inflater = optionsMenu.getMenuInflater();
+                inflater.inflate(R.menu.options_project, optionsMenu.getMenu());
+                optionsMenu.show();
             }
         });
 
@@ -147,6 +187,11 @@ public class ViewProjectActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        updateNavBar();
+        updateToolbar();
+        updateSaveButton();
+        updateSubjectListHeader();
+        _bottomNav.setSelectedItemId(R.id.navigation_basic_info);
     }
 
     @Override
@@ -204,6 +249,10 @@ public class ViewProjectActivity extends AppCompatActivity {
         return _btEditSubject;
     }
 
+    public ImageButton getBtEditSubject2() {
+        return _btEditSubject2;
+    }
+
     public ImageButton getBtDeleteSubject() {
         return _btDeleteSubject;
     }
@@ -245,7 +294,7 @@ public class ViewProjectActivity extends AppCompatActivity {
         _lblTitle.setText(getResources().getString(titleId));
     }
 
-    public void setSubjectTitle(CharSequence title) {
+    public void setSubjectTitle(@NonNull String title) {
         _lblSubjTitle.setText(title);
     }
 
@@ -367,6 +416,99 @@ public class ViewProjectActivity extends AppCompatActivity {
                 return true;
         }
         return false;
+    }
+
+    public void onOptionsMenuItemClick(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.bt_settings:
+                AppUtility.printSnackBarMsg("@TODO");
+                break;
+
+            case R.id.bt_export:
+                final TwoButtonDialog dlg
+                    = new TwoButtonDialog(new DialogStringData(this,
+                    getString(R.string.dlg_title_export_csv_raw),
+                    R.string.dlg_msg_export_csv_raw,
+                    R.string.dlg_bt_csv,
+                    R.string.dlg_bt_raw));
+                final ViewProjectActivity this_ = this;
+                dlg.setPositiveButton(new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // CSV
+                        FileUtility.createDirectoryChooser(this_, REQUEST_EXPORT_CSV, false);
+                    }
+                });
+                dlg.setNegativeButton(new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Serialized
+                        FileUtility.createDirectoryChooser(this_, REQUEST_EXPORT_SERIALIZED, false);
+                    }
+                });
+                dlg.show();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_EXPORT_CSV || requestCode == REQUEST_EXPORT_SERIALIZED) {
+            if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
+                final MolarWearProject project = ProjectHandler.get(_projectIndex);
+                final String path = data.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR);
+                final String extension = (requestCode == REQUEST_EXPORT_CSV) ? FileUtility.FILE_EXT_CSV : FileUtility.FILE_EXT_SERIALIZED_DATA;
+
+                final String filePath = path + File.separator + project.title() + extension;
+                if (new File(filePath).exists()) {
+                    final TwoButtonDialog dlg
+                        = new TwoButtonDialog(new DialogStringData(this,
+                        getString(R.string.dlg_title_overwrite)
+                            + " (\"" + project.title() + extension + "\")",
+                        R.string.dlg_msg_overwrite,
+                        R.string.dlg_bt_overwrite,
+                        R.string.dlg_bt_cancel));
+                    dlg.setPositiveButton(new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            boolean success = (requestCode == REQUEST_EXPORT_CSV) ? project.toCsv(filePath) : FileUtility.saveSerializableEx(project, filePath);
+                            if (success) {
+                                AppUtility.printSnackBarMsg(getString(R.string.out_msg_file_saved)
+                                    + ":\n" + filePath);
+                            } else {
+                                AppUtility.printSnackBarMsg(getString(R.string.err_file_write_fail));
+                            }
+                        }
+                    });
+                    dlg.show();
+                } else {
+                    boolean success = (requestCode == REQUEST_EXPORT_CSV) ? project.toCsv(filePath) : FileUtility.saveSerializableEx(project, filePath);
+                    if (success) {
+                        AppUtility.printSnackBarMsg(getString(R.string.out_msg_file_saved)
+                            + ":\n" + filePath);
+                    } else {
+                        AppUtility.printSnackBarMsg(getString(R.string.err_file_write_fail));
+                    }
+                }
+            } else {
+                AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_dir_sel));
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case FileUtility.REQUEST_CODE_EXT_STORAGE_PERMISSIONS: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Access granted
+                } else {
+                    AppUtility.printSnackBarMsg(R.string.err_access_denied);
+                }
+                return;
+            }
+        }
     }
 
     public void updateNavBar() {

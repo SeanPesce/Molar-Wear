@@ -1,5 +1,7 @@
 package mw.molarwear.data.classes.dental.molar;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -99,5 +101,14 @@ public class Surface implements Serializable {
         _q2.setWear(q2Wear);
         _q3.setWear(q3Wear);
         _q4.setWear(q4Wear);
+    }
+
+    public static Surface fromCsvData(@NonNull String q1Str, @NonNull String q2Str, @NonNull String q3Str, @NonNull String q4Str) {
+        return new Surface(
+            q1Str.equals("NA") ? Wear.UNKNOWN.score() : Integer.parseInt(q1Str),
+            q2Str.equals("NA") ? Wear.UNKNOWN.score() : Integer.parseInt(q2Str),
+            q3Str.equals("NA") ? Wear.UNKNOWN.score() : Integer.parseInt(q3Str),
+            q4Str.equals("NA") ? Wear.UNKNOWN.score() : Integer.parseInt(q4Str)
+        );
     }
 }

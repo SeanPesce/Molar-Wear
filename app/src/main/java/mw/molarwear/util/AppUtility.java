@@ -9,6 +9,8 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import java.util.ArrayList;
+
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
 import mw.molarwear.data.classes.MolarWearSubject;
@@ -26,6 +28,14 @@ import mw.molarwear.gui.dialog.TwoButtonDialog;
  */
 
 public class AppUtility {
+
+    private static final String _LOG_FILE = "MolWear.log";
+
+    public static boolean OVERWRITE_LOG_FILE = false;
+
+    // Startup data
+    private static final ArrayList<String> _STARTUP_LOG = new ArrayList<>();
+    private static             int _STARTUP_LOAD_ERRORS = 0;
 
     // Note: All methods and member data are static; this instance just allows for aliasing
     private static final          AppUtility _INSTANCE      = new AppUtility();
@@ -64,14 +74,19 @@ public class AppUtility {
     private static final     int INT    (@IntegerRes int intId    ) { return _res().getInteger(intId);     }
     private static final  String STRING (@StringRes  int stringId ) { return _res().getString (stringId);  }
 
-    public  static final AppUtility APP() { return _INSTANCE; }
-    public  static final AppUtility get() { return _INSTANCE; }
+    public static final AppUtility APP() { return _INSTANCE; }
+    public static final AppUtility get() { return _INSTANCE; }
 
-    public  static final Resources  getResources() { return _res(); }
+    public static final Resources  getResources() { return _res(); }
 
-    public  static final void initializeRuntimeSettings() {
+    public static final void initializeRuntimeSettings() {
         _ERR_NO_CONTEXT = STRING(R.string.err_app_util_context_null);
         _ERR_NO_VIEW    = STRING(R.string.err_app_util_view_null);
+
+        OVERWRITE_LOG_FILE = BOOLEAN(R.bool.rt_cfg_overwrite_log);
+        if (OVERWRITE_LOG_FILE) {
+            FileUtility.writeText(_LOG_FILE, "", false, true);
+        }
 
         FileUtility.FILE_EXT_SERIALIZED_DATA = STRING(R.string.file_ext_serialized_data);
         FileUtility.FILE_EXT_JSON_DATA       = STRING(R.string.file_ext_json_data);
@@ -92,14 +107,14 @@ public class AppUtility {
     }
 
 
-    public  static final void featureNotImplementedYet() {
+    public static final void featureNotImplementedYet() {
         TwoButtonDialog dialog = new TwoButtonDialog(new DialogStringData(CONTEXT,
                                                         R.string.dlg_title_feature_not_implemented,
                                                         R.string.dlg_msg_feature_not_implemented));
         dialog.show();
     }
 
-    public  static final void printSnackBarMsg(String msg) {
+    public static final void printSnackBarMsg(String msg) {
         if (VIEW != null) {
             Snackbar.make(AppUtility.VIEW, msg, Snackbar.LENGTH_LONG).setAction("Action", null).show();
         } else {
@@ -107,10 +122,31 @@ public class AppUtility {
         }
     }
 
-    public  static final void printSnackBarMsg(@StringRes int msgId) {
+    public static final void printSnackBarMsg(@StringRes int msgId) {
         printSnackBarMsg(STRING(msgId));
     }
 
-    public  static MolWearMainActivity MAIN_ACTIVITY() { return _MAIN_ACTIVITY; }
-    public  static final void SET_MAIN_ACTIVITY(@NonNull MolWearMainActivity mainActivity) { _MAIN_ACTIVITY = mainActivity; }
+    public static final void clearLoadErrors() {
+        _STARTUP_LOAD_ERRORS = 0;
+    }
+
+    public static final void addLoadError() {
+        _STARTUP_LOAD_ERRORS++;
+    }
+
+    public static final int LOAD_ERROR_COUNT() {
+        return _STARTUP_LOAD_ERRORS;
+    }
+
+    public static final void log(@NonNull String msg) {
+        if (VIEW == null || CONTEXT == null) {
+            _STARTUP_LOG.add(msg);
+        }
+        if (CONTEXT != null) {
+            FileUtility.writeText(_LOG_FILE, msg, true, true);
+        }
+    }
+
+    public static MolWearMainActivity MAIN_ACTIVITY() { return _MAIN_ACTIVITY; }
+    public static final void SET_MAIN_ACTIVITY(@NonNull MolWearMainActivity mainActivity) { _MAIN_ACTIVITY = mainActivity; }
 }

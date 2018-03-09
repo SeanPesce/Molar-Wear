@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Author: Sean Pesce
+-->
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/bt_settings"
+        android:title="@string/action_settings" />
+    <item
+        android:id="@+id/bt_export"
+        android:title="@string/act_export_project" />
+</menu>

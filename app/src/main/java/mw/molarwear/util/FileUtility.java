@@ -1,10 +1,19 @@
 package mw.molarwear.util;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.provider.DocumentsContract;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.text.InputFilter;
+import android.text.Spanned;
+
+import net.rdrei.android.dirchooser.DirectoryChooserActivity;
+import net.rdrei.android.dirchooser.DirectoryChooserConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,11 +21,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import mw.molarwear.R;
 
 import static java.io.File.separator;
 
@@ -32,10 +44,31 @@ import static java.io.File.separator;
 
 public class FileUtility {
 
-    public static String FILE_EXT_SERIALIZED_DATA;
-    public static String FILE_EXT_JSON_DATA;
+    public static final String FILE_EXT_CSV = ".csv";
 
-    // @TODO: JSON support
+    public static String FILE_EXT_SERIALIZED_DATA = ".mwsd";
+    public static String FILE_EXT_JSON_DATA = ".json";
+
+    // @TODO: JSON/CSV support
+
+    public static final int REQUEST_CODE_READ  = 42;
+    public static final int REQUEST_CODE_WRITE = 43;
+    public static final int REQUEST_CODE_CHOOSE_DIR = 451;
+    public static final int REQUEST_CODE_EXT_STORAGE_PERMISSIONS = 928;
+
+    // Text filter to disallow whitespace
+    public static InputFilter WHITESPACE_FILTER = new InputFilter() {
+        // Reference: https://stackoverflow.com/a/33993117/7891239
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end,
+                                   Spanned dest, int dStart, int dEnd) {
+            for (int i = start; i < end; i++) {
+                if (Character.isWhitespace(source.charAt(i))) {
+                    return "";
+                }
+            }
+            return null;
+        }};
 
     /**
      * Saves a serializable object using the default {@link Context}.MODE_PRIVATE flag.
@@ -51,10 +84,10 @@ public class FileUtility {
      *
      * @return true if the file was successfully saved; else false.
      *
-     * @see   mw.molarwear.util.FileUtility#saveSerializable(Serializable, String, int)
+     * @see   mw.molarwear.util.FileUtility#saveSerializable(Serializable, String, boolean, int)
      */
     public static <T extends Serializable> boolean saveSerializable(T objectToSave, String fileName) {
-        return saveSerializable(objectToSave, fileName, Context.MODE_PRIVATE);
+        return saveSerializable(objectToSave, fileName, true, Context.MODE_PRIVATE);
     }
 
     /**
@@ -80,9 +113,9 @@ public class FileUtility {
      *
      * @see   mw.molarwear.util.FileUtility#saveSerializable(Serializable, String)
      */
-    public static <T extends Serializable> boolean saveSerializable(T objectToSave, String fileName, int flags) {
+    public static <T extends Serializable> boolean saveSerializable(T objectToSave, String fileName, boolean internal, int flags) {
         try {
-            FileOutputStream fileOutputStream = AppUtility.CONTEXT.openFileOutput(fileName, flags);
+            FileOutputStream fileOutputStream = internal ? AppUtility.CONTEXT.openFileOutput(fileName, flags) : new FileOutputStream(fileName);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
             objectOutputStream.writeObject(objectToSave);
@@ -94,6 +127,10 @@ public class FileUtility {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static <T extends Serializable> boolean saveSerializableEx(T objectToSave, String fileName) {
+        return saveSerializable(objectToSave, fileName, false, Context.MODE_PRIVATE);
     }
 
     /**
@@ -154,6 +191,25 @@ public class FileUtility {
         }
 
         return objectToReturn;
+    }
+
+    public static boolean writeText(@NonNull String fileName, @NonNull String text, boolean append, boolean internal) {
+        try {
+            FileOutputStream fileOutputStream = internal ?
+                AppUtility.CONTEXT.openFileOutput(fileName, (append) ? Context.MODE_APPEND : Context.MODE_PRIVATE)
+                : new FileOutputStream(fileName, append);
+            PrintWriter writer = new PrintWriter(fileOutputStream);
+
+            writer.println(text);
+
+            writer.flush();
+            writer.close();
+            fileOutputStream.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -289,11 +345,66 @@ public class FileUtility {
         if (Build.VERSION.SDK_INT >= 19) {
             final String docId = DocumentsContract.getDocumentId(uri);
             final String[] split = docId.split(":");
-            return Environment.getExternalStorageDirectory() + separator + split[1];
+            //return Environment.getExternalStorageDirectory() + separator + split[1];
+            return split[1];
         }
         // @TODO: Add support for pre-19 Android builds?
         AppUtility.printSnackBarMsg("Error: Unsupported Android build");
         return "";
     }
 
+
+    public static void createDirectoryChooser(@NonNull Activity activity, int requestCode, boolean allowReadOnlyDir) {
+        checkExternalStoragePermissions(activity);
+        final Intent chooseDir = new Intent(activity, DirectoryChooserActivity.class);
+        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
+                                                .newDirectoryName(activity.getString(R.string.default_new_folder_name))
+                                                .allowReadOnlyDirectory(allowReadOnlyDir)
+                                                .allowNewDirectoryNameModification(true)
+                                                .build();
+        chooseDir.putExtra(DirectoryChooserActivity.EXTRA_CONFIG, config);
+        activity.startActivityForResult(chooseDir, requestCode);
+    }
+
+    public static void createDirectoryChooser() {
+        createDirectoryChooser(AppUtility.CONTEXT, REQUEST_CODE_CHOOSE_DIR, true);
+    }
+
+    public static void createDirectoryChooser(int requestCode) {
+        createDirectoryChooser(AppUtility.CONTEXT, requestCode, true);
+    }
+
+    public static void createDirectoryChooser(@NonNull Activity activity) {
+        createDirectoryChooser(activity, REQUEST_CODE_CHOOSE_DIR, true);
+    }
+
+    public static void createDirectoryChooser(@NonNull Activity activity, int requestCode) {
+        createDirectoryChooser(activity, requestCode, true);
+    }
+
+    public static void createDirectoryChooser(@NonNull Activity activity, boolean allowReadOnlyDir) {
+        createDirectoryChooser(activity, REQUEST_CODE_CHOOSE_DIR, allowReadOnlyDir);
+    }
+
+    public static void createDirectoryChooser(boolean allowReadOnlyDir) {
+        createDirectoryChooser(AppUtility.CONTEXT, REQUEST_CODE_CHOOSE_DIR, allowReadOnlyDir);
+    }
+
+    public static void createDirectoryChooser(int requestCode, boolean allowReadOnlyDir) {
+        createDirectoryChooser(AppUtility.CONTEXT, requestCode, allowReadOnlyDir);
+    }
+
+    public static void checkExternalStoragePermissions(@NonNull Activity activity) {
+        // Reference: https://stackoverflow.com/a/32175771/7891239
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.System.canWrite(activity)) {
+                activity.requestPermissions(new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_EXT_STORAGE_PERMISSIONS);
+            }
+        }
+    }
+
+    public static void checkExternalStoragePermissions() {
+        checkExternalStoragePermissions(AppUtility.CONTEXT);
+    }
 }

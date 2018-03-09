@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearSubject;
 import mw.molarwear.data.handlers.ProjectHandler;
 import mw.molarwear.gui.activity.ViewProjectActivity;
+import mw.molarwear.util.FileUtility;
 
 /**
  *
@@ -73,43 +75,27 @@ public class SubjectBasicInfoFragment extends Fragment {
 
             _subject = ProjectHandler.PROJECTS.get(_projectIndex).getSubject(_subjectIndex);
 
-            final TextInputLayout txtId = view.findViewById(R.id.txt_subject_id);
             final TextInputLayout txtSiteId = view.findViewById(R.id.txt_site_id);
+            final TextInputLayout txtGroupId = view.findViewById(R.id.txt_group_id);
             final TextInputLayout txtAge = view.findViewById(R.id.txt_subject_age);
             final RadioGroup rgSex = view.findViewById(R.id.radio_group_subject_sex);
 
-            txtId.getEditText().setText(_subject.id());
-            txtSiteId.getEditText().setText((_subject.siteId() != null) ? _subject.siteId() : "");
+            txtGroupId.getEditText().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
+            txtGroupId.getEditText().setText(_subject.groupId());
+            txtSiteId.getEditText().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
+            txtSiteId.getEditText().setText((_subject.siteId() != null) ? _subject.siteId().replace(' ', '_') : "");
             txtAge.getEditText().setText((_subject.age() >= 0 && _subject.age() <= MolarWearSubject.MAX_AGE) ? (Integer.toString(_subject.age())) : "");
             if (_subject.sex() == MolarWearSubject.SEX.MALE) {
                 rgSex.check(R.id.radio_sex_m);
+            } else if (_subject.sex() == MolarWearSubject.SEX.MALE_UNCONFIRMED) {
+                rgSex.check(R.id.radio_sex_m_unk);
             } else if (_subject.sex() == MolarWearSubject.SEX.FEMALE) {
                 rgSex.check(R.id.radio_sex_f);
+            } else if (_subject.sex() == MolarWearSubject.SEX.FEMALE_UNCONFIRMED) {
+                rgSex.check(R.id.radio_sex_f_unk);
             } else {
                 rgSex.check(R.id.radio_sex_u);
             }
-
-            txtId.getEditText().addTextChangedListener(new TextWatcher() {
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (!validateSubjectIdInput(txtId.getEditText().getText().toString())) {
-                        txtId.requestFocus();
-                        txtId.setError("Invalid ID");
-                    } else {
-                        txtId.requestFocus();
-                        txtId.setError(null);
-                        getActivityDerived().setSubjectTitle(s.toString());
-                    }
-                }
-            });
 
             txtSiteId.getEditText().addTextChangedListener(new TextWatcher() {
                 @Override
@@ -128,6 +114,27 @@ public class SubjectBasicInfoFragment extends Fragment {
                     } else {
                         txtSiteId.requestFocus();
                         txtSiteId.setError(null);
+                    }
+                }
+            });
+
+            txtGroupId.getEditText().addTextChangedListener(new TextWatcher() {
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (!validateGroupIdInput(txtGroupId.getEditText().getText().toString())) {
+                        txtGroupId.requestFocus();
+                        txtGroupId.setError("Invalid Group ID");
+                    } else {
+                        txtGroupId.requestFocus();
+                        txtGroupId.setError(null);
                     }
                 }
             });
@@ -158,8 +165,12 @@ public class SubjectBasicInfoFragment extends Fragment {
                 public void onCheckedChanged(RadioGroup rg, int checkedId) {
                     if (checkedId == R.id.radio_sex_m) {
                         _subject.setSex(MolarWearSubject.SEX.MALE);
+                    } else if (checkedId == R.id.radio_sex_m_unk) {
+                        _subject.setSex(MolarWearSubject.SEX.MALE_UNCONFIRMED);
                     } else if (checkedId == R.id.radio_sex_f) {
                         _subject.setSex(MolarWearSubject.SEX.FEMALE);
+                    } else if (checkedId == R.id.radio_sex_f_unk) {
+                        _subject.setSex(MolarWearSubject.SEX.FEMALE_UNCONFIRMED);
                     } else {
                         _subject.setSex(MolarWearSubject.SEX.UNKNOWN);
                     }
@@ -231,6 +242,12 @@ public class SubjectBasicInfoFragment extends Fragment {
 
     public boolean validateSiteIdInput(String siteId) {
         _subject.setSiteId(siteId.trim());
+        getActivityDerived().setEdited();
+        return true;
+    }
+
+    public boolean validateGroupIdInput(String groupId) {
+        _subject.setGroupId(groupId.trim());
         getActivityDerived().setEdited();
         return true;
     }

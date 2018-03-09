@@ -2,8 +2,8 @@ package mw.molarwear.gui.activity;
 
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -41,9 +41,6 @@ import mw.molarwear.util.FileUtility;
 public class MolWearMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static final int REQUEST_CODE_READ  = 42;
-    public static final int REQUEST_CODE_WRITE = 43;
-
     // GUI
     Toolbar _toolbarNav;
     LinearLayout _toolbarProjectView;
@@ -80,6 +77,11 @@ public class MolWearMainActivity extends AppCompatActivity
 
         AppUtility.VIEW = findViewById(R.id.content_main);
         setTitle(getResources().getString(R.string.app_name) + " " + getResources().getString(R.string.title_choose_proj));
+        if (AppUtility.LOAD_ERROR_COUNT() > 0) {
+            AppUtility.printSnackBarMsg(String.format(getString(R.string.err_startup_proj_load), AppUtility.LOAD_ERROR_COUNT()));
+        }
+
+        FileUtility.checkExternalStoragePermissions(this);
 
         if (savedInstanceState == null) {
 
@@ -124,6 +126,9 @@ public class MolWearMainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.bt_import) {
+            importProject();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -136,18 +141,14 @@ public class MolWearMainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_import_project) {
-            // @TODO: File extension filter
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("*/*");
-            startActivityForResult(intent, REQUEST_CODE_READ);
-        } else if (id == R.id.nav_gallery) {
+            importProject();
+        }/* else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_share) {
+        }*/ else if (id == R.id.nav_share) {
             AppUtility.featureNotImplementedYet();
         } else if (id == R.id.nav_github) {
             Uri githubRepo = Uri.parse(getResources().getString(R.string.github));
@@ -164,29 +165,36 @@ public class MolWearMainActivity extends AppCompatActivity
         // Reference: https://github.com/android-ide/platform_development/blob/master/samples/ApiDemos/src/com/example/android/apis/content/DocumentsSample.java
         final ContentResolver resolver = getContentResolver();
 
-        final Uri uri = data != null ? data.getData() : null;
-        if (uri == null) {
-            // No file was selected
-            AppUtility.printSnackBarMsg("No file selected");
-            return;
-        }
-
-        if (requestCode == REQUEST_CODE_READ) {
-            try {
-                if (Build.VERSION.SDK_INT >= 19) {
-                    resolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                } else {
-                    // @TODO: Add support for pre-19 Android builds?
-                }
-            } catch (SecurityException e) {
-                AppUtility.printSnackBarMsg("Error: Insufficient permissions");
+        if (requestCode == FileUtility.REQUEST_CODE_READ) {
+            final Uri uri = data != null ? data.getData() : null;
+            if (uri == null) {
+                // No file was selected
+                AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
                 return;
             }
             ProjectHandler.importProject(FileUtility.getPathFromURI(uri));
-
-        } else if (requestCode == REQUEST_CODE_WRITE) {
-            // @TODO: Handle exporting of projects?
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case FileUtility.REQUEST_CODE_EXT_STORAGE_PERMISSIONS: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Access granted
+                } else {
+                    AppUtility.printSnackBarMsg(R.string.err_access_denied);
+                }
+                return;
+            }
+        }
+    }
+
+    public void importProject() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        startActivityForResult(intent, FileUtility.REQUEST_CODE_READ);
     }
 
     public void setProjViewTitle(@NonNull String title) {
