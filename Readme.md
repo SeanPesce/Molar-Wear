@@ -2,9 +2,6 @@
 
 MolWear is an Android app that aims to simplify the recording and sharing of observational/descriptive data about dental wear on molars for anthropological research purposes.  
 
-## About  
-
-*@TODO*  
 
 ## Built With  
 
@@ -29,6 +26,17 @@ MolWear is an Android app that aims to simplify the recording and sharing of obs
  * **[Kasual Business](http://www.kasual.biz/)** - Creators of [MaterialNumberPicker](https://github.com/KasualBusiness/MaterialNumberPicker)  
  * **[Pascal Hartig](https://github.com/passy)** - Creator of the [DirectoryChooser](https://github.com/passy/Android-DirectoryChooser) library used by this app  
  * **[The-QRCode-Generator](https://www.the-qrcode-generator.com/)** - QR Code generator
+
+
+## Media  
+
+ * Additional images can be found [here](docs/images).  
+
+<p align="center">
+<img align="center" title="Dental wear editor screen (click to see full size)" src="https://github.com/SeanPesce/Molar-Wear/blob/master/docs/images/04.jpg?raw=true" alt="Screenshot" height="400px">
+<br>
+<sup>Dental wear editor screen</sup>
+</p>  
 
 
 ## License  
