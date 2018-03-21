@@ -19,6 +19,7 @@ android {
         versionCode 180321
         versionName "2018.03.21"
 //        versionCode format: YYMMDD
+        setProperty("archivesBaseName", "molwear-$versionName")
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
