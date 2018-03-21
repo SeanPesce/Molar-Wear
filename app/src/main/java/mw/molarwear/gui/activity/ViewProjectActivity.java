@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
@@ -42,7 +43,6 @@ import mw.molarwear.gui.fragment.SubjectsListFragment;
 import mw.molarwear.gui.list.SubjectArrayAdapter;
 import mw.molarwear.util.AppUtility;
 import mw.molarwear.util.FileUtility;
-import mw.molarwear.util.History;
 
 /**
  *
@@ -61,6 +61,9 @@ public class ViewProjectActivity extends AppCompatActivity {
     private int _projectIndex = AdapterView.INVALID_POSITION;
     private MolarWearProject _project = null;
 
+    private int _previousProjectIndex = AdapterView.INVALID_POSITION;
+    private int _previousSubjectIndex = AdapterView.INVALID_POSITION;
+
     // GUI
     private Toolbar  _toolbarSecondary;
     private Drawable _icClose;
@@ -72,11 +75,13 @@ public class ViewProjectActivity extends AppCompatActivity {
     private BottomNavigationView _bottomNav;
 
     private FloatingActionButton _btNewSubject;
+    private          ImageButton _btNewSubjectTb;
     private          ImageButton _btOptions;
     private          ImageButton _btSaveProject;
     private          ImageButton _btEditSubject;
     private          ImageButton _btEditSubject2;
     private          ImageButton _btDeleteSubject;
+
 
     private TextView _lblListHeader;
     private     View _listHeaderDiv;
@@ -94,6 +99,9 @@ public class ViewProjectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AppUtility.CONTEXT = this;
+
+        //_previousProjectIndex = AdapterView.INVALID_POSITION;
+        //_previousSubjectIndex = AdapterView.INVALID_POSITION;
 
         setContentView(R.layout.activity_view_project);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -120,6 +128,7 @@ public class ViewProjectActivity extends AppCompatActivity {
         _lblSubjTitle     = findViewById(R.id.lbl_subj_view_title);
         _btOptions        = findViewById(R.id.bt_proj_view_options);
         _btSaveProject    = findViewById(R.id.bt_toolbar_save_proj);
+        _btNewSubjectTb   = findViewById(R.id.bt_toolbar_new_subj);
         _btNewSubject     = findViewById(R.id.bt_new_subject);
         _btEditSubject    = findViewById(R.id.bt_toolbar_edit_subj);
         _btEditSubject2   = findViewById(R.id.bt_toolbar_secondary_edit_subj);
@@ -182,13 +191,22 @@ public class ViewProjectActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if ((!getProject().isSaved()) && AppUtility.getPrefAutoSave()) {
+            save();
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
+        AppUtility.CONTEXT = this;
         updateNavBar();
         updateToolbar();
         updateSaveButton();
         updateSubjectListHeader();
-        _bottomNav.setSelectedItemId(R.id.navigation_basic_info);
+        //_bottomNav.setSelectedItemId(R.id.navigation_basic_info);
     }
 
     @Override
@@ -212,24 +230,29 @@ public class ViewProjectActivity extends AppCompatActivity {
             closeSubjectEditor();
         } else {
             if (!getProject().isSaved()) {
-                final TwoButtonDialog dlg
-                    = new TwoButtonDialog(new DialogStringData(this,
-                    R.string.dlg_title_unsaved_changes,
-                    R.string.dlg_msg_unsaved_changes,
-                    R.string.dlg_bt_save,
-                    R.string.dlg_bt_no_save));
-                dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        save();
-                        finish();
-                    }
-                });
-                dlg.setNegativeButton(new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        finish();
-                    }
-                });
-                dlg.show();
+                if (AppUtility.getPrefAutoSave()) {
+                    save();
+                    finish();
+                } else {
+                    final TwoButtonDialog dlg
+                        = new TwoButtonDialog(new DialogStringData(this,
+                        R.string.dlg_title_unsaved_changes,
+                        R.string.dlg_msg_unsaved_changes,
+                        R.string.dlg_bt_save,
+                        R.string.dlg_bt_no_save));
+                    dlg.setPositiveButton(new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            save();
+                            finish();
+                        }
+                    });
+                    dlg.setNegativeButton(new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            finish();
+                        }
+                    });
+                    dlg.show();
+                }
             } else {
                 finish();
             }
@@ -252,6 +275,10 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public FloatingActionButton getBtNewSubject() {
         return _btNewSubject;
+    }
+
+    public ImageButton getBtNewSubjectTb() {
+        return _btNewSubjectTb;
     }
 
     public ImageButton getBtSave() {
@@ -294,6 +321,9 @@ public class ViewProjectActivity extends AppCompatActivity {
         return _viewSwitcher.getCurrentView().equals(_editorView);
     }
 
+    public int previousProjectIndex() { return _previousProjectIndex; }
+    public int previousSubjectIndex() { return _previousSubjectIndex; }
+
 
     //////////// Mutators ////////////
 
@@ -321,6 +351,23 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public void setTitleOriginal(@StringRes int titleId) {
         super.setTitle(titleId);
+    }
+
+    public void setPreviousIndices(int projectIndex, int subjectIndex) {
+        setPreviousProjectIndex(projectIndex);
+        setPreviousSubjectIndex(subjectIndex);
+    }
+
+    public void setPreviousProjectIndex(int index) {
+        if (index == AdapterView.INVALID_POSITION || (index >= 0 && index < ProjectHandler.projectCount())) {
+            _previousProjectIndex = index;
+        }
+    }
+
+    public void setPreviousSubjectIndex(int index) {
+        if (index == AdapterView.INVALID_POSITION || (index >= 0 && index < getProject().subjectCount())) {
+            _previousSubjectIndex = index;
+        }
     }
 
 
@@ -356,6 +403,7 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public void openSubjectEditor() {
         if (_viewSwitcher != null && !showingSubjectEditor()) {
+            AppUtility.hideKeyboard(this, _viewSwitcher);
             updateEditorView();
             _viewSwitcher.showNext();
             updateNavBar();
@@ -365,9 +413,11 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public void closeSubjectEditor() {
         if (_viewSwitcher != null && !showingSubjectsList()) {
+            AppUtility.hideKeyboard(this, _viewSwitcher);
             _viewSwitcher.showPrevious();
             updateNavBar();
             updateToolbar();
+            clearEditorView();
         }
     }
 
@@ -418,7 +468,7 @@ public class ViewProjectActivity extends AppCompatActivity {
     public void onOptionsMenuItemClick(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.bt_settings:
-                AppUtility.printSnackBarMsg("@TODO");
+                AppUtility.openPreferencesDialog(this);
                 break;
 
             case R.id.bt_export:
@@ -518,6 +568,7 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public void updateToolbar() {
         if (showingSubjectsList()) {
+            _btNewSubjectTb.setVisibility(View.GONE);
             if (_listFragment.selectionIndex() != AdapterView.INVALID_POSITION) {
                 _btEditSubject.setVisibility(View.VISIBLE);
                 _btDeleteSubject.setVisibility(View.VISIBLE);
@@ -531,6 +582,7 @@ public class ViewProjectActivity extends AppCompatActivity {
             _btEditSubject.setVisibility(View.GONE);
             _btDeleteSubject.setVisibility(View.GONE);
             setSubjectTitle(ProjectHandler.PROJECTS.get(_projectIndex).getSubject(_listFragment.selectionIndex()).id());
+            _btNewSubjectTb.setVisibility(View.VISIBLE);
             _toolbarSecondary.setVisibility(View.VISIBLE);
         }
     }
@@ -564,26 +616,57 @@ public class ViewProjectActivity extends AppCompatActivity {
         SubjectBasicInfoFragment infoFragment =
             (SubjectBasicInfoFragment) getSupportFragmentManager().findFragmentByTag("frag_edit_subj_info");
 
+        boolean resetBottomNav = !(_previousProjectIndex != AdapterView.INVALID_POSITION
+                                   && _projectIndex == _previousProjectIndex
+                                   && _previousSubjectIndex != AdapterView.INVALID_POSITION
+                                   && _listFragment.selectionIndex() == _previousSubjectIndex);
+
         if (infoFragment == null
             || infoFragment.getProjectIndex() != _projectIndex
             || infoFragment.getSubjectIndex() != _listFragment.selectionIndex()) {
 
             infoFragment = SubjectBasicInfoFragment.newInstance(_projectIndex, _listFragment.selectionIndex());
-            getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_edit_subject_basic_info_container, infoFragment, "frag_edit_subj_info")
-                .commit();
 
             SubjectMolarsViewFragment molarsFragment = SubjectMolarsViewFragment.newInstance(_projectIndex, _listFragment.selectionIndex());
-            getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_edit_subject_molar_data_container, molarsFragment, "frag_edit_subj_molar_data")
-                .commit();
 
             SubjectNotesFragment notesFragment = SubjectNotesFragment.newInstance(_projectIndex, _listFragment.selectionIndex());
-            getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_edit_subject_notes_container, notesFragment, "frag_edit_subj_notes")
-                .commit();
 
-            _bottomNav.setSelectedItemId(R.id.navigation_basic_info);
+            getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_edit_subject_basic_info_container, infoFragment, "frag_edit_subj_info")
+                .replace(R.id.fragment_edit_subject_molar_data_container, molarsFragment, "frag_edit_subj_molar_data")
+                .replace(R.id.fragment_edit_subject_notes_container, notesFragment, "frag_edit_subj_notes").commit();
+
+            if (resetBottomNav) {
+                _bottomNav.setSelectedItemId(R.id.navigation_basic_info);
+            }
         }
+        _editorView.setVisibility(View.VISIBLE);
+    }
+
+    public void clearEditorView() {
+        SubjectBasicInfoFragment infoFragment =
+            (SubjectBasicInfoFragment) getSupportFragmentManager().findFragmentByTag("frag_edit_subj_info");
+
+        if (infoFragment != null) {
+            setPreviousIndices(_projectIndex, _listFragment.selectionIndex());
+
+            SubjectMolarsViewFragment molarsFragment =
+                    (SubjectMolarsViewFragment) getSupportFragmentManager().findFragmentByTag("frag_edit_subj_molar_data");
+
+            SubjectNotesFragment notesFragment =
+                    (SubjectNotesFragment) getSupportFragmentManager().findFragmentByTag("frag_edit_subj_notes");
+
+            getSupportFragmentManager().beginTransaction().remove(infoFragment).remove(molarsFragment).remove(notesFragment).commit();
+        } else {
+            setPreviousIndices(AdapterView.INVALID_POSITION, AdapterView.INVALID_POSITION);
+        }
+        _editorView.setVisibility(View.GONE);
+    }
+
+    public void hideKeyboardOnEditBasicInfoRadioBtClick(@NonNull View view) {
+        // Specified in view_subject_basic_info.xml (used in SubjectBasicInfoFragment)
+        AppUtility.hideKeyboard(this, view);
+        final LinearLayout linearLayout = (LinearLayout) view.getParent().getParent().getParent();
+        linearLayout.requestFocus();
     }
 }

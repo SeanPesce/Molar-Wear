@@ -111,20 +111,8 @@ public class PickerDialog extends TwoButtonDialog {
     }
 
 
-    private void initialize() {
-//        setPositiveButton(new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int id) {
-//                // User clicked "OK" button
-//
-//            }
-//        });
-//
-//        setNegativeButton(new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int id) {
-//                // User clicked "Cancel" button
-//
-//            }
-//        });
+    protected void initialize() {
+
     }
 
 

@@ -31,6 +31,11 @@
 
     <integer name="rt_cfg_splash_screen_wait_time">0</integer>
     <bool name="rt_cfg_overwrite_log">true</bool>
+    <bool name="rt_cfg_default_long_toast_duration">true</bool>
+
+    <bool name="rt_cfg_pref_default_auto_save">true</bool>
+
+    <string name="rt_cfg_pref_key_auto_save">AUTO_SAVE</string>
 
     <string name="file_ext_serialized_data">.mwsd</string>
     <string name="file_ext_json_data">.json</string>

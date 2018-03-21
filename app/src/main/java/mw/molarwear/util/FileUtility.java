@@ -62,12 +62,17 @@ public class FileUtility {
         @Override
         public CharSequence filter(CharSequence source, int start, int end,
                                    Spanned dest, int dStart, int dEnd) {
+            boolean edited = false;
+            StringBuilder filtered = new StringBuilder();
             for (int i = start; i < end; i++) {
                 if (Character.isWhitespace(source.charAt(i))) {
-                    return "";
+                    filtered.append("_");
+                    edited = true;
+                } else {
+                    filtered.append(source.charAt(i));
                 }
             }
-            return null;
+            return edited ? filtered.toString() : null;
         }};
 
     /**

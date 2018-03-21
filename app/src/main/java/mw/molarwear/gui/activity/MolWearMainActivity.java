@@ -56,7 +56,6 @@ public class MolWearMainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AppUtility.CONTEXT = this;
-        AppUtility.SET_MAIN_ACTIVITY(this);
 
         setContentView(R.layout.activity_main);
 
@@ -73,10 +72,14 @@ public class MolWearMainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        if (ProjectHandler.projectCount() == 0) {
+            ProjectHandler.loadProjects();
+        }
+
         _fragProjects = (ProjectsListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_list_projects);
 
         AppUtility.VIEW = findViewById(R.id.content_main);
-        setTitle(getResources().getString(R.string.app_name) + " " + getResources().getString(R.string.title_choose_proj));
+        setTitle(getResources().getString(R.string.title_choose_proj));
         if (AppUtility.LOAD_ERROR_COUNT() > 0) {
             AppUtility.printSnackBarMsg(String.format(getString(R.string.err_startup_proj_load), AppUtility.LOAD_ERROR_COUNT()));
         }
@@ -93,10 +96,12 @@ public class MolWearMainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        _fragProjects.updateToolbar();
         AppUtility.CONTEXT = this;
-        AppUtility.SET_MAIN_ACTIVITY(this);
         AppUtility.VIEW = findViewById(R.id.content_main);
+        if (ProjectHandler.projectCount() == 0) {
+            ProjectHandler.loadProjects();
+        }
+        _fragProjects.updateToolbar();
     }
 
     @Override
@@ -112,7 +117,7 @@ public class MolWearMainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_settings, menu);
+        getMenuInflater().inflate(R.menu.options_main, menu);
         return true;
     }
 
@@ -125,6 +130,7 @@ public class MolWearMainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            AppUtility.openPreferencesDialog(this);
             return true;
         } else if (id == R.id.bt_import) {
             importProject();
@@ -142,13 +148,7 @@ public class MolWearMainActivity extends AppCompatActivity
 
         if (id == R.id.nav_import_project) {
             importProject();
-        }/* else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        }*/ else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_share) {
             AppUtility.featureNotImplementedYet();
         } else if (id == R.id.nav_github) {
             Uri githubRepo = Uri.parse(getResources().getString(R.string.github));

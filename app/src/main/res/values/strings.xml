@@ -31,8 +31,8 @@
     <string name="no_projects">No projects</string>
     <string name="no_subjects">@string/no_data</string>
     <string name="title_choose_proj">Projects</string>
-    <string name="title_activity_edit_subject">Edit Subject</string>
-    <string name="title_list_section_subjects">Research Subjects</string>
+    <string name="title_activity_edit_subject">Edit Individual</string>
+    <string name="title_list_section_subjects">Individuals</string>
 
     <!-- ||||||||||||||||||||||||||   Action-related Runtime Strings   ||||||||||||||||||||||||| -->
     <string name="import_project">Import project</string>
@@ -51,25 +51,29 @@
     <string name="act_notes">Notes</string>
     <string name="act_move_up">Move Up</string>
     <string name="act_move_down">Move Down</string>
+    <string name="act_help">Help</string>
 
     <!-- ||||||||||||||||||||||||||   Error-related Runtime Strings   |||||||||||||||||||||||||| -->
     <string name="error">Error</string>
     <string name="err_access_denied">ERROR: Access denied</string>
     <string name="err_invalid_type_not_molar">Invalid type (must be Tooth.Type.MOLAR)</string>
-    <string name="err_unsupported_os_new_proj_dlg">Failed to create \"New Project\" dialog builder (minimum supported: Android Lollipop)</string>
     <string name="err_app_util_context_null">AppUtility.CONTEXT was null</string>
     <string name="err_app_util_view_null">AppUtility.VIEW was null</string>
     <string name="err_startup_proj_load">WARNING: %d projects could not be loaded</string>
     <string name="err_proj_load_fail">Error loading project: %s</string>
     <string name="err_proj_create_fail">Failed to create project</string>
     <string name="err_proj_create_fail_exists">A project with the specified title already exists.</string>
+    <string name="err_proj_create_fail_empty_title">Project title cannot be empty.</string>
     <string name="err_proj_edit_title_fail">Failed to rename project</string>
     <string name="err_proj_edit_title_fail_exists">@string/err_proj_create_fail_exists</string>
     <string name="err_proj_edit_title_fail_rename_file">Unable to rename project file; no changes were made.</string>
-    <string name="err_subj_create_fail">Failed to add subject</string>
+    <string name="err_subj_create_fail">Failed to add individual</string>
     <string name="err_subj_create_fail_exists">An individual with the specified ID already exists.</string>
-    <string name="err_subj_edit_id_fail">Failed to rename subject</string>
+    <string name="err_subj_edit_id_fail">Failed to rename individual</string>
     <string name="err_subj_edit_id_fail_exists">@string/err_subj_create_fail_exists</string>
+    <string name="err_subj_invalid_site">Invalid site ID</string>
+    <string name="err_subj_invalid_group">Invalid Group ID</string>
+    <string name="err_subj_invalid_age">Invalid age</string>
     <string name="err_file_write_fail">ERROR: Failed to write file</string>
     <string name="err_file_read_fail">ERROR: Failed to read file</string>
     <!-- _______________________________________________________________________________________ -->
@@ -77,9 +81,9 @@
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |||||||||||||||||||||||||||||||||   LABELS & PROMPTS   |||||||||||||||||||||||||||||||| -->
-    <string name="lbl_subject_id">Subject ID</string>
-    <string name="lbl_site_id">Site ID</string>
-    <string name="lbl_group_id">Group ID</string>
+    <string name="lbl_subject_id">Individual ID</string>
+    <string name="lbl_site_id">Site</string>
+    <string name="lbl_group_id">Group</string>
     <string name="lbl_subject_age">Age</string>
     <string name="lbl_subject_sex">Sex</string>
     <string name="lbl_subject_notes">Additional notes</string>
@@ -107,7 +111,7 @@
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     <!-- |||||||||||||||||||||||||||||||||||||   DEFAULTS   |||||||||||||||||||||||||||||||||||| -->
     <string name="default_project_title">UntitledProject</string>
-    <string name="default_subject_id">UnknownSubject</string>
+    <string name="default_subject_id">UnknownIndividual</string>
     <string name="default_dlg_title"></string>
     <string name="default_dlg_msg"></string>
     <string name="default_dlg_bt_pos_txt">@string/dlg_bt_ok</string>
@@ -171,21 +175,25 @@
     <string name="dlg_title_feature_not_implemented">Feature not available</string>
     <string name="dlg_msg_feature_not_implemented">This feature hasn\'t been implemented yet.</string>
 
-    <string name="dlg_title_new_subject">New Research Subject</string>
-    <string name="dlg_msg_new_subject">Subject ID:</string>
+    <string name="dlg_title_new_subject">New Individual</string>
+    <string name="dlg_msg_new_subject">Individual ID:</string>
     <string name="dlg_hint_new_subject">@string/default_subject_id</string>
-    <string name="dlg_title_edit_subject">Edit Subject ID</string>
+    <string name="dlg_title_edit_subject">Edit Individual ID</string>
     <string name="dlg_title_del_subj_conf">Delete data?</string>
     <string name="dlg_msg_del_subj_conf">Are you sure you want to delete this entry?</string>
     <string name="dlg_title_del_subj_conf2">Confirm data deletion</string>
     <string name="dlg_msg_del_subj_conf2">Press \"Continue\" to delete the following entry:</string>
 
-    <string name="dlg_title_set_wear_lvl">Wear level</string>
+    <string name="dlg_title_set_wear_lvl">Wear score</string>
     <string name="dlg_msg_set_wear_lvl"></string>
+    <string name="dlg_title_wear_lvl_desc">Wear score descriptions</string>
 
     <string name="dlg_title_molar_note">Notes</string>
     <string name="dlg_msg_molar_note"></string>
     <string name="dlg_hint_molar_note">Notes</string>
+
+    <string name="dlg_title_app_prefs">Preferences</string>
+    <string name="dlg_msg_app_prefs"></string>
     <!-- _______________________________________________________________________________________ -->
 
 
@@ -205,6 +213,10 @@
     <string name="first">First</string>
     <string name="second">Second</string>
     <string name="third">Third</string>
+
+
+    <!-- |||||||||||||||||||||||||||   User Preference Descriptors   ||||||||||||||||||||||||||| -->
+    <string name="desc_pref_auto_save">Automatically save project changes</string>
 
 
     <!-- ||||||||||||||||||||||||||||||||   Dental Descriptors   ||||||||||||||||||||||||||||||| -->
@@ -235,15 +247,14 @@
     <string name="desc_wear_lvl_0">Condition of least wear; cusp may be worn/wear facets present but no dentine exposed.</string>
     <string name="desc_wear_lvl_1">Surface is worn flat, and a pinprick up to a small \"dot\" of dentine is visible.</string>
     <string name="desc_wear_lvl_2">Surface is worn flat, and dentine exposure covers ¼ of quadrant or less.</string>
-    <string name="desc_wear_lvl_3">Greater dentine exposure with more than ¼ of quadrant exposed. Much enamel is still present within the quadrant (if each quadrant can be visualized with three \"sides,\" the enamel fully surrounds the dentine exposed)</string>
-    <string name="desc_wear_lvl_4">Use this score as an intermediary, when the dentine engages one of two sides (less than ⅓) to coalesce with a neighbouring quadrant</string>
+    <string name="desc_wear_lvl_3">Greater dentine exposure with more than ¼ of quadrant exposed. Much enamel is still present within the quadrant (if each quadrant can be visualized with three \"sides,\" the enamel fully surrounds the dentine exposed).</string>
+    <string name="desc_wear_lvl_4">Use this score as an intermediary, when the dentine engages one of two sides (less than ⅓) to coalesce with a neighbouring quadrant.</string>
     <string name="desc_wear_lvl_5">Enamel is found on only two \"sides\" of the quadrant; usually suggests it has coalesced with a neighboring quadrant).</string>
     <string name="desc_wear_lvl_6">Enamel is only found on one \"side\" of the quadrant (typically outer rim). Enamel is thick to medium.</string>
     <string name="desc_wear_lvl_7">Enamel is only found on one \"side\" of quadrant (typically outer rim); however, enamel is thin. Sections may be worn through.</string>
     <string name="desc_wear_lvl_8">Condition of most wear; full dentine exposure. No enamel present.</string>
-    <string name="desc_wear_lvl_unk">No data.</string>
-    <string name="title_activity_tabbed">TabbedActivity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="desc_wear_lvl_unk">No available data, possibly due to surface damage, missing teeth, etc.</string>
+    <string name="desc_wear_lvl_unk_picker">No data</string>
     <!-- _______________________________________________________________________________________ -->
 
 </resources>

@@ -69,6 +69,15 @@
                         android:src="@drawable/ic_edit"
                         android:visibility="gone" />
                     <ImageButton
+                        android:id="@+id/bt_toolbar_new_subj"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:tint="@color/background_light"
+                        app:backgroundTint="?attr/colorPrimary"
+                        android:text="@string/dlg_title_new_subject"
+                        android:src="@drawable/ic_person_add"
+                        android:visibility="gone" />
+                    <ImageButton
                         android:id="@+id/bt_toolbar_save_proj"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
@@ -85,7 +94,9 @@
                         android:paddingRight="0dp"
                         android:backgroundTint="?attr/colorPrimary"
                         android:text="@string/act_options"
-                        android:src="@drawable/ic_more_vert" />
+                        android:src="@drawable/ic_more_vert"
+                        android:focusedByDefault="true"
+                        />
                 </LinearLayout>
             </LinearLayout>
 

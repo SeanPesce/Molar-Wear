@@ -31,6 +31,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         AppUtility.CONTEXT = this;
         AppUtility.initializeRuntimeSettings();
+        AppUtility.loadPreferences(this);
         ProjectHandler.loadProjects();
 
         try {

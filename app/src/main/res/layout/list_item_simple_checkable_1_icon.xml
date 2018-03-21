@@ -44,9 +44,9 @@
         android:src="@drawable/ic_person" />
     <TextView
         android:id="@+id/lbl_listitem_checkable_1"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight=".9"
+        android:layout_weight=".8"
         android:textAppearance="?android:attr/textAppearanceListItem"
         android:minHeight="?android:attr/listPreferredItemHeight"
         android:gravity="center_vertical"
@@ -55,9 +55,9 @@
         android:text="@string/default_project_title" />
     <ImageButton
         android:id="@+id/bt_listitem_checkable_1"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="fill_parent"
-        android:layout_weight=".1"
+        android:layout_weight=".2"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:tint="@color/colorPrimaryDark"

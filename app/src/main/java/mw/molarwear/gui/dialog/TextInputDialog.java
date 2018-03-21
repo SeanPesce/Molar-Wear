@@ -4,11 +4,17 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.os.Build;
 import android.support.annotation.StringRes;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import mw.molarwear.R;
+import mw.molarwear.util.AppUtility;
 
 /**
  * A basic dialog box that allows the user to enter text input.
@@ -181,6 +187,7 @@ public class TextInputDialog extends TwoButtonDialog {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked "OK" button
                 eraseText();
+                AppUtility.hideKeyboard(_activity, _layout);
             }
         });
 
@@ -188,8 +195,45 @@ public class TextInputDialog extends TwoButtonDialog {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked "Cancel" button
                 eraseText();
+                AppUtility.hideKeyboard(_activity, _layout);
             }
         });
+        final TextInputDialog dlg = this;
+        _textInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                _textInput.setError(null);
+            }
+        });
+        _textInput.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    AppUtility.hideKeyboard(_activity, v);
+                    dlg._dialog.getButton(AlertDialog.BUTTON_POSITIVE).requestFocus();
+                    AppUtility.sendKeyPress(KeyEvent.KEYCODE_ENTER);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        if (Build.VERSION.SDK_INT >= 17) {
+            _builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    AppUtility.hideKeyboard(_activity, _layout);
+                }
+            });
+        }
     }
 
 
@@ -234,5 +278,30 @@ public class TextInputDialog extends TwoButtonDialog {
         try {
             setTextInputHint(_activity.getResources().getString(textInputHintId));
         } catch (Resources.NotFoundException e) {}
+    }
+
+    @Override
+    public AlertDialog show() {
+        if (_onShowListener == null) {
+            _onShowListener = new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    AppUtility.showKeyboard(_activity, _textInput);
+                }
+            };
+        }
+        final AlertDialog dlg = super.show();
+        _textInput.requestFocus();
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(100);
+                    AppUtility.showKeyboard(_activity, _textInput);
+                } catch (InterruptedException e) {
+                    AppUtility.showKeyboard(_activity, _textInput);
+                }
+            }
+        }).start();
+        return dlg;
     }
 }

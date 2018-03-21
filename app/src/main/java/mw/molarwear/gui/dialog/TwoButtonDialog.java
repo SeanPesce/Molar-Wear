@@ -5,13 +5,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
-import android.os.Build;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
 import android.view.View;
 import android.view.ViewGroup;
-
-import mw.molarwear.R;
 
 /**
  * This class is a basic dialog box with two buttons, a title, and a message by default. It can be
@@ -40,7 +37,8 @@ public class TwoButtonDialog {
                      _posBtText = DialogStringData.DEFAULT_POS_BT_TXT,
                      _negBtText = DialogStringData.DEFAULT_NEG_BT_TXT;
 
-    protected DialogInterface.OnClickListener _posBtClickListener = null, _negBtClickListener = null;
+    protected DialogInterface.OnClickListener _posBtClickListener = null,
+                                              _negBtClickListener = null;
     protected DialogInterface.OnShowListener  _onShowListener     = null;
 
     //////////// Constructors ////////////
@@ -186,18 +184,19 @@ public class TwoButtonDialog {
     }
 
 
-    public void show() {
+    public AlertDialog show() {
         if (_layout != null) {
             if (_layout.getParent() != null) {
                 ((ViewGroup) _layout.getParent()).removeView(_layout);
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                _builder.setView(_layout);
-            } else {
-                throw new UnsupportedOperationException(_activity.getResources().getString(R.string.err_unsupported_os_new_proj_dlg));
-            }
+            _builder.setView(_layout);
         }
-        _builder.show();
+        _dialog = _builder.create();
+        if (_onShowListener != null) {
+            _dialog.setOnShowListener(_onShowListener);
+        }
+        _dialog.show();
+        return _dialog;
     }
 
 

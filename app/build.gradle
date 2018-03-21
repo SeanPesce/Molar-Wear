@@ -16,8 +16,8 @@ android {
         applicationId "mw.molarwear"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 180308
-        versionName "2018.03.08"
+        versionCode 180321
+        versionName "2018.03.21"
 //        versionCode format: YYMMDD
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

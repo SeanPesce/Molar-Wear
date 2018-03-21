@@ -7,16 +7,20 @@ import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearSubject;
 import mw.molarwear.data.handlers.ProjectHandler;
 import mw.molarwear.gui.activity.ViewProjectActivity;
+import mw.molarwear.util.AppUtility;
 import mw.molarwear.util.FileUtility;
 
 /**
@@ -64,7 +68,8 @@ public class SubjectBasicInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle args = getArguments();
-        ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.view_subject_basic_info, container, false);
+        final SubjectBasicInfoFragment _this = this;
+        final ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.view_subject_basic_info, container, false);
 
         if (args != null) {
             _projectIndex = args.getInt(ViewProjectActivity.PROJECT_INDEX_ARG_KEY, _projectIndex);
@@ -75,10 +80,12 @@ public class SubjectBasicInfoFragment extends Fragment {
 
             _subject = ProjectHandler.PROJECTS.get(_projectIndex).getSubject(_subjectIndex);
 
-            final TextInputLayout txtSiteId = view.findViewById(R.id.txt_site_id);
-            final TextInputLayout txtGroupId = view.findViewById(R.id.txt_group_id);
-            final TextInputLayout txtAge = view.findViewById(R.id.txt_subject_age);
-            final RadioGroup rgSex = view.findViewById(R.id.radio_group_subject_sex);
+            final ScrollView scrollView = view.findViewById(R.id.scrollview_subject_basic_info);
+            final LinearLayout linearLayout = scrollView.findViewById(R.id.linearlayout_subject_basic_info);
+            final TextInputLayout txtSiteId = linearLayout.findViewById(R.id.txt_site_id);
+            final TextInputLayout txtGroupId = linearLayout.findViewById(R.id.txt_group_id);
+            final TextInputLayout txtAge = linearLayout.findViewById(R.id.txt_subject_age);
+            final RadioGroup rgSex = linearLayout.findViewById(R.id.radio_group_subject_sex);
 
             txtGroupId.getEditText().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
             txtGroupId.getEditText().setText(_subject.groupId());
@@ -110,7 +117,7 @@ public class SubjectBasicInfoFragment extends Fragment {
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if (!validateSiteIdInput(txtSiteId.getEditText().getText().toString())) {
                         txtSiteId.requestFocus();
-                        txtSiteId.setError("Invalid site ID");
+                        txtSiteId.setError(getActivity().getString(R.string.err_subj_invalid_site));
                     } else {
                         txtSiteId.requestFocus();
                         txtSiteId.setError(null);
@@ -131,7 +138,7 @@ public class SubjectBasicInfoFragment extends Fragment {
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if (!validateGroupIdInput(txtGroupId.getEditText().getText().toString())) {
                         txtGroupId.requestFocus();
-                        txtGroupId.setError("Invalid Group ID");
+                        txtGroupId.setError(getActivity().getString(R.string.err_subj_invalid_group));
                     } else {
                         txtGroupId.requestFocus();
                         txtGroupId.setError(null);
@@ -152,11 +159,111 @@ public class SubjectBasicInfoFragment extends Fragment {
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     if (!validateAgeInput(txtAge.getEditText().getText().toString())) {
                         txtAge.requestFocus();
-                        txtAge.setError("Invalid age");
+                        txtAge.setError(getActivity().getString(R.string.err_subj_invalid_age));
                     } else {
                         txtAge.requestFocus();
                         txtAge.setError(null);
                     }
+                }
+            });
+
+            txtSiteId.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        scrollView.smoothScrollTo(0, 0);
+                    } else {
+                        AppUtility.hideKeyboard(getActivity(), v);
+                    }
+                }
+            });
+
+            txtGroupId.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        if (scrollView.getVerticalScrollbarPosition() < (scrollView.getMaxScrollAmount() / 2)) {
+                            scrollView.scrollTo(0, (scrollView.getMaxScrollAmount() / 2));
+                        }
+                    } else {
+                        AppUtility.hideKeyboard(getActivity(), v);
+                    }
+                }
+            });
+
+            txtAge.getEditText().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        scrollView.scrollTo(0, scrollView.getMaxScrollAmount());
+                    } else {
+                        AppUtility.hideKeyboard(getActivity(), v);
+                    }
+                }
+            });
+
+            txtGroupId.getEditText().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (scrollView.getVerticalScrollbarPosition() < (scrollView.getMaxScrollAmount() / 2)) {
+                        scrollView.smoothScrollTo(0, (scrollView.getMaxScrollAmount() / 2));
+                    }
+                }
+            });
+
+            txtAge.getEditText().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    scrollView.smoothScrollTo(0, scrollView.getMaxScrollAmount());
+                }
+            });
+
+            txtSiteId.getEditText().setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                        AppUtility.hideKeyboard(getActivity(), v);
+                        linearLayout.requestFocus();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+
+            txtGroupId.getEditText().setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                        AppUtility.hideKeyboard(getActivity(), v);
+                        linearLayout.requestFocus();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+
+            txtAge.getEditText().setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                        AppUtility.hideKeyboard(getActivity(), v);
+                        linearLayout.requestFocus();
+                        if (scrollView.getVerticalScrollbarPosition() > (scrollView.getMaxScrollAmount() / 2)) {
+                            scrollView.smoothScrollTo(0, (scrollView.getMaxScrollAmount() / 2));
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+
+            linearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // This blank listener is needed for hiding keyboard sometimes (Not sure why)
                 }
             });
 
@@ -175,6 +282,8 @@ public class SubjectBasicInfoFragment extends Fragment {
                         _subject.setSex(MolarWearSubject.SEX.UNKNOWN);
                     }
                     getActivityDerived().setEdited();
+                    AppUtility.hideKeyboard(getActivity(), scrollView);
+                    linearLayout.requestFocus();
                 }
             });
         } else {

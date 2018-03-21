@@ -54,7 +54,6 @@ public class ProjectsListFragment extends ListFragment {
         _btNewProject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clearSelection();
                 ProjectHandler.newProject();
             }
         });

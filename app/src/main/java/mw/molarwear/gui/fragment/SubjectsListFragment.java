@@ -23,6 +23,7 @@ import mw.molarwear.gui.dialog.DialogStringData;
 import mw.molarwear.gui.dialog.TextInputDialog;
 import mw.molarwear.gui.dialog.TwoButtonDialog;
 import mw.molarwear.gui.list.SubjectArrayAdapter;
+import mw.molarwear.util.AppUtility;
 import mw.molarwear.util.FileUtility;
 
 /**
@@ -58,6 +59,56 @@ public class SubjectsListFragment extends ListFragment {
         return f;
     }
 
+    private View.OnClickListener _newSubjectListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            final String defaultSubjectId = MolarWearSubject.DEFAULT_ID;
+            String hint = defaultSubjectId;
+            if (getProject().hasSubjectWithId(hint)) {
+                int i = 1;
+                hint = defaultSubjectId + i;
+                while (getProject().hasSubjectWithId(hint)) {
+                    i++;
+                    hint = defaultSubjectId + i;
+                }
+            }
+            final TextInputDialog dlg = new TextInputDialog(new DialogStringData(getActivity(),
+                R.string.dlg_title_new_subject,
+                "",
+                R.string.dlg_bt_add,
+                R.string.dlg_bt_cancel),
+                hint);
+            dlg.textInput().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
+            dlg.setText(hint);
+            dlg.setPositiveButton(new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // User clicked "Add" button
+                    AppUtility.hideKeyboard(getActivity(), dlg.linearLayout());
+                    final String newId = (!dlg.text().isEmpty()) ? dlg.text() : dlg.textInputHint();
+                    if (getProject().hasSubjectWithId(newId)) {
+//                        final TwoButtonDialog existsDlg = new TwoButtonDialog(new DialogStringData(getActivity(),
+//                            R.string.err_subj_create_fail,
+//                            R.string.err_subj_create_fail_exists));
+//                        existsDlg.show();
+                        dlg.show();
+                        dlg.textInput().setError(getActivity().getString(R.string.err_subj_create_fail_exists));
+                        //AppUtility.printToast(getActivity(), R.string.err_subj_create_fail);
+                    } else {
+                        getActivityDerived().closeSubjectEditor();
+                        clearSelection();
+                        add(new MolarWearSubject(newId));
+                    }
+                }
+            });
+            dlg.setNegativeButton(new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    AppUtility.hideKeyboard(getActivity(), dlg.linearLayout());
+                }
+            });
+            dlg.show();
+        }
+    };
+
     private View.OnClickListener _editSubjectIdListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -74,16 +125,24 @@ public class SubjectsListFragment extends ListFragment {
             dlg.setPositiveButton(new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     // User clicked "Submit" button
+                    AppUtility.hideKeyboard(getActivity(), dlg.linearLayout());
                     if (dlg.text().length() > 0 && !dlg.text().equals(dlg.textInputHint())) {
                         if (getProject().hasSubjectWithId(dlg.text())) {
-                            final TwoButtonDialog existsDlg = new TwoButtonDialog(new DialogStringData(getActivity(),
-                                R.string.err_subj_edit_id_fail,
-                                R.string.err_subj_edit_id_fail_exists));
-                            existsDlg.show();
+//                            final TwoButtonDialog existsDlg = new TwoButtonDialog(new DialogStringData(getActivity(),
+//                                R.string.err_subj_edit_id_fail,
+//                                R.string.err_subj_edit_id_fail_exists));
+//                            existsDlg.show();
+                            dlg.show();
+                            dlg.textInput().setError(getActivity().getString(R.string.err_subj_edit_id_fail_exists));
                         } else {
                             setSubjectId(_selectionIndex, dlg.text());
                         }
                     }
+                }
+            });
+            dlg.setNegativeButton(new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    AppUtility.hideKeyboard(getActivity(), dlg.linearLayout());
                 }
             });
             dlg.show();
@@ -99,45 +158,8 @@ public class SubjectsListFragment extends ListFragment {
         // Populate list with subject IDs
         setListAdapter(getProject().createSubjectArrayAdapter(this));
 
-        getBtNewSubject().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clearSelection();
-                final String defaultSubjectId = MolarWearSubject.DEFAULT_ID;
-                String hint = defaultSubjectId;
-                if (getProject().hasSubjectWithId(hint)) {
-                    int i = 1;
-                    hint = defaultSubjectId + i;
-                    while (getProject().hasSubjectWithId(hint)) {
-                        i++;
-                        hint = defaultSubjectId + i;
-                    }
-                }
-                final TextInputDialog dlg = new TextInputDialog(new DialogStringData(getActivity(),
-                    R.string.dlg_title_new_subject,
-                    "",
-                    R.string.dlg_bt_add,
-                    R.string.dlg_bt_cancel),
-                    hint);
-                dlg.textInput().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
-                dlg.setText(hint);
-                dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User clicked "Add" button
-                        final String newId = (!dlg.text().isEmpty()) ? dlg.text() : dlg.textInputHint();
-                        if (getProject().hasSubjectWithId(newId)) {
-                            final TwoButtonDialog existsDlg = new TwoButtonDialog(new DialogStringData(getActivity(),
-                                R.string.err_subj_create_fail,
-                                R.string.err_subj_create_fail_exists));
-                            existsDlg.show();
-                        } else {
-                            add(new MolarWearSubject(newId));
-                        }
-                    }
-                });
-                dlg.show();
-            }
-        });
+        getBtNewSubject().setOnClickListener(_newSubjectListener);
+        getBtNewSubjectTb().setOnClickListener(_newSubjectListener);
 
         getBtEditSubject().setOnClickListener(_editSubjectIdListener);
         getBtEditSubject2().setOnClickListener(_editSubjectIdListener);
@@ -153,6 +175,7 @@ public class SubjectsListFragment extends ListFragment {
                     R.string.dlg_bt_no));
                 dlg.setPositiveButton(new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        getActivityDerived().setPreviousIndices(AdapterView.INVALID_POSITION, AdapterView.INVALID_POSITION);
                         remove(_selectionIndex);
                     }
                 });
@@ -252,6 +275,10 @@ public class SubjectsListFragment extends ListFragment {
         return getActivityDerived().getBtNewSubject();
     }
 
+    public ImageButton getBtNewSubjectTb() {
+        return getActivityDerived().getBtNewSubjectTb();
+    }
+
     public ImageButton getBtSave() {
         return getActivityDerived().getBtSave();
     }
@@ -281,11 +308,12 @@ public class SubjectsListFragment extends ListFragment {
 
     public void add(@NonNull MolarWearSubject subject) {
         getProject().addSubject(subject);
+        selectItem(getProject().subjectCount()-1);
         getActivityDerived().notifyDataSetChanged(false);
     }
 
     public void remove(@IntRange(from=0) int index) {
-        if (index == getProject().subjectCount() - 1) {
+        if (index >= getProject().subjectCount() - 1) {
             clearSelection();
         }
         getProject().removeSubject(index);

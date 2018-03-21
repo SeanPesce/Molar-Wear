@@ -79,10 +79,12 @@ public class ProjectHandler {
                 dlgEdit.setPositiveButton(new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User clicked "Submit" button
-                        if (dlgEdit.text().length() > 0 && !dlgEdit.text().equals(dlgEdit.textInputHint())) {
+                        AppUtility.hideKeyboard(AppUtility.CONTEXT, dlgEdit.linearLayout());
+                        if (dlgEdit.text().length() > 0) {
                             if (new File(FileUtility.getInternalPath(dlgEdit.text() + FileUtility.FILE_EXT_SERIALIZED_DATA)).exists()) {
                                 // Another project with the specified title already exists
-                                AppUtility.printSnackBarMsg(R.string.err_proj_create_fail_exists);
+                                dlgEdit.show();
+                                dlgEdit.textInput().setError(AppUtility.CONTEXT.getString(R.string.err_proj_create_fail_exists));
                             } else {
                                 // Rename the project
                                 p.setTitle(dlgEdit.text());
@@ -90,12 +92,16 @@ public class ProjectHandler {
                                 p.save();
                                 AppUtility.printSnackBarMsg(R.string.out_msg_import_success);
                             }
+                        } else {
+                            dlgEdit.show();
+                            dlgEdit.textInput().setError(AppUtility.CONTEXT.getString(R.string.err_proj_create_fail_empty_title));
                         }
                     }
                 });
                 dlgEdit.setNegativeButton(new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User clicked "Cancel" button
+                        AppUtility.hideKeyboard(AppUtility.CONTEXT, dlgEdit.linearLayout());
                         AppUtility.printSnackBarMsg(R.string.out_msg_cancelled);
                     }
                 });
@@ -121,21 +127,13 @@ public class ProjectHandler {
         String fileName = newProject.title() + FileUtility.FILE_EXT_SERIALIZED_DATA;
         if (new File(AppUtility.CONTEXT.getFilesDir().toString() + separator + fileName).exists()) {
             // Failed to create project (one with same name already exists)
-            TwoButtonDialog existsDlg = new TwoButtonDialog(new DialogStringData(AppUtility.CONTEXT,
-                                        R.string.err_proj_create_fail,
-                                        R.string.err_proj_create_fail_exists));
-            existsDlg.show();
             return false;
         }
         if (FileUtility.saveSerializable(newProject, fileName)) {
             addProject(newProject);
-            AppUtility.CONTEXT.runOnUiThread(new Runnable() {
-                public void run() {
-                    if (projectsFragment != null) {
-                        projectsFragment.setSelection(PROJECTS.size() - 1);
-                    }
-                }
-            });
+            projectsFragment.clearSelection();
+            projectsFragment.selectItem(PROJECTS.size()-1);
+            notifyDataSetChanged();
         } else {
             // Failed to create project (unknown reason)
             AppUtility.printSnackBarMsg(AppUtility.getResources().getString(R.string.err_proj_create_fail));
@@ -146,6 +144,9 @@ public class ProjectHandler {
 
     public static void removeProject(int index) {
         if (FileUtility.deletePrivate(PROJECTS.get(index).title() + FileUtility.FILE_EXT_SERIALIZED_DATA)) {
+            if (projectsFragment.selectionIndex() >= (PROJECTS.size()-1)) {
+                projectsFragment.clearSelection();
+            }
             PROJECTS.remove(index);
             notifyDataSetChanged();
         } else {
@@ -204,18 +205,22 @@ public class ProjectHandler {
         dlgEdit.setPositiveButton(new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked "Submit" button
+                AppUtility.hideKeyboard(AppUtility.CONTEXT, dlgEdit.linearLayout());
                 if (dlgEdit.text().length() > 0 && !dlgEdit.text().equals(dlgEdit.textInputHint())) {
                     if (new File(FileUtility.getInternalPath(dlgEdit.text() + FileUtility.FILE_EXT_SERIALIZED_DATA)).exists()) {
                         // Another project with the specified title already exists
-                        TwoButtonDialog existsDlg = new TwoButtonDialog(new DialogStringData(AppUtility.CONTEXT,
-                            R.string.err_proj_edit_title_fail,
-                            R.string.err_proj_edit_title_fail_exists));
-                        existsDlg.show();
+                        dlgEdit.show();
+                        dlgEdit.textInput().setError(AppUtility.CONTEXT.getString(R.string.err_proj_edit_title_fail_exists));
                     } else {
                         // Rename the project
                         setTitle(index, dlgEdit.text());
                     }
                 }
+            }
+        });
+        dlgEdit.setNegativeButton(new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                AppUtility.hideKeyboard(AppUtility.CONTEXT, dlgEdit.linearLayout());
             }
         });
         dlgEdit.show();
@@ -265,10 +270,20 @@ public class ProjectHandler {
         dlg.setPositiveButton(new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked "Create" button
-                boolean created = createProject(new MolarWearProject((!dlg.text().isEmpty()) ? dlg.text() : dlg.textInputHint()));
-                if (created) {
-                    // @TODO: Open new project?
+                AppUtility.hideKeyboard(AppUtility.CONTEXT, dlg.linearLayout());
+                String fileName = ((!dlg.text().isEmpty()) ? dlg.text() : dlg.textInputHint()) + FileUtility.FILE_EXT_SERIALIZED_DATA;
+                if (new File(AppUtility.CONTEXT.getFilesDir().toString() + separator + fileName).exists()) {
+                    // Failed to create project (one with same name already exists)
+                    dlg.show();
+                    dlg.textInput().setError(AppUtility.CONTEXT.getString(R.string.err_proj_create_fail_exists));
+                } else {
+                    createProject(new MolarWearProject((!dlg.text().isEmpty()) ? dlg.text() : dlg.textInputHint()));
                 }
+            }
+        });
+        dlg.setNegativeButton(new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                AppUtility.hideKeyboard(AppUtility.CONTEXT, dlg.linearLayout());
             }
         });
 

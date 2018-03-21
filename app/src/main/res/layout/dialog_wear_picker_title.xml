@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Author: Sean Pesce
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_dialog_txt_input"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp"
+    android:paddingLeft="8dp"
+    android:paddingStart="8dp"
+    android:paddingRight="16dp"
+    android:paddingEnd="16dp">
+
+    <TextView
+        android:id="@+id/alertTitle"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.85"
+        android:text="@string/dlg_title_set_wear_lvl"
+        android:paddingTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        />
+
+    <ImageButton
+        android:id="@+id/bt_wear_descriptions"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.15"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
+        android:backgroundTint="@android:color/transparent"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:gravity="right|end|center_vertical"
+        android:layout_gravity="right|end|center_vertical"
+        android:src="@drawable/ic_help_outline"
+        android:text="@string/act_help"
+        android:tint="@color/colorPrimary" />
+
+</LinearLayout>

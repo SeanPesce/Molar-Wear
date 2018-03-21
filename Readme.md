@@ -28,6 +28,7 @@ MolWear is an Android app that aims to simplify the recording and sharing of obs
 
  * **[Kasual Business](http://www.kasual.biz/)** - Creators of [MaterialNumberPicker](https://github.com/KasualBusiness/MaterialNumberPicker)  
  * **[Pascal Hartig](https://github.com/passy)** - Creator of the [DirectoryChooser](https://github.com/passy/Android-DirectoryChooser) library used by this app  
+ * **[The-QRCode-Generator](https://www.the-qrcode-generator.com/)** - QR Code generator
 
 
 ## License  

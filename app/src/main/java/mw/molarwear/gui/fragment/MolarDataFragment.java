@@ -25,6 +25,7 @@ import mw.molarwear.gui.activity.ViewProjectActivity;
 import mw.molarwear.gui.dialog.DialogStringData;
 import mw.molarwear.gui.dialog.TextInputDialog;
 import mw.molarwear.gui.dialog.WearPickerDialog;
+import mw.molarwear.util.AppUtility;
 
 /**
  *
@@ -210,8 +211,8 @@ public class MolarDataFragment extends Fragment {
                     dlg.setPositiveButton(new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User clicked "Ok" button
-                            if (currentScore != dlg.selectionWear()) {
-                                _molar.surface().setQ1(dlg.selectionWear());
+                            if (currentScore != dlg.selectionScore()) {
+                                _molar.surface().setQ1(dlg.selectionScore());
                                 updateElements();
                                 getActivityDerived().setEdited();
                             }
@@ -230,8 +231,8 @@ public class MolarDataFragment extends Fragment {
                     dlg.setPositiveButton(new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User clicked "Ok" button
-                            if (currentScore != dlg.selectionWear()) {
-                                _molar.surface().setQ2(dlg.selectionWear());
+                            if (currentScore != dlg.selectionScore()) {
+                                _molar.surface().setQ2(dlg.selectionScore());
                                 updateElements();
                                 getActivityDerived().setEdited();
                             }
@@ -250,8 +251,8 @@ public class MolarDataFragment extends Fragment {
                     dlg.setPositiveButton(new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User clicked "Ok" button
-                            if (currentScore != dlg.selectionWear()) {
-                                _molar.surface().setQ3(dlg.selectionWear());
+                            if (currentScore != dlg.selectionScore()) {
+                                _molar.surface().setQ3(dlg.selectionScore());
                                 updateElements();
                                 getActivityDerived().setEdited();
                             }
@@ -270,8 +271,8 @@ public class MolarDataFragment extends Fragment {
                     dlg.setPositiveButton(new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User clicked "Ok" button
-                            if (currentScore != dlg.selectionWear()) {
-                                _molar.surface().setQ4(dlg.selectionWear());
+                            if (currentScore != dlg.selectionScore()) {
+                                _molar.surface().setQ4(dlg.selectionScore());
                                 updateElements();
                                 getActivityDerived().setEdited();
                             }
@@ -306,10 +307,16 @@ public class MolarDataFragment extends Fragment {
                     dlg.setPositiveButton(new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User clicked "Ok" button
+                            AppUtility.hideKeyboard(getActivity(), dlg.linearLayout());
                             if (!_molar.notes().equals(dlg.text())) {
                                 _molar.setNotes(dlg.text());
                                 getActivityDerived().setEdited();
                             }
+                        }
+                    });
+                    dlg.setNegativeButton(new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            AppUtility.hideKeyboard(getActivity(), dlg.linearLayout());
                         }
                     });
                     dlg.show();
