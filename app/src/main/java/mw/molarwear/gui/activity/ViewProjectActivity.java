@@ -1,9 +1,12 @@
 package mw.molarwear.gui.activity;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,15 +24,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
+import android.support.v7.widget.AppCompatImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import net.rdrei.android.dirchooser.DirectoryChooserActivity;
-
 import java.io.File;
+import java.util.List;
 
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
@@ -75,12 +77,12 @@ public class ViewProjectActivity extends AppCompatActivity {
     private BottomNavigationView _bottomNav;
 
     private FloatingActionButton _btNewSubject;
-    private          ImageButton _btNewSubjectTb;
-    private          ImageButton _btOptions;
-    private          ImageButton _btSaveProject;
-    private          ImageButton _btEditSubject;
-    private          ImageButton _btEditSubject2;
-    private          ImageButton _btDeleteSubject;
+    private AppCompatImageButton _btNewSubjectTb;
+    private AppCompatImageButton _btOptions;
+    private AppCompatImageButton _btSaveProject;
+    private AppCompatImageButton _btEditSubject;
+    private AppCompatImageButton _btEditSubject2;
+    private AppCompatImageButton _btDeleteSubject;
 
 
     private TextView _lblListHeader;
@@ -277,23 +279,23 @@ public class ViewProjectActivity extends AppCompatActivity {
         return _btNewSubject;
     }
 
-    public ImageButton getBtNewSubjectTb() {
+    public AppCompatImageButton getBtNewSubjectTb() {
         return _btNewSubjectTb;
     }
 
-    public ImageButton getBtSave() {
+    public AppCompatImageButton getBtSave() {
         return _btSaveProject;
     }
 
-    public ImageButton getBtEditSubject() {
+    public AppCompatImageButton getBtEditSubject() {
         return _btEditSubject;
     }
 
-    public ImageButton getBtEditSubject2() {
+    public AppCompatImageButton getBtEditSubject2() {
         return _btEditSubject2;
     }
 
-    public ImageButton getBtDeleteSubject() {
+    public AppCompatImageButton getBtDeleteSubject() {
         return _btDeleteSubject;
     }
 
@@ -482,13 +484,13 @@ public class ViewProjectActivity extends AppCompatActivity {
                 dlg.setPositiveButton(new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // CSV
-                        FileUtility.createDirectoryChooser(this_, REQUEST_EXPORT_CSV, false);
+                        FileUtility.createDirectoryChooser(this_, REQUEST_EXPORT_CSV);
                     }
                 });
                 dlg.setNegativeButton(new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Serialized
-                        FileUtility.createDirectoryChooser(this_, REQUEST_EXPORT_SERIALIZED, false);
+                        FileUtility.createDirectoryChooser(this_, REQUEST_EXPORT_SERIALIZED);
                     }
                 });
                 dlg.show();
@@ -502,41 +504,46 @@ public class ViewProjectActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(final int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_EXPORT_CSV || requestCode == REQUEST_EXPORT_SERIALIZED) {
-            if (resultCode == DirectoryChooserActivity.RESULT_CODE_DIR_SELECTED) {
-                final MolarWearProject project = ProjectHandler.get(_projectIndex);
-                final String path = data.getStringExtra(DirectoryChooserActivity.RESULT_SELECTED_DIR);
-                final String extension = (requestCode == REQUEST_EXPORT_CSV) ? FileUtility.FILE_EXT_CSV : FileUtility.FILE_EXT_SERIALIZED_DATA;
-
-                final String filePath = path + File.separator + project.title() + extension;
-                if (new File(filePath).exists()) {
-                    final TwoButtonDialog dlg
-                        = new TwoButtonDialog(new DialogStringData(this,
-                        getString(R.string.dlg_title_overwrite)
-                            + " (\"" + project.title() + extension + "\")",
-                        R.string.dlg_msg_overwrite,
-                        R.string.dlg_bt_overwrite,
-                        R.string.dlg_bt_cancel));
-                    dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            boolean success = (requestCode == REQUEST_EXPORT_CSV) ? project.toCsv(filePath) : FileUtility.saveSerializableEx(project, filePath);
-                            if (success) {
-                                AppUtility.printSnackBarMsg(getString(R.string.out_msg_file_saved)
-                                    + ":\n" + filePath);
-                            } else {
-                                AppUtility.printSnackBarMsg(getString(R.string.err_file_write_fail));
+            if (resultCode == Activity.RESULT_OK) {
+                final List<Uri> files = com.nononsenseapps.filepicker.Utils.getSelectedFilesFromResult(data);
+                if (!files.isEmpty()) {
+                    final MolarWearProject project = ProjectHandler.get(_projectIndex);
+                    final String path = com.nononsenseapps.filepicker.Utils.getFileForUri(files.get(0)).getAbsolutePath();
+                    final String extension = (requestCode == REQUEST_EXPORT_CSV) ? FileUtility.FILE_EXT_CSV : FileUtility.FILE_EXT_SERIALIZED_DATA;
+                    final String filePath = path + File.separator + project.title() + extension;
+                    if (new File(filePath).exists()) {
+                        final TwoButtonDialog dlg
+                            = new TwoButtonDialog(new DialogStringData(this,
+                            getString(R.string.dlg_title_overwrite)
+                                + " (\"" + project.title() + extension + "\")",
+                            R.string.dlg_msg_overwrite,
+                            R.string.dlg_bt_overwrite,
+                            R.string.dlg_bt_cancel));
+                        dlg.setPositiveButton(new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                boolean success = (requestCode == REQUEST_EXPORT_CSV) ? project.toCsv(filePath) : FileUtility.saveSerializableEx(project, filePath);
+                                if (success) {
+                                    AppUtility.printSnackBarMsg(getString(R.string.out_msg_file_saved)
+                                        + ":\n" + filePath);
+                                } else {
+                                    AppUtility.printSnackBarMsg(getString(R.string.err_file_write_fail));
+                                }
                             }
-                        }
-                    });
-                    dlg.show();
-                } else {
-                    boolean success = (requestCode == REQUEST_EXPORT_CSV) ? project.toCsv(filePath) : FileUtility.saveSerializableEx(project, filePath);
-                    if (success) {
-                        AppUtility.printSnackBarMsg(getString(R.string.out_msg_file_saved)
-                            + ":\n" + filePath);
+                        });
+                        dlg.show();
                     } else {
-                        AppUtility.printSnackBarMsg(getString(R.string.err_file_write_fail));
+                        boolean success = (requestCode == REQUEST_EXPORT_CSV) ? project.toCsv(filePath) : FileUtility.saveSerializableEx(project, filePath);
+                        if (success) {
+                            AppUtility.printSnackBarMsg(getString(R.string.out_msg_file_saved)
+                                + ":\n" + filePath);
+                        } else {
+                            AppUtility.printSnackBarMsg(getString(R.string.err_file_write_fail));
+                        }
                     }
+                } else {
+                    AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_dir_sel));
                 }
+                return;
             } else {
                 AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_dir_sel));
                 return;
@@ -595,10 +602,14 @@ public class ViewProjectActivity extends AppCompatActivity {
             _btSaveProject.setEnabled(true);
             DrawableCompat.setTint(_icSave, ContextCompat.getColor(this, R.color.background_light));
         }
-        // @TODO: Fix color compatibility
+
         if (Build.VERSION.SDK_INT >= 21) {
             _btSaveProject.getDrawable().setTint(getResources().getColor(
                 (_project.isSaved()) ? R.color.colorPrimaryLight2 : R.color.background_light) );
+        } else {
+            _btSaveProject.getDrawable().mutate().setColorFilter(
+                ContextCompat.getColor(this, _project.isSaved() ? R.color.colorPrimaryLight2 : R.color.background_light),
+                PorterDuff.Mode.SRC_IN);
         }
     }
 

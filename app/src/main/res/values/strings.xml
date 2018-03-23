@@ -30,6 +30,8 @@
     <string name="no_data">No data</string>
     <string name="no_projects">No projects</string>
     <string name="no_subjects">@string/no_data</string>
+    <string name="title_choose_file">Choose file</string>
+    <string name="title_import_proj">Import Project</string>
     <string name="title_choose_proj">Projects</string>
     <string name="title_activity_edit_subject">Edit Individual</string>
     <string name="title_list_section_subjects">Individuals</string>
@@ -76,6 +78,7 @@
     <string name="err_subj_invalid_age">Invalid age</string>
     <string name="err_file_write_fail">ERROR: Failed to write file</string>
     <string name="err_file_read_fail">ERROR: Failed to read file</string>
+    <string name="err_unsupported_android_version">"ERROR: Unsupported Android version</string>
     <!-- _______________________________________________________________________________________ -->
 
 
@@ -217,6 +220,7 @@
 
     <!-- |||||||||||||||||||||||||||   User Preference Descriptors   ||||||||||||||||||||||||||| -->
     <string name="desc_pref_auto_save">Automatically save project changes</string>
+    <string name="desc_pref_use_sys_file_picker">Use system file picker</string>
 
 
     <!-- ||||||||||||||||||||||||||||||||   Dental Descriptors   ||||||||||||||||||||||||||||||| -->

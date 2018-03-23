@@ -1,11 +1,11 @@
 package mw.molarwear.gui.activity;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -16,9 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.List;
 
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
@@ -43,12 +44,6 @@ public class MolWearMainActivity extends AppCompatActivity
 
     // GUI
     Toolbar _toolbarNav;
-    LinearLayout _toolbarProjectView;
-    TextView _lblTitleProjectView;
-    ConstraintLayout _layoutChooseProject;
-    ConstraintLayout _layoutOpenProject;
-    FloatingActionButton _btNewProject;
-    FloatingActionButton _btNewSubject;
 
     ProjectsListFragment _fragProjects;
 
@@ -140,7 +135,6 @@ public class MolWearMainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle subject_editor_navigation view item clicks here.
@@ -166,13 +160,28 @@ public class MolWearMainActivity extends AppCompatActivity
         final ContentResolver resolver = getContentResolver();
 
         if (requestCode == FileUtility.REQUEST_CODE_READ) {
-            final Uri uri = data != null ? data.getData() : null;
-            if (uri == null) {
-                // No file was selected
-                AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
-                return;
+            if (FileUtility.USE_SYSTEM_FILE_CHOOSER) {
+                final Uri uri = data != null ? data.getData() : null;
+                if (uri == null) {
+                    // No file was selected
+                    AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
+                    return;
+                }
+                ProjectHandler.importProject(FileUtility.getPathFromURI(uri));
+            } else {
+                if (resultCode == Activity.RESULT_OK) {
+                    final List<Uri> files = com.nononsenseapps.filepicker.Utils.getSelectedFilesFromResult(data);
+                    if (!files.isEmpty()) {
+                        ProjectHandler.importProject(com.nononsenseapps.filepicker.Utils.getFileForUri(files.get(0)).getAbsolutePath());
+                    } else {
+                        AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
+                        return;
+                    }
+                } else {
+                    AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
+                    return;
+                }
             }
-            ProjectHandler.importProject(FileUtility.getPathFromURI(uri));
         }
     }
 
@@ -188,35 +197,10 @@ public class MolWearMainActivity extends AppCompatActivity
                 return;
             }
         }
+        AppUtility.printToast(this, "Test");
     }
 
     public void importProject() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("*/*");
-        startActivityForResult(intent, FileUtility.REQUEST_CODE_READ);
-    }
-
-    public void setProjViewTitle(@NonNull String title) {
-        _lblTitleProjectView.setText(title);
-    }
-
-    public void openProjectView() {
-        _btNewProject.setVisibility(View.GONE);
-        _layoutChooseProject.setVisibility(View.GONE);
-        _toolbarNav.setVisibility(View.GONE);
-        _toolbarProjectView.setVisibility(View.VISIBLE);
-        _layoutOpenProject.setVisibility(View.VISIBLE);
-        _btNewSubject.setVisibility(View.VISIBLE);
-    }
-
-    public void closeProjectView() {
-        _btNewSubject.setVisibility(View.GONE);
-        _layoutOpenProject.setVisibility(View.GONE);
-        _toolbarProjectView.setVisibility(View.GONE);
-        _lblTitleProjectView.setText("");
-        _toolbarNav.setVisibility(View.VISIBLE);
-        _layoutChooseProject.setVisibility(View.VISIBLE);
-        _btNewProject.setVisibility(View.VISIBLE);
+        FileUtility.createFileChooser(this, FileUtility.REQUEST_CODE_READ);
     }
 }

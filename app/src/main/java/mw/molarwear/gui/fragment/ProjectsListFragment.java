@@ -7,7 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
+import android.support.v7.widget.AppCompatImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -35,8 +35,8 @@ public class ProjectsListFragment extends ListFragment {
 
     // GUI
     private FloatingActionButton _btNewProject = null;
-    private          ImageButton   _btEditProj = null;
-    private          ImageButton _btDeleteProj = null;
+    private AppCompatImageButton   _btEditProj = null;
+    private AppCompatImageButton _btDeleteProj = null;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -48,8 +48,8 @@ public class ProjectsListFragment extends ListFragment {
         getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         _btNewProject = (FloatingActionButton) getActivity().findViewById(R.id.bt_new_project);
-        _btEditProj   = (ImageButton) getActivity().findViewById(R.id.bt_toolbar_edit_proj);
-        _btDeleteProj = (ImageButton) getActivity().findViewById(R.id.bt_toolbar_delete_proj);
+        _btEditProj   = (AppCompatImageButton) getActivity().findViewById(R.id.bt_toolbar_edit_proj);
+        _btDeleteProj = (AppCompatImageButton) getActivity().findViewById(R.id.bt_toolbar_delete_proj);
 
         _btNewProject.setOnClickListener(new View.OnClickListener() {
             @Override

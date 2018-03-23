@@ -11,7 +11,7 @@ import android.text.InputFilter;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
+import android.support.v7.widget.AppCompatImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -275,23 +275,23 @@ public class SubjectsListFragment extends ListFragment {
         return getActivityDerived().getBtNewSubject();
     }
 
-    public ImageButton getBtNewSubjectTb() {
+    public AppCompatImageButton getBtNewSubjectTb() {
         return getActivityDerived().getBtNewSubjectTb();
     }
 
-    public ImageButton getBtSave() {
+    public AppCompatImageButton getBtSave() {
         return getActivityDerived().getBtSave();
     }
 
-    public ImageButton getBtEditSubject() {
+    public AppCompatImageButton getBtEditSubject() {
         return getActivityDerived().getBtEditSubject();
     }
 
-    public ImageButton getBtEditSubject2() {
+    public AppCompatImageButton getBtEditSubject2() {
         return getActivityDerived().getBtEditSubject2();
     }
 
-    public ImageButton getBtDeleteSubject() {
+    public AppCompatImageButton getBtDeleteSubject() {
         return getActivityDerived().getBtDeleteSubject();
     }
 

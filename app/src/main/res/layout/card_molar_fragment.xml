@@ -2,9 +2,26 @@
 <!--
     Author: Sean Pesce
 -->
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/lbl_molar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_horizontal|center_vertical"
+        android:paddingTop="8dp"
+        android:singleLine="true"
+        android:text="@string/lbl_subject_molar_l1"
+        android:textAlignment="center"
+        />
+
+<android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -21,7 +38,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent"
+            android:background="@color/transparent"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -135,47 +152,45 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/listPreferredItemHeightSmall"
-                android:background="?attr/colorPrimary">
+                android:background="@color/colorPrimary">
 
-                <TextView
-                    android:id="@+id/lbl_molar"
-                    android:layout_width="0dp"
-                    android:layout_height="fill_parent"
-                    android:layout_weight="0.8"
-                    android:ellipsize="end"
-                    android:gravity="start|center_vertical"
-                    android:paddingLeft="16dp"
-                    android:paddingStart="16dp"
-                    android:singleLine="true"
-                    android:text="@string/lbl_subject_molar_l1"
-                    android:textAlignment="viewStart"
-                    android:textColor="@color/background_light"
-                    />
-
-                <ImageButton
+                <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/bt_molar_photo"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="0.5"
-                    android:backgroundTint="@android:color/transparent"
+                    app:backgroundTint="@color/transparent"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="end|center_vertical"
                     android:src="@drawable/ic_menu_camera"
                     android:text="@string/act_photo"
                     android:tint="@color/background_light" />
 
-                <ImageButton
+                <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/bt_molar_notes"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="0.5"
-                    android:backgroundTint="@android:color/transparent"
+                    app:backgroundTint="@color/transparent"
                     android:foreground="?android:attr/selectableItemBackground"
                     android:gravity="end|center_vertical"
                     android:src="@drawable/ic_speaker_notes"
                     android:text="@string/act_notes"
                     android:tint="@color/background_light" />
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/bt_molar_options"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="0.5"
+                    app:backgroundTint="@color/transparent"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:gravity="end|center_vertical"
+                    android:src="@drawable/ic_more_vert"
+                    android:text="@string/act_options"
+                    android:tint="@color/background_light" />
             </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </android.support.constraint.ConstraintLayout>
+</LinearLayout>

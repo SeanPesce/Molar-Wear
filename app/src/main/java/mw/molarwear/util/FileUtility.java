@@ -4,16 +4,19 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.InputFilter;
 import android.text.Spanned;
 
-import net.rdrei.android.dirchooser.DirectoryChooserActivity;
-import net.rdrei.android.dirchooser.DirectoryChooserConfig;
+import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,7 +52,10 @@ public class FileUtility {
     public static String FILE_EXT_SERIALIZED_DATA = ".mwsd";
     public static String FILE_EXT_JSON_DATA = ".json";
 
-    // @TODO: JSON/CSV support
+    public static boolean USE_SYSTEM_FILE_CHOOSER = false;
+    public static String FILE_CHOOSER_TITLE_DEFAULT = "Choose file";
+
+    // @TODO: JSON support
 
     public static final int REQUEST_CODE_READ  = 42;
     public static final int REQUEST_CODE_WRITE = 43;
@@ -359,44 +365,55 @@ public class FileUtility {
     }
 
 
-    public static void createDirectoryChooser(@NonNull Activity activity, int requestCode, boolean allowReadOnlyDir) {
+    public static void createDirectoryChooser(@NonNull Activity activity, int requestCode) {
         checkExternalStoragePermissions(activity);
-        final Intent chooseDir = new Intent(activity, DirectoryChooserActivity.class);
-        final DirectoryChooserConfig config = DirectoryChooserConfig.builder()
-                                                .newDirectoryName(activity.getString(R.string.default_new_folder_name))
-                                                .allowReadOnlyDirectory(allowReadOnlyDir)
-                                                .allowNewDirectoryNameModification(true)
-                                                .build();
-        chooseDir.putExtra(DirectoryChooserActivity.EXTRA_CONFIG, config);
-        activity.startActivityForResult(chooseDir, requestCode);
+        Intent i = new Intent(activity.getApplicationContext(), FilePickerActivity.class);
+        i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+        i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
+        i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
+        i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+        activity.startActivityForResult(i, requestCode);
     }
 
     public static void createDirectoryChooser() {
-        createDirectoryChooser(AppUtility.CONTEXT, REQUEST_CODE_CHOOSE_DIR, true);
+        createDirectoryChooser(AppUtility.CONTEXT, REQUEST_CODE_CHOOSE_DIR);
     }
 
     public static void createDirectoryChooser(int requestCode) {
-        createDirectoryChooser(AppUtility.CONTEXT, requestCode, true);
+        createDirectoryChooser(AppUtility.CONTEXT, requestCode);
     }
 
     public static void createDirectoryChooser(@NonNull Activity activity) {
-        createDirectoryChooser(activity, REQUEST_CODE_CHOOSE_DIR, true);
+        createDirectoryChooser(activity, REQUEST_CODE_CHOOSE_DIR);
     }
 
-    public static void createDirectoryChooser(@NonNull Activity activity, int requestCode) {
-        createDirectoryChooser(activity, requestCode, true);
+    public static void createFileChooser(@NonNull Activity activity, int requestCode) {
+        checkExternalStoragePermissions(activity);
+        if (USE_SYSTEM_FILE_CHOOSER) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("*/*");
+            activity.startActivityForResult(intent, FileUtility.REQUEST_CODE_READ);
+        } else {
+            Intent i = new Intent(activity.getApplicationContext(), FilePickerActivity.class);
+            i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+            i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
+            i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+            i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+            activity.startActivityForResult(i, requestCode);
+        }
     }
 
-    public static void createDirectoryChooser(@NonNull Activity activity, boolean allowReadOnlyDir) {
-        createDirectoryChooser(activity, REQUEST_CODE_CHOOSE_DIR, allowReadOnlyDir);
+    public static void createFileChooser() {
+        createFileChooser(AppUtility.CONTEXT, REQUEST_CODE_READ);
     }
 
-    public static void createDirectoryChooser(boolean allowReadOnlyDir) {
-        createDirectoryChooser(AppUtility.CONTEXT, REQUEST_CODE_CHOOSE_DIR, allowReadOnlyDir);
+    public static void createFileChooser(@NonNull Activity activity) {
+        createFileChooser(activity, REQUEST_CODE_READ);
     }
 
-    public static void createDirectoryChooser(int requestCode, boolean allowReadOnlyDir) {
-        createDirectoryChooser(AppUtility.CONTEXT, requestCode, allowReadOnlyDir);
+    public static void createFileChooser(int requestCode) {
+        createFileChooser(AppUtility.CONTEXT, requestCode);
     }
 
     public static void checkExternalStoragePermissions(@NonNull Activity activity) {
@@ -406,6 +423,15 @@ public class FileUtility {
                 activity.requestPermissions(new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.READ_EXTERNAL_STORAGE }, REQUEST_CODE_EXT_STORAGE_PERMISSIONS);
             }
+        } else if (Build.VERSION.SDK_INT >= 16) {
+            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity,
+                    new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                    REQUEST_CODE_EXT_STORAGE_PERMISSIONS);
+            }
+        } else {
+            AppUtility.printToast(activity, activity.getString(R.string.err_unsupported_android_version));
         }
     }
 

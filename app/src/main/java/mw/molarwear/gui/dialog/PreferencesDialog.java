@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 import mw.molarwear.R;
 import mw.molarwear.util.AppUtility;
+import mw.molarwear.util.FileUtility;
 
 /**
  * A dialog box that allows the user to configure persistent app preferences.
@@ -23,6 +24,7 @@ public class PreferencesDialog extends TwoButtonDialog {
 
     // GUI
     protected final AppCompatCheckBox _cbAutoSavePref;
+    protected final AppCompatCheckBox _cbUseSysFilePickerPref;
 
 
     //////////// Constructors ////////////
@@ -35,17 +37,20 @@ public class PreferencesDialog extends TwoButtonDialog {
                                    R.string.dlg_bt_cancel),
               R.layout.dialog_app_preferences);
         _cbAutoSavePref = (AppCompatCheckBox) this.linearLayout().findViewById(R.id.checkbox_pref_auto_save);
+        _cbUseSysFilePickerPref = (AppCompatCheckBox) this.linearLayout().findViewById(R.id.checkbox_pref_use_sys_file_picker);
         initialize();
     }
 
 
     protected void initialize() {
         _cbAutoSavePref.setChecked(AppUtility.getPrefAutoSave());
+        _cbUseSysFilePickerPref.setChecked(FileUtility.USE_SYSTEM_FILE_CHOOSER);
 
         setPositiveButton(new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 SharedPreferences.Editor editor = AppUtility.PREFERENCES.edit();
                 editor.putBoolean(_activity.getString(R.string.rt_cfg_pref_key_auto_save), _cbAutoSavePref.isChecked());
+                editor.putBoolean(_activity.getString(R.string.rt_cfg_pref_key_use_sys_file_picker), _cbUseSysFilePickerPref.isChecked());
                 editor.apply();
                 AppUtility.loadPreferences(_activity);
             }

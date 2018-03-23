@@ -11,8 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
+import android.support.v7.widget.AppCompatImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import mw.molarwear.R;
@@ -128,7 +129,7 @@ public class MolarDataFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle args = getArguments();
-        ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.card_molar_fragment, container, false);
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.card_molar_fragment, container, false);
 
         if (args != null) {
             _projectIndex = args.getInt(ViewProjectActivity.PROJECT_INDEX_ARG_KEY, _projectIndex);
@@ -139,8 +140,8 @@ public class MolarDataFragment extends Fragment {
 
         if (_projectIndex >= 0 && _subjectIndex >= 0) {
 
-            ImageButton btNotes = view.findViewById(R.id.bt_molar_notes);
-            ImageButton btPhoto = view.findViewById(R.id.bt_molar_photo);
+            AppCompatImageButton btNotes = view.findViewById(R.id.bt_molar_notes);
+            AppCompatImageButton btPhoto = view.findViewById(R.id.bt_molar_photo);
 
             final TextView label = view.findViewById(R.id.lbl_molar);
 

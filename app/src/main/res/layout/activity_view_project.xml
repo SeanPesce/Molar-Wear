@@ -18,8 +18,8 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:layout_height="@dimen/actionBarSize"
+            android:background="@color/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             >
             <LinearLayout
@@ -50,49 +50,49 @@
                     android:paddingRight="6dp"
                     android:layout_weight="1"
                     >
-                    <ImageButton
+                    <android.support.v7.widget.AppCompatImageButton
                         android:id="@+id/bt_toolbar_delete_subj"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:tint="@color/background_light"
-                        app:backgroundTint="?attr/colorPrimary"
+                        app:backgroundTint="@color/colorPrimary"
                         android:text="@string/act_delete"
                         android:src="@drawable/ic_delete"
                         android:visibility="gone" />
-                    <ImageButton
+                    <android.support.v7.widget.AppCompatImageButton
                         android:id="@+id/bt_toolbar_edit_subj"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:tint="@color/background_light"
-                        app:backgroundTint="?attr/colorPrimary"
+                        app:backgroundTint="@color/colorPrimary"
                         android:text="@string/act_edit"
                         android:src="@drawable/ic_edit"
                         android:visibility="gone" />
-                    <ImageButton
+                    <android.support.v7.widget.AppCompatImageButton
                         android:id="@+id/bt_toolbar_new_subj"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:tint="@color/background_light"
-                        app:backgroundTint="?attr/colorPrimary"
+                        app:backgroundTint="@color/colorPrimary"
                         android:text="@string/dlg_title_new_subject"
                         android:src="@drawable/ic_person_add"
                         android:visibility="gone" />
-                    <ImageButton
+                    <android.support.v7.widget.AppCompatImageButton
                         android:id="@+id/bt_toolbar_save_proj"
                         android:layout_width="wrap_content"
                         android:layout_height="fill_parent"
                         android:tint="@color/background_light"
-                        app:backgroundTint="?attr/colorPrimary"
+                        app:backgroundTint="@color/colorPrimary"
                         android:src="@drawable/ic_save"
                         android:text="@string/act_save" />
-                    <ImageButton
+                    <android.support.v7.widget.AppCompatImageButton
                         android:id="@+id/bt_proj_view_options"
                         android:layout_width="36dp"
                         android:layout_height="fill_parent"
                         android:tint="@color/background_light"
                         android:paddingLeft="0dp"
                         android:paddingRight="0dp"
-                        android:backgroundTint="?attr/colorPrimary"
+                        app:backgroundTint="@color/colorPrimary"
                         android:text="@string/act_options"
                         android:src="@drawable/ic_more_vert"
                         android:focusedByDefault="true"
@@ -110,7 +110,7 @@
             android:paddingLeft="72dp"
             android:paddingEnd="16dp"
             android:paddingRight="16dp"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <TextView
@@ -136,12 +136,12 @@
                 android:textAlignment="viewStart"
                 android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle" />
 
-            <ImageButton
+            <android.support.v7.widget.AppCompatImageButton
                 android:id="@+id/bt_toolbar_secondary_edit_subj"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:tint="@color/background_light"
-                android:backgroundTint="@android:color/transparent"
+                app:backgroundTint="@color/transparent"
                 android:foreground="?android:attr/selectableItemBackground"
                 android:text="@string/act_edit"
                 android:src="@drawable/ic_edit"

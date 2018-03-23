@@ -112,6 +112,7 @@ public class AppUtility {
         }
 
         // Default app preferences
+        FileUtility.USE_SYSTEM_FILE_CHOOSER = BOOLEAN(R.bool.rt_cfg_default_use_sys_file_picker);
         DEFAULT_TOAST_DURATION = BOOLEAN(R.bool.rt_cfg_default_long_toast_duration) ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
         _PREF_AUTO_SAVE = BOOLEAN(R.bool.rt_cfg_pref_default_auto_save);
 
@@ -127,6 +128,7 @@ public class AppUtility {
         Wear.SEVEN.setDescription(STRING(R.string.desc_wear_lvl_7));
         Wear.EIGHT.setDescription(STRING(R.string.desc_wear_lvl_8));
 
+        FileUtility.FILE_CHOOSER_TITLE_DEFAULT = STRING(R.string.title_choose_file);
         FileUtility.FILE_EXT_SERIALIZED_DATA = STRING(R.string.file_ext_serialized_data);
         FileUtility.FILE_EXT_JSON_DATA       = STRING(R.string.file_ext_json_data);
 
@@ -155,6 +157,7 @@ public class AppUtility {
         CONTEXT = activity;
         PREFERENCES = activity.getSharedPreferences("_PREFS", Context.MODE_PRIVATE);
         _PREF_AUTO_SAVE = PREFERENCES.getBoolean(STRING(R.string.rt_cfg_pref_key_auto_save), _PREF_AUTO_SAVE);
+        FileUtility.USE_SYSTEM_FILE_CHOOSER = PREFERENCES.getBoolean(STRING(R.string.rt_cfg_pref_key_use_sys_file_picker), FileUtility.USE_SYSTEM_FILE_CHOOSER);
     }
 
     public static final void hideKeyboard(@NonNull View view) {

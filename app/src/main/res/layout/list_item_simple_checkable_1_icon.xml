@@ -27,7 +27,7 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:descendantFocusability="blocksDescendants"
-    android:background="@android:color/transparent"
+    android:background="@color/transparent"
     android:foreground="?android:attr/selectableItemBackground">
     <ImageView
         android:id="@+id/ic_listitem_checkable_1"
@@ -40,7 +40,7 @@
         android:paddingEnd="32dp"
         android:paddingRight="32dp"
         android:tint="@color/colorPrimaryDark"
-        app:backgroundTint="@android:color/transparent"
+        app:backgroundTint="@color/transparent"
         android:src="@drawable/ic_person" />
     <TextView
         android:id="@+id/lbl_listitem_checkable_1"
@@ -53,7 +53,7 @@
         android:singleLine="true"
         android:ellipsize="end"
         android:text="@string/default_project_title" />
-    <ImageButton
+    <android.support.v7.widget.AppCompatImageButton
         android:id="@+id/bt_listitem_checkable_1"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
@@ -61,7 +61,7 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:tint="@color/colorPrimaryDark"
-        app:backgroundTint="@android:color/transparent"
+        app:backgroundTint="@color/transparent"
         android:text="@string/act_open"
         android:src="@drawable/ic_keyboard_arrow_right"
         android:foreground="?android:attr/selectableItemBackground" />

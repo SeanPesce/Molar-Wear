@@ -46,7 +46,7 @@
                     android:overScrollMode="always"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:background="@android:color/transparent"
+                    android:background="@color/transparent"
                     android:scrollbarStyle="insideInset"
                     android:scrollbars="vertical" />
             </android.support.design.widget.TextInputLayout>

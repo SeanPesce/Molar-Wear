@@ -33,9 +33,12 @@
     <bool name="rt_cfg_overwrite_log">true</bool>
     <bool name="rt_cfg_default_long_toast_duration">true</bool>
 
+    <bool name="rt_cfg_default_use_sys_file_picker">false</bool>
+
     <bool name="rt_cfg_pref_default_auto_save">true</bool>
 
     <string name="rt_cfg_pref_key_auto_save">AUTO_SAVE</string>
+    <string name="rt_cfg_pref_key_use_sys_file_picker">USE_SYS_FILE_PICKER</string>
 
     <string name="file_ext_serialized_data">.mwsd</string>
     <string name="file_ext_json_data">.json</string>

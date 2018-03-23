@@ -11,28 +11,42 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
+    signingConfigs {
+        MolWear_Config {
+            // Signing config reference: https://developer.android.com/studio/publish/app-signing.html
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "mw.molarwear"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 180321
-        versionName "2018.03.21"
+        versionCode 180322
+        versionName "2018.03.22"
 //        versionCode format: YYMMDD
         setProperty("archivesBaseName", "molwear-$versionName")
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
+        vectorDrawables.useSupportLibrary = false
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.MolWear_Config
+        }
+        debug {
+            signingConfig signingConfigs.MolWear_Config
         }
     }
 }
 
 repositories {
     maven { url 'http://guardian.github.com/maven/repo-releases' }
+    jcenter()
 }
 
 dependencies {
@@ -46,7 +60,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.android.support:cardview-v7:27.1.0'
     compile 'biz.kasual:materialnumberpicker:1.2.1'
-    compile "org.apache.commons:commons-csv:1.5"
+    compile 'org.apache.commons:commons-csv:1.5'
     compile 'com.gu:option:1.3'
-    compile 'net.rdrei.android.dirchooser:library:3.2@aar'
+    compile 'com.nononsenseapps:filepicker:4.1.0'
 }
