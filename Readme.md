@@ -10,6 +10,7 @@ MolWear is an Android app that aims to simplify the recording and sharing of obs
  * **[Gradle](https://gradle.org/)** - Build tools  
  * **[Material Design Icons](https://material.io/icons)** - Official icon set from Google  
  * **[MaterialNumberPicker](https://github.com/KasualBusiness/MaterialNumberPicker)** - Customizable [Android NumberPicker](https://developer.android.com/reference/android/widget/NumberPicker.html) that follows [Material Design Guidelines](https://developer.android.com/design/index.html)  
+ * **[MPAndroidChart](https://github.com/PhilJay/MPAndroidChart/)** - Charts/graphing library for Android  
  * **[NoNonsense FilePicker](https://github.com/spacecowboy/NoNonsense-FilePicker)** - File/directory picker for Android  
  * **[Apache Commons CSV™](https://commons.apache.org/proper/commons-csv)** - Apache Commons library for reading & writing CSV files  
 
