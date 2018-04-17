@@ -85,18 +85,31 @@
                         app:backgroundTint="@color/colorPrimary"
                         android:src="@drawable/ic_save"
                         android:text="@string/act_save" />
-                    <android.support.v7.widget.AppCompatImageButton
-                        android:id="@+id/bt_proj_view_options"
+                    <LinearLayout
                         android:layout_width="36dp"
-                        android:layout_height="fill_parent"
-                        android:tint="@color/background_light"
-                        android:paddingLeft="0dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:paddingLeft="4dp"
                         android:paddingRight="0dp"
-                        app:backgroundTint="@color/colorPrimary"
-                        android:text="@string/act_options"
-                        android:src="@drawable/ic_more_vert"
-                        android:focusedByDefault="true"
-                        />
+                        >
+                        <View
+                            android:id="@+id/bt_proj_view_options_top"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            />
+                        <android.support.v7.widget.AppCompatImageButton
+                            android:id="@+id/bt_proj_view_options"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:tint="@color/background_light"
+                            android:paddingLeft="0dp"
+                            android:paddingRight="0dp"
+                            app:backgroundTint="@color/colorPrimary"
+                            android:text="@string/act_options"
+                            android:src="@drawable/ic_more_vert"
+                            android:focusedByDefault="true"
+                            />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 

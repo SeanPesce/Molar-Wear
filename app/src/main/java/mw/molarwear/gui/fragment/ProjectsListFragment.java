@@ -1,11 +1,15 @@
 package mw.molarwear.gui.fragment;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.support.v7.widget.AppCompatImageButton;
 import android.widget.ListView;
@@ -13,7 +17,14 @@ import android.widget.TextView;
 
 import mw.molarwear.R;
 import mw.molarwear.data.handlers.ProjectHandler;
+import mw.molarwear.gui.activity.MolWearMainActivity;
+import mw.molarwear.gui.activity.ViewProjectActivity;
+import mw.molarwear.gui.dialog.BasicDialog;
+import mw.molarwear.gui.dialog.DialogStringData;
+import mw.molarwear.gui.dialog.PopupListDialog;
 import mw.molarwear.gui.list.ProjectArrayAdapter;
+import mw.molarwear.util.AppUtil;
+import mw.molarwear.util.FileUtil;
 
 /**
  *
@@ -31,6 +42,23 @@ public class ProjectsListFragment extends ListFragment {
 
     public static final String SELECTION_INDEX_KEY = "curProjChoice";
 
+
+    public static final int OPTION_OPEN    = 0;
+    public static final int OPTION_ANALYZE = 1;
+    public static final int OPTION_EXPORT  = 2;
+    public static final int OPTION_RENAME  = 3;
+    public static final int OPTION_DELETE  = 4;
+    public static final String[] LONG_PRESS_ITEMS = {
+                                                        "Open",
+                                                        "Analyze",
+                                                        "Export",
+                                                        "Rename",
+                                                        "Delete"
+                                                    };
+
+
+    private final ProjectsListFragment _this = this;
+
     private int _selectionIndex = AdapterView.INVALID_POSITION;
 
     // GUI
@@ -42,14 +70,18 @@ public class ProjectsListFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+        final View footer = LayoutInflater.from(getActivity()).inflate(R.layout.list_frag_footer, null, false);
+        getListView().addFooterView(footer, null, false);
+        getListView().setDividerHeight(0);
+
         // Populate list with project titles
         setListAdapter(new ProjectArrayAdapter(ProjectHandler.PROJECTS, this));
 
-        getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-
-        _btNewProject = (FloatingActionButton) getActivity().findViewById(R.id.bt_new_project);
-        _btEditProj   = (AppCompatImageButton) getActivity().findViewById(R.id.bt_toolbar_edit_proj);
-        _btDeleteProj = (AppCompatImageButton) getActivity().findViewById(R.id.bt_toolbar_delete_proj);
+        _btNewProject = getActivity().findViewById(R.id.bt_new_project);
+        _btEditProj   = getActivity().findViewById(R.id.bt_toolbar_edit_proj);
+        _btDeleteProj = getActivity().findViewById(R.id.bt_toolbar_delete_proj);
 
         _btNewProject.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +104,47 @@ public class ProjectsListFragment extends ListFragment {
             }
         });
 
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItem(position, true);
+                final PopupListDialog<String> dlg = new PopupListDialog<>(getActivityDerived(),
+                            LONG_PRESS_ITEMS,
+                            android.R.layout.simple_spinner_dropdown_item)
+                    .setFooterDividersEnabled(false)
+                    .setHeaderDividersEnabled(false)
+                    .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+                            switch (pos) {
+                                case OPTION_OPEN:
+                                    Intent i = new Intent(getActivity().getApplicationContext(), ViewProjectActivity.class);
+                                    i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                    i.putExtra(ViewProjectActivity.PROJECT_INDEX_ARG_KEY, _selectionIndex);
+                                    getActivity().startActivity(i);
+                                    break;
+                                case OPTION_ANALYZE:
+                                    AppUtil.featureNotImplementedYet();
+                                    break;
+                                case OPTION_EXPORT:
+                                    ProjectHandler.openExportDialog(getActivityDerived());
+                                    break;
+                                case OPTION_RENAME:
+                                    ProjectHandler.editTitle(_selectionIndex);
+                                    break;
+                                case OPTION_DELETE:
+                                    ProjectHandler.deleteProject(_selectionIndex);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    });
+                dlg.show();
+                return true;
+            }
+        });
+
         if (savedInstanceState != null) {
             // Restore last state for index of selected item
             selectItem(savedInstanceState.getInt(SELECTION_INDEX_KEY, AdapterView.INVALID_POSITION));
@@ -79,7 +152,7 @@ public class ProjectsListFragment extends ListFragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setEmptyText(" ");
         TextView emptyView = (TextView)getListView().getEmptyView();
@@ -101,7 +174,7 @@ public class ProjectsListFragment extends ListFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(SELECTION_INDEX_KEY, _selectionIndex);
         super.onSaveInstanceState(outState);
     }
@@ -150,7 +223,7 @@ public class ProjectsListFragment extends ListFragment {
         }
 
         if (_selectionIndex >= 0 && _selectionIndex < ProjectHandler.projectCount()) {
-            _btEditProj.setVisibility(View.VISIBLE);
+            //_btEditProj.setVisibility(View.VISIBLE);
             _btDeleteProj.setVisibility(View.VISIBLE);
             //getActivity().setTitle(ProjectHandler.PROJECTS.get(_selectionIndex).title());
         } else {
@@ -166,6 +239,10 @@ public class ProjectsListFragment extends ListFragment {
                 ((ProjectArrayAdapter)getListAdapter()).notifyDataSetChanged();
             }
         });
+    }
+
+    public MolWearMainActivity getActivityDerived() {
+        return (MolWearMainActivity) super.getActivity();
     }
 
     public int selectionIndex() { return _selectionIndex; }

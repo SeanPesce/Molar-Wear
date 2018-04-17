@@ -42,8 +42,8 @@
             android:orientation="vertical">
 
             <RelativeLayout
-                android:layout_width="146dp"
-                android:layout_height="146dp">
+                android:layout_width="149dp"
+                android:layout_height="149dp">
 
                 <ImageView
                     android:layout_width="match_parent"
@@ -61,43 +61,33 @@
                         android:orientation="vertical">
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="73dp"
+                            android:layout_width="149dp"
+                            android:layout_height="74dp"
                             android:layout_weight="1"
-                            android:orientation="horizontal">
+                            android:orientation="horizontal"
+                            android:gravity="bottom"
+                            android:layout_gravity="bottom"
+                            >
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-                                <!-- Top left quadrant -->
-
-                                <ImageView
-                                    android:id="@+id/img_q_top_left"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:src="@drawable/q1_unknown" />
-                            </LinearLayout>
+                            <!-- Top left quadrant -->
+                            <ImageView
+                                android:id="@+id/img_q_top_left"
+                                android:layout_width="74dp"
+                                android:layout_height="74dp"
+                                android:src="@drawable/q1_start" />
 
                             <View
                                 android:layout_width="1dp"
                                 android:layout_height="match_parent"
                                 android:background="@color/colorPrimary" />
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-                                <!-- Top right quadrant -->
+                            <!-- Top right quadrant -->
+                            <ImageView
+                                android:id="@+id/img_q_top_right"
+                                android:layout_width="74dp"
+                                android:layout_height="74dp"
+                                android:src="@drawable/q2_start" />
 
-                                <ImageView
-                                    android:id="@+id/img_q_top_right"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:src="@drawable/q2_unknown" />
-                            </LinearLayout>
                         </LinearLayout>
 
                         <View
@@ -106,46 +96,36 @@
                             android:background="@color/colorPrimary" />
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="73dp"
+                            android:layout_width="149dp"
+                            android:layout_height="74dp"
                             android:layout_weight="1"
                             android:orientation="horizontal">
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-                                <!-- Bottom left quadrant -->
-
-                                <ImageView
-                                    android:id="@+id/img_q_bottom_left"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:src="@drawable/q3_unknown" />
-                            </LinearLayout>
+                            <!-- Bottom left quadrant -->
+                            <ImageView
+                                android:id="@+id/img_q_bottom_left"
+                                android:layout_width="74dp"
+                                android:layout_height="74dp"
+                                android:src="@drawable/q3_start" />
 
                             <View
                                 android:layout_width="1dp"
                                 android:layout_height="match_parent"
                                 android:background="@color/colorPrimary" />
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-                                <!-- Bottom right quadrant -->
+                            <!-- Bottom right quadrant -->
+                            <ImageView
+                                android:id="@+id/img_q_bottom_right"
+                                android:layout_width="74dp"
+                                android:layout_height="74dp"
+                                android:src="@drawable/q4_start" />
 
-                                <ImageView
-                                    android:id="@+id/img_q_bottom_right"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:src="@drawable/q4_unknown" />
-                            </LinearLayout>
                         </LinearLayout>
+
                     </LinearLayout>
+
                 </RelativeLayout>
+
             </RelativeLayout>
 
             <!-- Button bar -->

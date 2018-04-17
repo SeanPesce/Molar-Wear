@@ -4,7 +4,8 @@
 -->
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
     <item
         android:id="@+id/bt_settings"
         android:orderInCategory="100"
@@ -12,4 +13,7 @@
     <item
         android:id="@+id/bt_export"
         android:title="@string/act_export_project" />
+    <item
+        android:id="@+id/bt_analyze_subject"
+        android:title="@string/act_analyze_subject" />
 </menu>

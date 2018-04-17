@@ -16,7 +16,8 @@ import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
 import mw.molarwear.gui.activity.ViewProjectActivity;
 import mw.molarwear.gui.fragment.ProjectsListFragment;
-import mw.molarwear.util.AppUtility;
+import mw.molarwear.gui.layout.CheckableLinearLayout;
+import mw.molarwear.util.AppUtil;
 
 /**
  * Custom {@link ArrayAdapter} class that holds a list of research {@link MolarWearProject projects}
@@ -42,23 +43,23 @@ public class ProjectArrayAdapter extends ArrayAdapter<MolarWearProject> {
     //////////// Constructors ////////////
 
     public ProjectArrayAdapter(@NonNull ArrayList<MolarWearProject> projects) {
-        super(AppUtility.CONTEXT, 0, projects);
+        super(AppUtil.CONTEXT, 0, projects);
         _projects = projects;
     }
 
     public ProjectArrayAdapter(int resource, @NonNull ArrayList<MolarWearProject> projects) {
-        super(AppUtility.CONTEXT, resource, projects);
+        super(AppUtil.CONTEXT, resource, projects);
         _projects = projects;
     }
 
     public ProjectArrayAdapter(@NonNull ArrayList<MolarWearProject> projects, @NonNull ProjectsListFragment listFragment) {
-        super(AppUtility.CONTEXT, 0, projects);
+        super(AppUtil.CONTEXT, 0, projects);
         _projects = projects;
         _listFragment = listFragment;
     }
 
     public ProjectArrayAdapter(int resource, @NonNull ArrayList<MolarWearProject> projects, @NonNull ProjectsListFragment listFragment) {
-        super(AppUtility.CONTEXT, resource, projects);
+        super(AppUtil.CONTEXT, resource, projects);
         _projects = projects;
         _listFragment = listFragment;
     }
@@ -73,16 +74,17 @@ public class ProjectArrayAdapter extends ArrayAdapter<MolarWearProject> {
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         // Reference: https://gist.github.com/nikhilbansal97/f11551b4f6c28c377a363d2cd252b844#file-movieadapter-java
         View listItem = convertView;
-        if(listItem == null) {
-            listItem = LayoutInflater.from(AppUtility.CONTEXT).inflate(R.layout.list_item_simple_checkable_1_txt_large, parent,false);
+        if (listItem == null) {
+            listItem = LayoutInflater.from(AppUtil.CONTEXT).inflate(R.layout.list_item_simple_checkable_1_txt_large, parent,false);
         }
 
         final MolarWearProject project = _projects.get(position);
+        final CheckableLinearLayout item = listItem.findViewById(R.id.layout_listitem);
 
-        TextView lblTitle = (TextView) listItem.findViewById(R.id.lbl_listitem_checkable_1);
+        final TextView lblTitle = item.findViewById(R.id.lbl_listitem_checkable_1);
         lblTitle.setText(project.title());
 
-        AppCompatImageButton btOpen = (AppCompatImageButton) listItem.findViewById(R.id.bt_listitem_checkable_1);
+        final AppCompatImageButton btOpen = item.findViewById(R.id.bt_listitem_checkable_1);
         btOpen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,6 +97,8 @@ public class ProjectArrayAdapter extends ArrayAdapter<MolarWearProject> {
                 }
             }
         });
+
+
 
         return listItem;
     }

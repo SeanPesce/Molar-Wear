@@ -5,43 +5,20 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout_dialog_txt_input"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:id="@+id/dlg_root"
+    android:orientation="horizontal"
+    android:layout_width="250dp"
+    android:layout_height="match_parent"
+    >
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="2">
-        </View>
-
-        <biz.kasual.materialnumberpicker.MaterialNumberPicker
-            android:id="@+id/picker_input_dlg"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="4dp"
-            android:layout_weight="1"
-            app:npMinValue="0"
-            app:npBackgroundColor="@color/transparent"
-            app:npSeparatorColor="@color/colorAccent"
-            app:npTextColor="@android:color/black"
-            app:npTextSize="25sp" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="2">
-        </View>
-
-    </LinearLayout>
+    <biz.kasual.materialnumberpicker.MaterialNumberPicker
+        android:id="@+id/picker_input_dlg"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        app:npMinValue="0"
+        app:npBackgroundColor="@color/transparent"
+        app:npSeparatorColor="@color/colorAccent"
+        app:npTextColor="@android:color/black"
+        app:npTextSize="25sp" />
 
 </LinearLayout>

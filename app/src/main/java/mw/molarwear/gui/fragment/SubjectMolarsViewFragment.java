@@ -1,6 +1,7 @@
 package mw.molarwear.gui.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,9 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import mw.molarwear.R;
-import mw.molarwear.data.classes.MolarWearSubject;
 import mw.molarwear.data.classes.dental.enums.ToothMapping;
-import mw.molarwear.data.handlers.ProjectHandler;
 import mw.molarwear.gui.activity.ViewProjectActivity;
 
 /**
@@ -52,11 +51,10 @@ public class SubjectMolarsViewFragment extends Fragment {
 
     private int _projectIndex = AdapterView.INVALID_POSITION;
     private int _subjectIndex = AdapterView.INVALID_POSITION;
-    private MolarWearSubject _subject;
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle args = getArguments();
         ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.view_subject_molar_data, container, false);
 
@@ -65,19 +63,17 @@ public class SubjectMolarsViewFragment extends Fragment {
             _subjectIndex = args.getInt(ViewProjectActivity.SUBJECT_INDEX_ARG_KEY, _subjectIndex);
         }
 
-        if (_projectIndex >= 0 && _subjectIndex >= 0) {
+        if (_projectIndex < 0 || _subjectIndex < 0) {
 
-            _subject = ProjectHandler.PROJECTS.get(_projectIndex).getSubject(_subjectIndex);
-
-        } else {
             // Invalid project or subject index
             getActivityDerived().closeSubjectEditor();
+
         }
         return view;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         MolarDataFragment l1Fragment =
             (MolarDataFragment) getChildFragmentManager().findFragmentByTag("frag_edit_subj_molar_data_l1");
 

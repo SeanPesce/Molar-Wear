@@ -1,12 +1,15 @@
 package mw.molarwear.gui.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatImageButton;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +19,16 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 
+import java.util.List;
+
 import mw.molarwear.R;
+import mw.molarwear.data.classes.MolarWearProject;
 import mw.molarwear.data.classes.MolarWearSubject;
 import mw.molarwear.data.handlers.ProjectHandler;
 import mw.molarwear.gui.activity.ViewProjectActivity;
-import mw.molarwear.util.AppUtility;
-import mw.molarwear.util.FileUtility;
+import mw.molarwear.gui.dialog.PopupListDialog;
+import mw.molarwear.util.AppUtil;
+import mw.molarwear.util.FileUtil;
 
 /**
  *
@@ -66,9 +73,8 @@ public class SubjectBasicInfoFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle args = getArguments();
-        final SubjectBasicInfoFragment _this = this;
         final ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.view_subject_basic_info, container, false);
 
         if (args != null) {
@@ -86,10 +92,12 @@ public class SubjectBasicInfoFragment extends Fragment {
             final TextInputLayout txtGroupId = linearLayout.findViewById(R.id.txt_group_id);
             final TextInputLayout txtAge = linearLayout.findViewById(R.id.txt_subject_age);
             final RadioGroup rgSex = linearLayout.findViewById(R.id.radio_group_subject_sex);
+            final AppCompatImageButton btFillSite  = linearLayout.findViewById(R.id.bt_fill_site_id);
+            final AppCompatImageButton btFillGroup = linearLayout.findViewById(R.id.bt_fill_group_id);
 
-            txtGroupId.getEditText().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
+            txtGroupId.getEditText().setFilters(new InputFilter[] { FileUtil.WHITESPACE_FILTER });
             txtGroupId.getEditText().setText(_subject.groupId());
-            txtSiteId.getEditText().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
+            txtSiteId.getEditText().setFilters(new InputFilter[] { FileUtil.WHITESPACE_FILTER });
             txtSiteId.getEditText().setText((_subject.siteId() != null) ? _subject.siteId().replace(' ', '_') : "");
             txtAge.getEditText().setText((_subject.age() >= 0 && _subject.age() <= MolarWearSubject.MAX_AGE) ? (Integer.toString(_subject.age())) : "");
             if (_subject.sex() == MolarWearSubject.SEX.MALE) {
@@ -173,7 +181,7 @@ public class SubjectBasicInfoFragment extends Fragment {
                     if (hasFocus) {
                         scrollView.smoothScrollTo(0, 0);
                     } else {
-                        AppUtility.hideKeyboard(getActivity(), v);
+                        AppUtil.hideKeyboard(getActivity(), v);
                     }
                 }
             });
@@ -186,7 +194,7 @@ public class SubjectBasicInfoFragment extends Fragment {
                             scrollView.scrollTo(0, (scrollView.getMaxScrollAmount() / 2));
                         }
                     } else {
-                        AppUtility.hideKeyboard(getActivity(), v);
+                        AppUtil.hideKeyboard(getActivity(), v);
                     }
                 }
             });
@@ -197,7 +205,7 @@ public class SubjectBasicInfoFragment extends Fragment {
                     if (hasFocus) {
                         scrollView.scrollTo(0, scrollView.getMaxScrollAmount());
                     } else {
-                        AppUtility.hideKeyboard(getActivity(), v);
+                        AppUtil.hideKeyboard(getActivity(), v);
                     }
                 }
             });
@@ -222,7 +230,7 @@ public class SubjectBasicInfoFragment extends Fragment {
                 @Override
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                        AppUtility.hideKeyboard(getActivity(), v);
+                        AppUtil.hideKeyboard(getActivity(), v);
                         linearLayout.requestFocus();
                         return true;
                     } else {
@@ -235,7 +243,7 @@ public class SubjectBasicInfoFragment extends Fragment {
                 @Override
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                        AppUtility.hideKeyboard(getActivity(), v);
+                        AppUtil.hideKeyboard(getActivity(), v);
                         linearLayout.requestFocus();
                         return true;
                     } else {
@@ -248,7 +256,7 @@ public class SubjectBasicInfoFragment extends Fragment {
                 @Override
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                        AppUtility.hideKeyboard(getActivity(), v);
+                        AppUtil.hideKeyboard(getActivity(), v);
                         linearLayout.requestFocus();
                         if (scrollView.getVerticalScrollbarPosition() > (scrollView.getMaxScrollAmount() / 2)) {
                             scrollView.smoothScrollTo(0, (scrollView.getMaxScrollAmount() / 2));
@@ -267,6 +275,105 @@ public class SubjectBasicInfoFragment extends Fragment {
                 }
             });
 
+            btFillSite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AppUtil.hideKeyboard(getActivity(), v);
+                    linearLayout.requestFocus();
+                    if (_projectIndex >= 0 && _projectIndex < ProjectHandler.projectCount()) {
+
+//                        final List<String> l = new ArrayList<>();
+//                        for (int i = 0; i < 50; i++) {
+//                            l.add("" + i);
+//                        }
+                        final List<String> siteIds = ProjectHandler.get(_projectIndex).getSiteIds();
+                        int currentSiteIndex = -1;
+                        for (int i = 0; i < siteIds.size(); i++) {
+                            if (MolarWearProject.DEFAULT_GROUP_ID_IGNORE_CASE) {
+                                if (txtSiteId.getEditText().getText().toString().equalsIgnoreCase(siteIds.get(i))) {
+                                    currentSiteIndex = i;
+                                }
+                            } else {
+                                if (txtSiteId.getEditText().getText().toString().equals(siteIds.get(i))) {
+                                    currentSiteIndex = i;
+                                }
+                            }
+                        }
+
+                        final PopupListDialog<String> dlg = new PopupListDialog<>(
+                            getActivityDerived(),
+                            siteIds,
+                            R.layout.list_item_simple_checkable_large,
+                            R.id.lbl_listitem_checkable)
+                            .setFooterDividersEnabled(false)
+                            .setHeaderDividersEnabled(false)
+                            .setHighlightOnLongClick(false)
+                            .setHighlighted(currentSiteIndex, R.id.layout_listitem_large);
+                        dlg.setEmptyMessage(getActivity().getString(R.string.err_no_sites_in_proj))
+                            .setTitle(String.format(getActivity().getString(R.string.act_choose_existing), getActivity().getString(R.string.lbl_site_id)))
+                            .setNegBt(R.string.dlg_bt_cancel).useNegBt(true)
+                            .setWidth(AppUtil.dpToPixels(300))
+                            .useNegBt(true)
+                            .showAndGetInstance();
+                        dlg.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                txtSiteId.getEditText().setText(dlg.getItem(position));
+                            }
+                        });
+
+                    }
+                }
+            });
+
+            btFillGroup.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AppUtil.hideKeyboard(getActivity(), v);
+                    linearLayout.requestFocus();
+                    if (_projectIndex >= 0 && _projectIndex < ProjectHandler.projectCount()) {
+
+                        final List<String> groupIds = ProjectHandler.get(_projectIndex).getGroupIds();
+                        int currentGroupIndex = -1;
+                        for (int i = 0; i < groupIds.size(); i++) {
+                            if (MolarWearProject.DEFAULT_GROUP_ID_IGNORE_CASE) {
+                                if (txtGroupId.getEditText().getText().toString().equalsIgnoreCase(groupIds.get(i))) {
+                                    currentGroupIndex = i;
+                                }
+                            } else {
+                                if (txtGroupId.getEditText().getText().toString().equals(groupIds.get(i))) {
+                                    currentGroupIndex = i;
+                                }
+                            }
+                        }
+
+                        final PopupListDialog<String> dlg = new PopupListDialog<>(
+                                    getActivityDerived(),
+                                    groupIds,
+                                    R.layout.list_item_simple_checkable_large,
+                                    R.id.lbl_listitem_checkable)
+                                    .setFooterDividersEnabled(false)
+                                    .setHeaderDividersEnabled(false)
+                                    .setHighlightOnLongClick(false)
+                                    .setHighlighted(currentGroupIndex, R.id.layout_listitem_large);
+                        dlg.setEmptyMessage(getActivity().getString(R.string.err_no_groups_in_proj))
+                            .setTitle(String.format(getActivity().getString(R.string.act_choose_existing), getActivity().getString(R.string.lbl_group_id)))
+                            .setNegBt(R.string.dlg_bt_cancel).useNegBt(true)
+                            .setWidth(AppUtil.dpToPixels(300))
+                            .useNegBt(true)
+                            .showAndGetInstance();
+
+                        dlg.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                txtGroupId.getEditText().setText(dlg.getItem(position));
+                            }
+                        });
+
+                    }
+                }
+            });
+
             rgSex.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup rg, int checkedId) {
@@ -282,7 +389,7 @@ public class SubjectBasicInfoFragment extends Fragment {
                         _subject.setSex(MolarWearSubject.SEX.UNKNOWN);
                     }
                     getActivityDerived().setEdited();
-                    AppUtility.hideKeyboard(getActivity(), scrollView);
+                    AppUtil.hideKeyboard(getActivity(), scrollView);
                     linearLayout.requestFocus();
                 }
             });
@@ -295,7 +402,7 @@ public class SubjectBasicInfoFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -315,7 +422,7 @@ public class SubjectBasicInfoFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(ViewProjectActivity.PROJECT_INDEX_ARG_KEY, _projectIndex);
         outState.putInt(ViewProjectActivity.SUBJECT_INDEX_ARG_KEY, _subjectIndex);
         super.onSaveInstanceState(outState);
@@ -375,7 +482,7 @@ public class SubjectBasicInfoFragment extends Fragment {
                 return true;
             }
         } catch (NumberFormatException e) {
-
+            // String was not a number
         }
         return false;
     }

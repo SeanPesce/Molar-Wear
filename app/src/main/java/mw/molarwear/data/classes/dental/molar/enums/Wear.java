@@ -1,10 +1,10 @@
 package mw.molarwear.data.classes.dental.molar.enums;
 
-import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 
 import mw.molarwear.R;
 import mw.molarwear.gui.dialog.DialogStringData;
-import mw.molarwear.gui.dialog.TwoButtonDialog;
+import mw.molarwear.gui.dialog.MessageDialog;
 
 /**
  * This enum represents varying levels (or "scores") of wear for describing the physical condition of
@@ -108,13 +108,13 @@ public enum Wear {
     public static Wear   get(int score) { return (score >= 0 && score < Wear.values().length && score != Wear.INDEX_OF_UNKNOWN) ? Wear.values()[score] : UNKNOWN; }
     public static String getDescription(int score) { return (score >= 0 && score < Wear.values().length && score != Wear.INDEX_OF_UNKNOWN) ? Wear.DESCRIPTION[score] : UNKNOWN.description(); }
     public static int    INDEX_OF_UNKNOWN() { return Wear.INDEX_OF_UNKNOWN; }
-    public static void   showWearDescriptionDialog(Activity activity) {
+    public static void   showWearDescriptionDialog(AppCompatActivity activity) {
         StringBuilder dlgMsg = new StringBuilder("\n\"" + activity.getString(R.string.desc_wear_lvl_unk_picker)
             + "\"  -  " + activity.getString(R.string.desc_wear_lvl_unk) + "\n");
         for (int i = 0; i < (Wear.values().length-1); i++) {
             dlgMsg.append("\n").append(i).append("  -  ").append(Wear.get(i).description()).append("\n");
         }
-        final TwoButtonDialog dlg = new TwoButtonDialog(new DialogStringData(activity,
+        final MessageDialog dlg = new MessageDialog(new DialogStringData(activity,
             R.string.dlg_title_wear_lvl_desc,
             dlgMsg.toString()));
         dlg.show();
@@ -147,9 +147,9 @@ public enum Wear {
     }
 
     //////////// Accessors ////////////
-    public    int  score()        { return _score;       }
-    public String  description()  { return _description; }
-    public boolean inititalized() { return _initialized; }
+    public    int  score()       { return _score;       }
+    public String  description() { return _description; }
+    public boolean initialized() { return _initialized; }
 
     //////////// Mutators ////////////
     public void setDescription(String description) {

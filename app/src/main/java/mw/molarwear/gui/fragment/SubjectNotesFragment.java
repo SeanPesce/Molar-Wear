@@ -1,6 +1,7 @@
 package mw.molarwear.gui.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -58,7 +59,7 @@ public class SubjectNotesFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle args = getArguments();
         ConstraintLayout view = (ConstraintLayout) inflater.inflate(R.layout.view_subject_notes, container, false);
 

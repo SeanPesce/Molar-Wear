@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearSubject;
 import mw.molarwear.gui.fragment.SubjectsListFragment;
-import mw.molarwear.util.AppUtility;
+import mw.molarwear.util.AppUtil;
 
 /**
  * Custom {@link ArrayAdapter} class that holds a list of research {@link MolarWearSubject subjects}
@@ -40,23 +40,23 @@ public class SubjectArrayAdapter extends ArrayAdapter<MolarWearSubject> {
     //////////// Constructors ////////////
 
     public SubjectArrayAdapter(@NonNull ArrayList<MolarWearSubject> subjects) {
-        super(AppUtility.CONTEXT, 0, subjects);
+        super(AppUtil.CONTEXT, 0, subjects);
         _subjects = subjects;
     }
 
     public SubjectArrayAdapter(int resource, @NonNull ArrayList<MolarWearSubject> subjects) {
-        super(AppUtility.CONTEXT, resource, subjects);
+        super(AppUtil.CONTEXT, resource, subjects);
         _subjects = subjects;
     }
 
     public SubjectArrayAdapter(@NonNull ArrayList<MolarWearSubject> subjects, @NonNull SubjectsListFragment listFragment) {
-        super(AppUtility.CONTEXT, 0, subjects);
+        super(AppUtil.CONTEXT, 0, subjects);
         _subjects = subjects;
         _listFragment = listFragment;
     }
 
     public SubjectArrayAdapter(int resource, @NonNull ArrayList<MolarWearSubject> subjects, @NonNull SubjectsListFragment listFragment) {
-        super(AppUtility.CONTEXT, resource, subjects);
+        super(AppUtil.CONTEXT, resource, subjects);
         _subjects = subjects;
         _listFragment = listFragment;
     }
@@ -72,15 +72,15 @@ public class SubjectArrayAdapter extends ArrayAdapter<MolarWearSubject> {
         // Reference: https://gist.github.com/nikhilbansal97/f11551b4f6c28c377a363d2cd252b844#file-movieadapter-java
         View listItem = convertView;
         if(listItem == null) {
-            listItem = LayoutInflater.from(AppUtility.CONTEXT).inflate(R.layout.list_item_simple_checkable_1_icon, parent,false);
+            listItem = LayoutInflater.from(AppUtil.CONTEXT).inflate(R.layout.list_item_simple_checkable_1_icon, parent,false);
         }
 
         final MolarWearSubject subject = _subjects.get(position);
 
-        TextView lblId = (TextView) listItem.findViewById(R.id.lbl_listitem_checkable_1);
+        TextView lblId = listItem.findViewById(R.id.lbl_listitem_checkable_1);
         lblId.setText(subject.id());
 
-        AppCompatImageButton btOpen = (AppCompatImageButton) listItem.findViewById(R.id.bt_listitem_checkable_1);
+        AppCompatImageButton btOpen = listItem.findViewById(R.id.bt_listitem_checkable_1);
         btOpen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

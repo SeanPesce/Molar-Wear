@@ -1,11 +1,12 @@
 package mw.molarwear.gui.fragment;
 
-import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +21,15 @@ import mw.molarwear.R;
 import mw.molarwear.data.classes.dental.enums.ToothMapping;
 import mw.molarwear.data.classes.dental.molar.Molar;
 import mw.molarwear.data.classes.dental.molar.SurfaceQuadrant;
+import mw.molarwear.data.classes.dental.molar.WearImageCacheMap;
 import mw.molarwear.data.classes.dental.molar.enums.Wear;
 import mw.molarwear.data.handlers.ProjectHandler;
 import mw.molarwear.gui.activity.ViewProjectActivity;
 import mw.molarwear.gui.dialog.DialogStringData;
+import mw.molarwear.gui.dialog.PopupListDialog;
 import mw.molarwear.gui.dialog.TextInputDialog;
-import mw.molarwear.gui.dialog.WearPickerDialog;
-import mw.molarwear.util.AppUtility;
+import mw.molarwear.util.AppUtil;
+import mw.molarwear.util.FileUtil;
 
 /**
  *
@@ -67,6 +70,19 @@ public class MolarDataFragment extends Fragment {
         f.setArguments(args);
         return f;
     }
+
+    public final static String[] WEAR_PICKER_ITEMS = {
+            "No data",
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+        };
 
     private int _projectIndex = AdapterView.INVALID_POSITION;
     private int _subjectIndex = AdapterView.INVALID_POSITION;
@@ -126,8 +142,15 @@ public class MolarDataFragment extends Fragment {
     private final int[][] _imgIds = { null, null, null, null };
     private final SurfaceQuadrant[] _quads = { null, null, null, null };
 
+    public final View.OnClickListener wearDescriptionsListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Wear.showWearDescriptionDialog(getActivityDerived());
+        }
+    };
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle args = getArguments();
         LinearLayout view = (LinearLayout) inflater.inflate(R.layout.card_molar_fragment, container, false);
 
@@ -207,19 +230,36 @@ public class MolarDataFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     final int currentScore = _molar.surface().q1Wear().score();
-                    final WearPickerDialog dlg = new WearPickerDialog(getActivity(), currentScore);
 
-                    dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User clicked "Ok" button
-                            if (currentScore != dlg.selectionScore()) {
-                                _molar.surface().setQ1(dlg.selectionScore());
-                                updateElements();
-                                getActivityDerived().setEdited();
+                    final PopupListDialog<String> dlg = new PopupListDialog<>(getActivityDerived(),
+                        WEAR_PICKER_ITEMS,
+                        R.layout.list_item_simple_checkable_large_center_align,
+                        R.id.lbl_listitem_checkable);
+
+                    final View title = getActivity().getLayoutInflater().inflate(R.layout.dialog_wear_picker_title, null);
+                    dlg.setCustomTitle(title);
+                    final ImageView btWearHelp = title.findViewById(R.id.bt_wear_descriptions);
+                    btWearHelp.setOnClickListener(wearDescriptionsListener);
+
+                    dlg.setFooterDividersEnabled(false)
+                        .setHeaderDividersEnabled(false)
+                        .setHighlighted(((currentScore == Wear.UNKNOWN.score()) ? 0 : currentScore+1), R.id.layout_listitem_large)
+                        .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                final int score = position - 1;
+                                if (score != currentScore) {
+                                    _molar.surface().setQ1(score);
+                                    updateElements();
+                                    getActivityDerived().setEdited();
+                                }
                             }
-                        }
-                    });
-                    dlg.show();
+                        })
+                        .setHighlightOnLongClick(false)
+                        .setWidth(AppUtil.dpToPixels(300))
+                        .useNegBt(true)
+                        .setTitleAndGetInstance(R.string.dlg_title_set_wear_lvl)
+                        .show();
                 }
             });
 
@@ -227,19 +267,33 @@ public class MolarDataFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     final int currentScore = _molar.surface().q2Wear().score();
-                    final WearPickerDialog dlg = new WearPickerDialog(getActivity(), currentScore);
 
-                    dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User clicked "Ok" button
-                            if (currentScore != dlg.selectionScore()) {
-                                _molar.surface().setQ2(dlg.selectionScore());
-                                updateElements();
-                                getActivityDerived().setEdited();
+                    final PopupListDialog<String> dlg = new PopupListDialog<>(getActivityDerived(),
+                        WEAR_PICKER_ITEMS,
+                        R.layout.list_item_simple_checkable_large_center_align,
+                        R.id.lbl_listitem_checkable);
+                    final View title = getActivity().getLayoutInflater().inflate(R.layout.dialog_wear_picker_title, null);
+                    dlg.setCustomTitle(title);
+                    final ImageView btWearHelp = title.findViewById(R.id.bt_wear_descriptions);
+                    btWearHelp.setOnClickListener(wearDescriptionsListener);
+                    dlg.setFooterDividersEnabled(false)
+                        .setHeaderDividersEnabled(false)
+                        .setHighlighted(((currentScore == Wear.UNKNOWN.score()) ? 0 : currentScore+1), R.id.layout_listitem_large)
+                        .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                final int score = position - 1;
+                                if (score != currentScore) {
+                                    _molar.surface().setQ2(score);
+                                    updateElements();
+                                    getActivityDerived().setEdited();
+                                }
                             }
-                        }
-                    });
-                    dlg.show();
+                        })
+                        .setWidth(AppUtil.dpToPixels(300))
+                        .useNegBt(true)
+                        .setTitleAndGetInstance(R.string.dlg_title_set_wear_lvl)
+                        .show();
                 }
             });
 
@@ -247,19 +301,33 @@ public class MolarDataFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     final int currentScore = _molar.surface().q3Wear().score();
-                    final WearPickerDialog dlg = new WearPickerDialog(getActivity(), currentScore);
 
-                    dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User clicked "Ok" button
-                            if (currentScore != dlg.selectionScore()) {
-                                _molar.surface().setQ3(dlg.selectionScore());
-                                updateElements();
-                                getActivityDerived().setEdited();
+                    final PopupListDialog<String> dlg = new PopupListDialog<>(getActivityDerived(),
+                        WEAR_PICKER_ITEMS,
+                        R.layout.list_item_simple_checkable_large_center_align,
+                        R.id.lbl_listitem_checkable);
+                    final View title = getActivity().getLayoutInflater().inflate(R.layout.dialog_wear_picker_title, null);
+                    dlg.setCustomTitle(title);
+                    final ImageView btWearHelp = title.findViewById(R.id.bt_wear_descriptions);
+                    btWearHelp.setOnClickListener(wearDescriptionsListener);
+                    dlg.setFooterDividersEnabled(false)
+                        .setHeaderDividersEnabled(false)
+                        .setHighlighted(((currentScore == Wear.UNKNOWN.score()) ? 0 : currentScore+1), R.id.layout_listitem_large)
+                        .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                final int score = position - 1;
+                                if (score != currentScore) {
+                                    _molar.surface().setQ3(score);
+                                    updateElements();
+                                    getActivityDerived().setEdited();
+                                }
                             }
-                        }
-                    });
-                    dlg.show();
+                        })
+                        .setWidth(AppUtil.dpToPixels(300))
+                        .useNegBt(true)
+                        .setTitleAndGetInstance(R.string.dlg_title_set_wear_lvl)
+                        .show();
                 }
             });
 
@@ -267,19 +335,33 @@ public class MolarDataFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     final int currentScore = _molar.surface().q4Wear().score();
-                    final WearPickerDialog dlg = new WearPickerDialog(getActivity(), currentScore);
 
-                    dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User clicked "Ok" button
-                            if (currentScore != dlg.selectionScore()) {
-                                _molar.surface().setQ4(dlg.selectionScore());
-                                updateElements();
-                                getActivityDerived().setEdited();
+                    final PopupListDialog<String> dlg = new PopupListDialog<>(getActivityDerived(),
+                        WEAR_PICKER_ITEMS,
+                        R.layout.list_item_simple_checkable_large_center_align,
+                        R.id.lbl_listitem_checkable);
+                    final View title = getActivity().getLayoutInflater().inflate(R.layout.dialog_wear_picker_title, null);
+                    dlg.setCustomTitle(title);
+                    final ImageView btWearHelp = title.findViewById(R.id.bt_wear_descriptions);
+                    btWearHelp.setOnClickListener(wearDescriptionsListener);
+                    dlg.setFooterDividersEnabled(false)
+                        .setHeaderDividersEnabled(false)
+                        .setHighlighted(((currentScore == Wear.UNKNOWN.score()) ? 0 : currentScore+1), R.id.layout_listitem_large)
+                        .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                final int score = position - 1;
+                                if (score != currentScore) {
+                                    _molar.surface().setQ4(score);
+                                    updateElements();
+                                    getActivityDerived().setEdited();
+                                }
                             }
-                        }
-                    });
-                    dlg.show();
+                        })
+                        .setWidth(AppUtil.dpToPixels(300))
+                        .useNegBt(true)
+                        .setTitleAndGetInstance(R.string.dlg_title_set_wear_lvl)
+                        .show();
                 }
             });
 
@@ -287,49 +369,57 @@ public class MolarDataFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     final TextInputDialog dlg = new TextInputDialog(
-                        new DialogStringData(getActivity(),
+                        new DialogStringData(getActivityDerived(),
                             R.string.dlg_title_molar_note,
                             R.string.dlg_msg_molar_note,
                             R.string.dlg_bt_ok,
                             R.string.dlg_bt_cancel),
                         R.string.dlg_hint_molar_note );
 
+                    DisplayMetrics screenDimens = new DisplayMetrics();
+                    getActivity().getWindowManager().getDefaultDisplay().getMetrics(screenDimens);
+                    dlg.setMinWidthPx((int)(screenDimens.widthPixels*0.8));
+
                     dlg.textInput().setInputType(InputType.TYPE_CLASS_TEXT);
                     dlg.textInput().setSingleLine(false);
                     dlg.textInput().setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
                     dlg.textInput().setVerticalScrollBarEnabled(true);
                     dlg.textInput().setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
-                    dlg.textInput().setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryLight5));
+                    if (getActivity() != null) {
+                        dlg.textInput().setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorPrimaryLight5));
+                    }
                     dlg.textInput().setPadding(6, 0, 6, 6);
                     dlg.textInput().setLines(3);
                     dlg.textInput().setGravity(Gravity.TOP);
+                    dlg.textInput().setMinWidth((int)(screenDimens.widthPixels*0.8)-24);
                     dlg.textInput().setMaxHeight(250);
                     dlg.setText(_molar.notes());
-                    dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+                    dlg.setPosBt(new View.OnClickListener() {
+                        public void onClick(View view) {
                             // User clicked "Ok" button
-                            AppUtility.hideKeyboard(getActivity(), dlg.linearLayout());
+                            AppUtil.hideKeyboard(getActivityDerived(), dlg.linearLayout());
                             if (!_molar.notes().equals(dlg.text())) {
                                 _molar.setNotes(dlg.text());
                                 getActivityDerived().setEdited();
                             }
+                            dlg.dismiss();
                         }
                     });
-                    dlg.setNegativeButton(new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            AppUtility.hideKeyboard(getActivity(), dlg.linearLayout());
+                    dlg.setNegBt(new View.OnClickListener() {
+                        public void onClick(View view) {
+                            AppUtil.hideKeyboard(getActivityDerived(), dlg.linearLayout());
                         }
                     });
                     dlg.show();
                 }
             });
 
-            btPhoto.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // @TODO
-                }
-            });
+//            btPhoto.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    // @TODO
+//                }
+//            });
 
             updateElements();
 
@@ -347,10 +437,24 @@ public class MolarDataFragment extends Fragment {
         for (int i = 0; i < _imgQs.length; i++) {
             if (_quads[i].wearScore() == Wear.UNKNOWN.score()) {
                 _imgQs[i].setAlpha(0.5f);
-                _imgQs[i].setImageDrawable(ContextCompat.getDrawable(getActivity(), _imgIds[i][9]));
+                if (getActivity() != null) {
+                    Drawable img = FileUtil.Cache.MOLAR_WEAR_IMAGES.get(_imgIds[i][9]);
+                    if (img == null) {
+                        img = FileUtil.resizeImage(getActivityDerived(), _imgIds[i][9], AppUtil.dpToPixels(WearImageCacheMap.WEAR_IMAGE_DIMENSION_DP));
+                        FileUtil.Cache.MOLAR_WEAR_IMAGES.put(_imgIds[i][9], img);
+                    }
+                    _imgQs[i].setImageDrawable(img);
+                }
             } else {
                 _imgQs[i].setAlpha(1.0f);
-                _imgQs[i].setImageDrawable(ContextCompat.getDrawable(getActivity(), _imgIds[i][_quads[i].wearScore()]));
+                if (getActivity() != null) {
+                    Drawable img = FileUtil.Cache.MOLAR_WEAR_IMAGES.get(_imgIds[i][_quads[i].wearScore()]);
+                    if (img == null) {
+                        img = FileUtil.resizeImage(getActivityDerived(), _imgIds[i][_quads[i].wearScore()], AppUtil.dpToPixels(WearImageCacheMap.WEAR_IMAGE_DIMENSION_DP));
+                        FileUtil.Cache.MOLAR_WEAR_IMAGES.put(_imgIds[i][_quads[i].wearScore()], img);
+                    }
+                    _imgQs[i].setImageDrawable(img);
+                }
             }
         }
     }

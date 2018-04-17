@@ -1,19 +1,43 @@
 package mw.molarwear.data.handlers;
 
-import android.content.DialogInterface;
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
+import android.util.Log;
+import android.view.View;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.TreeSet;
 
+import mw.molarwear.MolWearApp;
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
+import mw.molarwear.data.classes.MolarWearSubject;
+import mw.molarwear.data.classes.ProjectDeserializer;
+import mw.molarwear.data.classes.ProjectSerializer;
+import mw.molarwear.gui.dialog.BasicDialog;
 import mw.molarwear.gui.dialog.DialogStringData;
+import mw.molarwear.gui.dialog.MessageDialog;
+import mw.molarwear.gui.dialog.RadioGroupDialog;
 import mw.molarwear.gui.dialog.TextInputDialog;
-import mw.molarwear.gui.dialog.TwoButtonDialog;
 import mw.molarwear.gui.fragment.ProjectsListFragment;
-import mw.molarwear.util.AppUtility;
-import mw.molarwear.util.FileUtility;
+import mw.molarwear.util.AnalysisUtil;
+import mw.molarwear.util.AppUtil;
+import mw.molarwear.util.FileUtil;
 
 import static java.io.File.separator;
 
@@ -31,24 +55,137 @@ public class ProjectHandler {
 
     private static final int NO_SELECTION_INDEX = -1;
     public  static final ArrayList<MolarWearProject> PROJECTS = new ArrayList<>();
+    private static final ArrayList<String> DEFAULT_SITES  = new ArrayList<>();
+    private static final ArrayList<String> DEFAULT_GROUPS = new ArrayList<>();
 
+    private static boolean _INITIALIZED = false;
     public  static ProjectsListFragment projectsFragment = null;
-    private static int _openProject = NO_SELECTION_INDEX; // Index of currently-open project
 
 
     //////////// Accessors ////////////
 
-    public static              int openProjectIndex()      { return _openProject;        }
-    public static              int projectCount()          { return PROJECTS.size();     }
-    public static MolarWearProject get(int index)          { return PROJECTS.get(index); }
+    public static          boolean initialized()  { return _INITIALIZED;        }
+    public static              int projectCount() { return PROJECTS.size();     }
+    public static MolarWearProject get(int index) { return PROJECTS.get(index); }
+
+
+    public static ArrayList<String> getDefaultGroupIDs() { return DEFAULT_GROUPS; }
+    public static int getDefaultGroupIdCount() { return DEFAULT_GROUPS.size(); }
+
+    public static List<String> getGroupIds() {
+        return getGroupIds(MolarWearProject.DEFAULT_GROUP_ID_IGNORE_CASE);
+    }
+
+    public static List<String> getGroupIds(boolean ignoreCase) {
+        TreeSet<String>      groups = new TreeSet<>(),
+                        groupsLower = new TreeSet<>(); // For case-insensitive comparisons
+        groups.addAll(DEFAULT_GROUPS);
+        String s;
+        for (MolarWearProject p : PROJECTS) {
+            for (int i = 0; i < p.subjectCount(); i++) {
+                MolarWearSubject subj = p.getSubject(i);
+                s = ignoreCase ? subj.groupId().toLowerCase() : subj.groupId();
+                TreeSet<String> set = ignoreCase ? groupsLower : groups;
+                if ((!s.isEmpty()) && !set.contains(s)) {
+                    groups.add(subj.groupId());
+                    groupsLower.add(s);
+                }
+            }
+        }
+        if (groups.isEmpty()) {
+            return new ArrayList<>();
+        }
+        ArrayList<String> list = new ArrayList<>();
+        list.addAll(groups);
+        Collections.sort(list, String.CASE_INSENSITIVE_ORDER);
+        return list;
+    }
+
+    public static ArrayList<String> getDefaultSiteIds() { return DEFAULT_SITES; }
+    public static int getDefaultSiteIdCount() { return DEFAULT_SITES.size(); }
+
+    public static List<String> getSiteIds() {
+        return getSiteIds(MolarWearProject.DEFAULT_GROUP_ID_IGNORE_CASE);
+    }
+
+    public static List<String> getSiteIds(boolean ignoreCase) {
+        TreeSet<String>      sites = new TreeSet<>(),
+                        sitesLower = new TreeSet<>(); // For case-insensitive comparisons
+        sites.addAll(DEFAULT_SITES);
+        String s;
+        for (MolarWearProject p : PROJECTS) {
+            for (int i = 0; i < p.subjectCount(); i++) {
+                MolarWearSubject subj = p.getSubject(i);
+                s = ignoreCase ? subj.siteId().toLowerCase() : subj.siteId();
+                TreeSet<String> set = ignoreCase ? sitesLower : sites;
+                if ((!s.isEmpty()) && !set.contains(s)) {
+                    sites.add(subj.siteId());
+                    sitesLower.add(s);
+                }
+            }
+        }
+        if (sites.isEmpty()) {
+            return new ArrayList<>();
+        }
+        ArrayList<String> list = new ArrayList<>();
+        list.addAll(sites);
+        Collections.sort(list, String.CASE_INSENSITIVE_ORDER);
+        return list;
+    }
 
 
     //////////// Mutators ////////////
 
+    public static void sortDefaultSiteIds() { Collections.sort(DEFAULT_SITES, String.CASE_INSENSITIVE_ORDER); }
+
+    public static void addDefaultSiteId(String siteId) {
+        if (siteId != null) {
+            AnalysisUtil.addIfNotContains(DEFAULT_SITES, siteId, MolarWearProject.DEFAULT_GROUP_ID_IGNORE_CASE, false);
+        }
+    }
+
+    public static void removeDefaultSiteId(@NonNull String siteId) {
+        DEFAULT_SITES.remove(siteId);
+    }
+
+    public static void removeDefaultSiteId(@IntRange(from=0) int index) {
+        DEFAULT_SITES.remove(index);
+    }
+
+    public static void clearDefaultSiteIds() { DEFAULT_SITES.clear(); }
+
+    public static void sortDefaultGroupIds() { Collections.sort(DEFAULT_GROUPS, String.CASE_INSENSITIVE_ORDER); }
+
+    public static void addDefaultGroupId(String groupId) {
+        if (groupId != null) {
+            AnalysisUtil.addIfNotContains(DEFAULT_GROUPS, groupId, MolarWearProject.DEFAULT_GROUP_ID_IGNORE_CASE, false);
+        }
+    }
+
+    public static void removeDefaultGroupId(@NonNull String groupId) {
+        DEFAULT_GROUPS.remove(groupId);
+    }
+
+    public static void removeDefaultGroupId(@IntRange(from=0) int index) {
+        DEFAULT_GROUPS.remove(index);
+    }
+
+    public static void clearDefaultGroupIds() { DEFAULT_GROUPS.clear(); }
+
+    public static void sortDefaultIds() {
+        sortDefaultSiteIds();
+        sortDefaultGroupIds();
+    }
+
+    public static void clearDefaultIds() {
+        clearDefaultSiteIds();
+        clearDefaultGroupIds();
+    }
+
     public static boolean loadProject(String filePath) {
-        MolarWearProject p = (MolarWearProject) FileUtility.readInternalSerializable(filePath);
+        MolarWearProject p = FileUtil.readInternalSerializable(filePath);
         if (p == null) {
-            AppUtility.printSnackBarMsg("Error loading " + filePath);
+            AppUtil.printSnackBarMsg("Error loading " + filePath);
             return false;
         } else {
             addProject(p);
@@ -58,58 +195,70 @@ public class ProjectHandler {
 
     public static boolean importProject(String filePath) {
         final MolarWearProject p =
-            (filePath.toLowerCase().endsWith(FileUtility.FILE_EXT_CSV)) ? MolarWearProject.fromCsv(filePath)
-                                    : ((MolarWearProject)FileUtility.readExternalSerializable(filePath));
+            (filePath.toLowerCase().endsWith(FileUtil.FILE_EXT_CSV)) ? MolarWearProject.fromCsv(filePath) :
+                                    (filePath.toLowerCase().endsWith(FileUtil.FILE_EXT_JSON_DATA)) ? importJson(filePath) :
+                                    ((MolarWearProject)FileUtil.readExternalSerializable(filePath));
         if (p == null) {
-            AppUtility.printSnackBarMsg(AppUtility.getResources().getString(R.string.err_file_read_fail) + ":\n" + filePath);
+            AppUtil.printSnackBarMsg(AppUtil.getResources().getString(R.string.err_file_read_fail) + ":\n" + filePath);
             return false;
         } else {
-            final String internalPath = FileUtility.getInternalPath(p.title() + FileUtility.FILE_EXT_SERIALIZED_DATA);
+            final String internalPath = FileUtil.getInternalPath(p.title() + FileUtil.FILE_EXT_SERIALIZED_DATA);
             if (new File(internalPath).exists()) {
                 final TextInputDialog dlgEdit = new TextInputDialog(
-                    new DialogStringData(AppUtility.CONTEXT,
+                    new DialogStringData(AppUtil.CONTEXT,
                         R.string.dlg_title_rename_proj_import,
                         R.string.dlg_msg_rename_proj_import,
                         R.string.dlg_bt_submit,
                         R.string.dlg_bt_cancel),
                     p.title()
                 );
-                dlgEdit.textInput().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
+                dlgEdit.textInput().setFilters(new InputFilter[] { FileUtil.WHITESPACE_FILTER });
                 dlgEdit.setText(p.title());
-                dlgEdit.setPositiveButton(new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                dlgEdit.setPosBt(new View.OnClickListener() {
+                    public void onClick(View view) {
                         // User clicked "Submit" button
-                        AppUtility.hideKeyboard(AppUtility.CONTEXT, dlgEdit.linearLayout());
+                        //AppUtil.hideKeyboard(AppUtil.CONTEXT, dlgEdit.linearLayout());
                         if (dlgEdit.text().length() > 0) {
-                            if (new File(FileUtility.getInternalPath(dlgEdit.text() + FileUtility.FILE_EXT_SERIALIZED_DATA)).exists()) {
+                            if (new File(FileUtil.getInternalPath(dlgEdit.text() + FileUtil.FILE_EXT_SERIALIZED_DATA)).exists()) {
                                 // Another project with the specified title already exists
                                 dlgEdit.show();
-                                dlgEdit.textInput().setError(AppUtility.CONTEXT.getString(R.string.err_proj_create_fail_exists));
+                                dlgEdit.textInput().setError(AppUtil.CONTEXT.getString(R.string.err_proj_create_fail_exists));
                             } else {
                                 // Rename the project
+                                AppUtil.hideKeyboard(AppUtil.CONTEXT, dlgEdit.linearLayout());
                                 p.setTitle(dlgEdit.text());
                                 addProject(p);
-                                p.save();
-                                AppUtility.printSnackBarMsg(R.string.out_msg_import_success);
+                                if (p.save()) {
+                                    AppUtil.printSnackBarMsg(R.string.out_msg_import_success);
+                                } else {
+                                    AppUtil.printSnackBarMsg(R.string.err_file_write_fail);
+                                }
+                                AppUtil.printSnackBarMsg(R.string.out_msg_import_success);
+                                dlgEdit.dismiss();
                             }
                         } else {
                             dlgEdit.show();
-                            dlgEdit.textInput().setError(AppUtility.CONTEXT.getString(R.string.err_proj_create_fail_empty_title));
+                            dlgEdit.textInput().setError(AppUtil.CONTEXT.getString(R.string.err_proj_create_fail_empty_title));
                         }
                     }
                 });
-                dlgEdit.setNegativeButton(new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                dlgEdit.setNegBt(new View.OnClickListener() {
+                    public void onClick(View view) {
                         // User clicked "Cancel" button
-                        AppUtility.hideKeyboard(AppUtility.CONTEXT, dlgEdit.linearLayout());
-                        AppUtility.printSnackBarMsg(R.string.out_msg_cancelled);
+                        AppUtil.hideKeyboard(AppUtil.CONTEXT, dlgEdit.linearLayout());
+                        AppUtil.printSnackBarMsg(R.string.out_msg_cancelled);
                     }
                 });
                 dlgEdit.show();
                 return true;
             }
             addProject(p);
-            AppUtility.printSnackBarMsg(R.string.out_msg_import_success);
+            p.setEdited();
+            if (p.save()) {
+                AppUtil.printSnackBarMsg(R.string.out_msg_import_success);
+            } else {
+                AppUtil.printSnackBarMsg(R.string.err_file_write_fail);
+            }
         }
         return true;
     }
@@ -124,59 +273,59 @@ public class ProjectHandler {
     }
 
     public static boolean createProject(MolarWearProject newProject) {
-        String fileName = newProject.title() + FileUtility.FILE_EXT_SERIALIZED_DATA;
-        if (new File(AppUtility.CONTEXT.getFilesDir().toString() + separator + fileName).exists()) {
+        String fileName = newProject.title() + FileUtil.FILE_EXT_SERIALIZED_DATA;
+        if (new File(AppUtil.CONTEXT.getFilesDir().toString() + separator + fileName).exists()) {
             // Failed to create project (one with same name already exists)
             return false;
         }
-        if (FileUtility.saveSerializable(newProject, fileName)) {
+        if (FileUtil.saveSerializable(newProject, fileName)) {
             addProject(newProject);
             projectsFragment.clearSelection();
             projectsFragment.selectItem(PROJECTS.size()-1);
             notifyDataSetChanged();
         } else {
             // Failed to create project (unknown reason)
-            AppUtility.printSnackBarMsg(AppUtility.getResources().getString(R.string.err_proj_create_fail));
+            AppUtil.printSnackBarMsg(AppUtil.getResources().getString(R.string.err_proj_create_fail));
             return false;
         }
         return true;
     }
 
     public static void removeProject(int index) {
-        if (FileUtility.deletePrivate(PROJECTS.get(index).title() + FileUtility.FILE_EXT_SERIALIZED_DATA)) {
+        if (FileUtil.deletePrivate(PROJECTS.get(index).title() + FileUtil.FILE_EXT_SERIALIZED_DATA)) {
             if (projectsFragment.selectionIndex() >= (PROJECTS.size()-1)) {
                 projectsFragment.clearSelection();
             }
             PROJECTS.remove(index);
             notifyDataSetChanged();
         } else {
-            AppUtility.printSnackBarMsg("ERROR: Failed to delete project");
+            AppUtil.printSnackBarMsg("ERROR: Failed to delete project");
         }
     }
 
     public static void deleteProject(final int index) {
         if (index >= 0 && index < PROJECTS.size()) {
-            TwoButtonDialog confirmDlg1
-                = new TwoButtonDialog(new DialogStringData(AppUtility.CONTEXT,
-                            AppUtility.getResources().getString(R.string.dlg_title_del_proj_conf)
-                                + " (\"" + PROJECTS.get(index).title() + "\")",
-                             R.string.dlg_msg_del_proj_conf,
-                             R.string.dlg_bt_yes,
-                             R.string.dlg_bt_no));
+            BasicDialog confirmDlg1
+                = new BasicDialog(new DialogStringData(AppUtil.CONTEXT,
+                        AppUtil.getResources().getString(R.string.dlg_title_del_proj_conf)
+                            + " (\"" + PROJECTS.get(index).title() + "\")",
+                            R.string.dlg_msg_del_proj_conf,
+                            R.string.dlg_bt_yes,
+                            R.string.dlg_bt_no));
 
-            confirmDlg1.setPositiveButton(new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
+            confirmDlg1.setPosBt(new View.OnClickListener() {
+                public void onClick(View view) {
                     if (PROJECTS.get(index).subjectCount() > 0) {
                         // Second confirmation dialog
-                        TwoButtonDialog confirmDlg2 = new TwoButtonDialog(new DialogStringData(AppUtility.CONTEXT,
+                        BasicDialog confirmDlg2 = new BasicDialog(new DialogStringData(AppUtil.CONTEXT,
                             R.string.dlg_title_del_proj_conf2,
-                            AppUtility.getResources().getString(R.string.dlg_msg_del_proj_conf2)
+                            AppUtil.getResources().getString(R.string.dlg_msg_del_proj_conf2)
                                 + "\n\n\"" + PROJECTS.get(index).title() + "\"",
                             R.string.dlg_bt_continue,
                             R.string.dlg_bt_cancel));
 
-                        confirmDlg2.setPositiveButton(new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+                        confirmDlg2.setPosBt(new View.OnClickListener() {
+                            public void onClick(View view) {
                                 removeProject(index);
                             }
                         });
@@ -193,34 +342,38 @@ public class ProjectHandler {
 
     public static void editTitle(final int index) {
         final TextInputDialog dlgEdit = new TextInputDialog(
-            new DialogStringData(AppUtility.CONTEXT,
+            new DialogStringData(AppUtil.CONTEXT,
                 R.string.dlg_title_edit_project,
                 "",
                 R.string.dlg_bt_submit,
                 R.string.dlg_bt_cancel),
             PROJECTS.get(index).title()
         );
-        dlgEdit.textInput().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
+        dlgEdit.textInput().setFilters(new InputFilter[] { FileUtil.WHITESPACE_FILTER });
         dlgEdit.setText(PROJECTS.get(index).title());
-        dlgEdit.setPositiveButton(new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        dlgEdit.setPosBt(new View.OnClickListener() {
+            public void onClick(View view) {
                 // User clicked "Submit" button
-                AppUtility.hideKeyboard(AppUtility.CONTEXT, dlgEdit.linearLayout());
+                //AppUtil.hideKeyboard(AppUtil.CONTEXT, dlgEdit.linearLayout());
                 if (dlgEdit.text().length() > 0 && !dlgEdit.text().equals(dlgEdit.textInputHint())) {
-                    if (new File(FileUtility.getInternalPath(dlgEdit.text() + FileUtility.FILE_EXT_SERIALIZED_DATA)).exists()) {
+                    if (new File(FileUtil.getInternalPath(dlgEdit.text() + FileUtil.FILE_EXT_SERIALIZED_DATA)).exists()) {
                         // Another project with the specified title already exists
                         dlgEdit.show();
-                        dlgEdit.textInput().setError(AppUtility.CONTEXT.getString(R.string.err_proj_edit_title_fail_exists));
+                        dlgEdit.textInput().setError(AppUtil.CONTEXT.getString(R.string.err_proj_edit_title_fail_exists));
                     } else {
                         // Rename the project
+                        AppUtil.hideKeyboard(AppUtil.CONTEXT, dlgEdit.linearLayout());
                         setTitle(index, dlgEdit.text());
+                        dlgEdit.dismiss();
                     }
+                } else {
+                    dlgEdit.dismiss();
                 }
             }
         });
-        dlgEdit.setNegativeButton(new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                AppUtility.hideKeyboard(AppUtility.CONTEXT, dlgEdit.linearLayout());
+        dlgEdit.setNegBt(new View.OnClickListener() {
+            public void onClick(View view) {
+                AppUtil.hideKeyboard(AppUtil.CONTEXT, dlgEdit.linearLayout());
             }
         });
         dlgEdit.show();
@@ -231,11 +384,11 @@ public class ProjectHandler {
 
         if (!oldTitle.equals(title)) {
             PROJECTS.get(index).setTitle(title);
-            File projFile = new File(FileUtility.getInternalPath(oldTitle
-                + FileUtility.FILE_EXT_SERIALIZED_DATA));
+            File projFile = new File(FileUtil.getInternalPath(oldTitle
+                + FileUtil.FILE_EXT_SERIALIZED_DATA));
 
-            String newPath = FileUtility.getInternalPath(PROJECTS.get(index).title()
-                + FileUtility.FILE_EXT_SERIALIZED_DATA);
+            String newPath = FileUtil.getInternalPath(PROJECTS.get(index).title()
+                + FileUtil.FILE_EXT_SERIALIZED_DATA);
             boolean success = projFile.renameTo(new File(newPath));
             if (success) {
                 success = saveProject(index);
@@ -244,7 +397,7 @@ public class ProjectHandler {
             if (!success) {
                 // Error when attempting to rename project file
                 PROJECTS.get(index).setTitle(oldTitle);
-                TwoButtonDialog existsDlg = new TwoButtonDialog(new DialogStringData(AppUtility.CONTEXT,
+                MessageDialog existsDlg = new MessageDialog(new DialogStringData(AppUtil.CONTEXT,
                     R.string.err_proj_edit_title_fail,
                     R.string.err_proj_edit_title_fail_rename_file));
                 existsDlg.show();
@@ -259,47 +412,49 @@ public class ProjectHandler {
 
     public static void newProject() {
         // Initialize project creation dialog
-        final TextInputDialog dlg = new TextInputDialog(new DialogStringData(AppUtility.CONTEXT,
+        final TextInputDialog dlg = new TextInputDialog(new DialogStringData(AppUtil.CONTEXT,
                                                                 R.string.dlg_title_new_project,
                                                                 "",
                                                                 R.string.dlg_bt_create,
                                                                 R.string.dlg_bt_cancel),
                                                         R.string.dlg_hint_new_project);
-        dlg.textInput().setFilters(new InputFilter[] { FileUtility.WHITESPACE_FILTER });
+        dlg.textInput().setFilters(new InputFilter[] { FileUtil.WHITESPACE_FILTER });
         dlg.setText(MolarWearProject.DEFAULT_TITLE);
-        dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+        dlg.setPosBt(new View.OnClickListener() {
+            public void onClick(View view) {
                 // User clicked "Create" button
-                AppUtility.hideKeyboard(AppUtility.CONTEXT, dlg.linearLayout());
-                String fileName = ((!dlg.text().isEmpty()) ? dlg.text() : dlg.textInputHint()) + FileUtility.FILE_EXT_SERIALIZED_DATA;
-                if (new File(AppUtility.CONTEXT.getFilesDir().toString() + separator + fileName).exists()) {
+                //AppUtil.hideKeyboard(AppUtil.CONTEXT, dlg.linearLayout());
+                String fileName = ((!dlg.text().isEmpty()) ? dlg.text() : dlg.textInputHint()) + FileUtil.FILE_EXT_SERIALIZED_DATA;
+                if (new File(AppUtil.CONTEXT.getFilesDir().toString() + separator + fileName).exists()) {
                     // Failed to create project (one with same name already exists)
                     dlg.show();
-                    dlg.textInput().setError(AppUtility.CONTEXT.getString(R.string.err_proj_create_fail_exists));
+                    dlg.textInput().setError(AppUtil.CONTEXT.getString(R.string.err_proj_create_fail_exists));
                 } else {
+                    AppUtil.hideKeyboard(AppUtil.CONTEXT, dlg.linearLayout());
                     createProject(new MolarWearProject((!dlg.text().isEmpty()) ? dlg.text() : dlg.textInputHint()));
+                    dlg.dismiss();
                 }
             }
         });
-        dlg.setNegativeButton(new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                AppUtility.hideKeyboard(AppUtility.CONTEXT, dlg.linearLayout());
+        dlg.setNegBt(new View.OnClickListener() {
+            public void onClick(View view) {
+                AppUtil.hideKeyboard(AppUtil.CONTEXT, dlg.linearLayout());
             }
         });
 
         // Determine default file name
-        String baseFileName = AppUtility.CONTEXT.getFilesDir().toString()
+        String baseFileName = AppUtil.CONTEXT.getFilesDir().toString()
                               + separator
-                              + AppUtility.getResources().getString(R.string.dlg_hint_new_project);
-        File checkExists = new File(baseFileName + FileUtility.FILE_EXT_SERIALIZED_DATA);
+                              + AppUtil.getResources().getString(R.string.dlg_hint_new_project);
+        File checkExists = new File(baseFileName + FileUtil.FILE_EXT_SERIALIZED_DATA);
         if (checkExists.exists()) {
             int i = 1;
-            checkExists = new File(baseFileName + "(" + i + ")" + FileUtility.FILE_EXT_SERIALIZED_DATA);
+            checkExists = new File(baseFileName + "(" + i + ")" + FileUtil.FILE_EXT_SERIALIZED_DATA);
             while (checkExists.exists()) {
-                checkExists = new File(baseFileName + "(" + ++i + ")" + FileUtility.FILE_EXT_SERIALIZED_DATA);
+                checkExists = new File(baseFileName + "(" + ++i + ")" + FileUtil.FILE_EXT_SERIALIZED_DATA);
             }
-            dlg.setTextInputHint(AppUtility.getResources().getString(R.string.dlg_hint_new_project) + "(" + i + ")");
-            dlg.setText(AppUtility.getResources().getString(R.string.dlg_hint_new_project) + "(" + i + ")");
+            dlg.setTextInputHint(AppUtil.getResources().getString(R.string.dlg_hint_new_project) + "(" + i + ")");
+            dlg.setText(AppUtil.getResources().getString(R.string.dlg_hint_new_project) + "(" + i + ")");
         }
         dlg.show();
     }
@@ -310,25 +465,155 @@ public class ProjectHandler {
         }
     }
 
-    public static void loadProjects() {
-        // Load existing projects from internal storage
-        PROJECTS.clear();
-        AppUtility.clearLoadErrors();
-        String [] projs = AppUtility.CONTEXT.fileList();
-        for (String s : projs) {
-            if (s.endsWith(FileUtility.FILE_EXT_SERIALIZED_DATA)) {
-                MolarWearProject p = (MolarWearProject) FileUtility.readInternalSerializable(s);
-                if (p == null) {
-                    if (AppUtility.VIEW != null) {
-                        AppUtility.printSnackBarMsg(String.format(AppUtility.getResources().getString(R.string.err_proj_load_fail), s));
-                    } else {
-                        AppUtility.addLoadError();
-                        AppUtility.log("Error loading project: " + s);
-                    }
+    public static void openExportDialog(@NonNull final AppCompatActivity activity) {
+        final RadioGroupDialog<String> dlgExport = new RadioGroupDialog<>(
+            new DialogStringData(activity, R.string.dlg_title_export_csv_raw, "", R.string.act_export, R.string.dlg_bt_cancel),
+            FileUtil.PROJECT_FILE_EXTENSIONS, activity.getString(R.string.dlg_msg_export_csv_raw), 0);
+        dlgExport.setSize(AppUtil.dpToPixels(250), AppUtil.dpToPixels(250));
+        dlgExport.setPosBt(new View.OnClickListener() {
+            public void onClick(View view) {
+                //FileUtil.createDirectoryChooser(this_, FileUtil.REQUEST_EXPORT_CSV);
+                switch (dlgExport.getCheckedRadioButtonIndex()) {
+                    case 0:
+                        FileUtil.createDirectoryChooser(activity, FileUtil.REQUEST_EXPORT_CSV);
+                        break;
+                    case 1:
+                        FileUtil.createDirectoryChooser(activity, FileUtil.REQUEST_EXPORT_SERIALIZED);
+                        break;
+                    case 2:
+                        FileUtil.createDirectoryChooser(activity, FileUtil.REQUEST_EXPORT_JSON);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+        dlgExport.show();
+    }
+
+    public static void handleExportRequestResult(final AppCompatActivity activity, int projectIndex, final int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            final List<Uri> files = com.nononsenseapps.filepicker.Utils.getSelectedFilesFromResult(data);
+            if (!files.isEmpty()) {
+                final MolarWearProject project = ProjectHandler.get(projectIndex);
+                final String path = com.nononsenseapps.filepicker.Utils.getFileForUri(files.get(0)).getAbsolutePath();
+                final String extension = (requestCode == FileUtil.REQUEST_EXPORT_CSV) ? FileUtil.FILE_EXT_CSV :
+                                         (requestCode == FileUtil.REQUEST_EXPORT_SERIALIZED) ? FileUtil.FILE_EXT_SERIALIZED_DATA :
+                                         (requestCode == FileUtil.REQUEST_EXPORT_JSON) ? FileUtil.FILE_EXT_JSON_DATA :
+                                         FileUtil.FILE_EXT_XML;
+                final String filePath = path + File.separator + project.title() + extension;
+                if (new File(filePath).exists()) {
+                    final BasicDialog dlg
+                        = new BasicDialog(new DialogStringData(activity,
+                        activity.getString(R.string.dlg_title_overwrite)
+                            + " (\"" + project.title() + extension + "\")",
+                        R.string.dlg_msg_overwrite,
+                        R.string.dlg_bt_overwrite,
+                        R.string.dlg_bt_cancel));
+
+                    dlg.setPosBt(new View.OnClickListener() {
+                        public void onClick(View view) {
+                            boolean success = (requestCode == FileUtil.REQUEST_EXPORT_CSV) ? project.toCsv(filePath) :
+                                              (requestCode == FileUtil.REQUEST_EXPORT_SERIALIZED) ? FileUtil.saveSerializableEx(project, filePath) :
+                                              ProjectHandler.exportJson(project, filePath);
+                            if (success) {
+                                AppUtil.printToast(activity, activity.getString(R.string.out_msg_file_saved) + ":\n" + filePath);
+                                //new MessageDialog(activity, activity.getString(R.string.out_msg_file_saved) + ":\n" + filePath);
+                            } else {
+                                AppUtil.printToast(activity, activity.getString(R.string.err_file_write_fail));
+                                //new MessageDialog(activity, activity.getString(R.string.err_file_write_fail));
+                            }
+                        }
+                    });
+                    dlg.show();
                 } else {
+                    boolean success = (requestCode == FileUtil.REQUEST_EXPORT_CSV) ? project.toCsv(filePath) : FileUtil.saveSerializableEx(project, filePath);
+                    if (success) {
+                        AppUtil.printToast(activity, activity.getString(R.string.out_msg_file_saved) + ":\n" + filePath);
+                        //new MessageDialog(activity, activity.getString(R.string.out_msg_file_saved) + ":\n" + filePath);
+                    } else {
+                        AppUtil.printToast(activity, activity.getString(R.string.err_file_write_fail));
+                        //new MessageDialog(activity, activity.getString(R.string.err_file_write_fail));
+                    }
+                }
+            } else {
+                AppUtil.printToast(activity, activity.getString(R.string.out_msg_no_dir_sel));
+                //new MessageDialog(activity, activity.getString(R.string.out_msg_no_dir_sel));
+            }
+            return;
+        } else {
+            AppUtil.printToast(activity, activity.getString(R.string.out_msg_no_dir_sel));
+            //new MessageDialog(activity, activity.getString(R.string.out_msg_no_dir_sel));
+            return;
+        }
+    }
+
+    public static void loadProjects() {
+        loadProjects(false);
+    }
+
+    public static void loadProjects(boolean deleteBadProjectFiles) {
+        // Load existing projects from internal storage
+        if (!deleteBadProjectFiles) {
+            PROJECTS.clear();
+            AppUtil.clearLoadErrors();
+        }
+        String [] projs = MolWearApp.getContext().fileList();
+        for (String s : projs) {
+            if (s.endsWith(FileUtil.FILE_EXT_SERIALIZED_DATA)) {
+                MolarWearProject p = FileUtil.readInternalSerializable(s);
+                if (p == null) {
+                    if (deleteBadProjectFiles) {
+                        FileUtil.deletePrivate(s);
+                    } else {
+                        AppUtil.addLoadError();
+                        //AppUtil.printToast(String.format(AppUtil.getResources().getString(R.string.err_proj_load_fail), s));
+                        Log.e("ProjectHandler", String.format(AppUtil.getResources().getString(R.string.err_proj_load_fail), s));
+                        AppUtil.log(String.format(AppUtil.getResources().getString(R.string.err_proj_load_fail), s));
+                    }
+                } else if (!deleteBadProjectFiles) {
                     PROJECTS.add(p);
                 }
             }
+        }
+        _INITIALIZED = true;
+    }
+
+    @Nullable
+    public static MolarWearProject importJson(@NonNull String fileName) {
+        final String jsonData = FileUtil.readText(fileName);
+        if (jsonData != null && !jsonData.isEmpty()) {
+            ObjectMapper mapper = new ObjectMapper();
+            SimpleModule module = new SimpleModule();
+            module.addDeserializer(MolarWearProject.class, new ProjectDeserializer());
+            mapper.registerModule(module);
+            try {
+                return mapper.readValue(jsonData, MolarWearProject.class);
+            } catch (IOException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static boolean exportJson(@NonNull MolarWearProject project, @NonNull String fileName) {
+        try {
+            SimpleModule module = new SimpleModule();
+            module.addSerializer(new ProjectSerializer(MolarWearProject.class));
+            ObjectMapper jsonMapper = new ObjectMapper();
+            String jsonResult = jsonMapper.registerModule(module).writer(new DefaultPrettyPrinter()).writeValueAsString(project);
+            final File file = new File(fileName);
+            if (file.exists()) {
+                if (!file.delete()) {
+                    return false;
+                }
+            }
+            return FileUtil.writeText(fileName, jsonResult, false, false);
+        } catch (JsonProcessingException e) {
+            //e.printStackTrace();
+            //AppUtil.printToast(e.toString());
+            return false;
         }
     }
 }

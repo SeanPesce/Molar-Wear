@@ -34,10 +34,11 @@
     <string name="title_import_proj">Import Project</string>
     <string name="title_choose_proj">Projects</string>
     <string name="title_activity_edit_subject">Edit Individual</string>
-    <string name="title_list_section_subjects">Individuals</string>
+    <string name="title_list_section_subjects">@string/individuals</string>
 
     <!-- ||||||||||||||||||||||||||   Action-related Runtime Strings   ||||||||||||||||||||||||| -->
     <string name="import_project">Import project</string>
+    <string name="act_export">Export</string>
     <string name="act_export_project">Export…</string>
     <string name="act_import_project">Import…</string>
     <string name="act_delete">Delete</string>
@@ -54,13 +55,16 @@
     <string name="act_move_up">Move Up</string>
     <string name="act_move_down">Move Down</string>
     <string name="act_help">Help</string>
+    <string name="act_report_issue">Report an issue</string>
+    <string name="act_analyze_subject">Analyze individual</string>
+    <string name="act_choose_existing">Choose Existing %s</string>
 
     <!-- ||||||||||||||||||||||||||   Error-related Runtime Strings   |||||||||||||||||||||||||| -->
     <string name="error">Error</string>
     <string name="err_access_denied">ERROR: Access denied</string>
     <string name="err_invalid_type_not_molar">Invalid type (must be Tooth.Type.MOLAR)</string>
-    <string name="err_app_util_context_null">AppUtility.CONTEXT was null</string>
-    <string name="err_app_util_view_null">AppUtility.VIEW was null</string>
+    <string name="err_app_util_context_null">AppUtil.CONTEXT was null</string>
+    <string name="err_app_util_view_null">AppUtil.VIEW was null</string>
     <string name="err_startup_proj_load">WARNING: %d projects could not be loaded</string>
     <string name="err_proj_load_fail">Error loading project: %s</string>
     <string name="err_proj_create_fail">Failed to create project</string>
@@ -79,6 +83,12 @@
     <string name="err_file_write_fail">ERROR: Failed to write file</string>
     <string name="err_file_read_fail">ERROR: Failed to read file</string>
     <string name="err_unsupported_android_version">"ERROR: Unsupported Android version</string>
+    <string name="err_update_navbar_fail">WARNING: Failed to update navbar</string>
+    <string name="err_resource_not_found">Failed to locate resource</string>
+    <string name="err_export_failed">ERROR: Export Failed</string>
+    <string name="err_export_chart_failed">An error occurred when attempting to write the image file.</string>
+    <string name="err_no_groups_in_proj">No group IDs found in this project</string>
+    <string name="err_no_sites_in_proj">No site IDs found in this project</string>
     <!-- _______________________________________________________________________________________ -->
 
 
@@ -108,6 +118,12 @@
     <string name="lbl_subject_nav_basic_info">Basic Info</string>
     <string name="lbl_subject_nav_molar_data">Molar Data</string>
     <string name="lbl_subject_nav_notes">Notes</string>
+
+    <string name="charts">Charts</string>
+    <string name="individuals">Individuals</string>
+
+    <!--<string name="lbl_subj_analysis_display">Choose which set of molars to analyze:</string>-->
+    <string name="lbl_subj_analysis_display">Choose data set:</string>
     <!-- _______________________________________________________________________________________ -->
 
 
@@ -131,6 +147,7 @@
     <string name="out_msg_no_dir_sel">No directory selected</string>
     <string name="out_msg_file_saved">File saved</string>
     <string name="out_msg_import_success">Import successful</string>
+    <string name="out_msg_export_success">Successfully exported file:\n%s</string>
 
     <!-- _______________________________________________________________________________________ -->
 
@@ -158,10 +175,12 @@
     <!-- |||||||||||||||   Titles, Messages, & Context-specific Button Strings   ||||||||||||||| -->
     <string name="dlg_title_overwrite">Overwrite?</string>
     <string name="dlg_msg_overwrite">File already exists. Do you want to overwrite?</string>
-    <string name="dlg_title_export_csv_raw">Select file format</string>
-    <string name="dlg_msg_export_csv_raw">Export as a spreadsheet (.csv) or serialized data (.mwsd)?</string>
+    <string name="dlg_title_export_csv_raw">Export Project</string>
+    <string name="dlg_msg_export_csv_raw">Select file format:</string>
     <string name="dlg_bt_csv">.csv</string>
-    <string name="dlg_bt_raw">.mwsd</string>
+    <string name="dlg_bt_raw">.mwsd (serialized data)</string>
+    <string name="dlg_bt_xml">.xml</string>
+    <string name="dlg_bt_json">.json</string>
 
     <string name="dlg_title_new_project">New Project</string>
     <string name="dlg_msg_new_project">Project title:</string>
@@ -197,6 +216,12 @@
 
     <string name="dlg_title_app_prefs">Preferences</string>
     <string name="dlg_msg_app_prefs"></string>
+
+    <string name="dlg_title_subject_analysis">Analysis (Individual)</string>
+    <string name="dlg_msg_subject_analysis"></string>
+
+    <string name="dlg_title_export_chart">Export Chart</string>
+    <string name="dlg_msg_export_chart">File type:</string>
     <!-- _______________________________________________________________________________________ -->
 
 
@@ -206,6 +231,9 @@
     <!-- |||||||||||||||||||||||||||||||   General Descriptors   ||||||||||||||||||||||||||||||| -->
     <string name="left">Left</string>
     <string name="right">Right</string>
+    <string name="both">Both</string>
+    <string name="all">All</string>
+    <string name="max_n">max N</string>
 
     <string name="inner">Inner</string>
     <string name="outer">Outer</string>
@@ -220,7 +248,8 @@
 
     <!-- |||||||||||||||||||||||||||   User Preference Descriptors   ||||||||||||||||||||||||||| -->
     <string name="desc_pref_auto_save">Automatically save project changes</string>
-    <string name="desc_pref_use_sys_file_picker">Use system file picker</string>
+    <string name="desc_pref_use_sys_file_picker">Use system file picker for importing</string>
+    <string name="desc_pref_case_sensitive_group_ids">Case-sensitive Group/Site IDs</string>
 
 
     <!-- ||||||||||||||||||||||||||||||||   Dental Descriptors   ||||||||||||||||||||||||||||||| -->

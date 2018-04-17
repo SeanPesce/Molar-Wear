@@ -45,43 +45,87 @@
                 android:textAlignment="viewStart"
                 />
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/txt_site_id"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="20dp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 >
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/txt_edit_site_id"
-                    android:layout_width="match_parent"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/txt_site_id"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:selectAllOnFocus="true"
-                    android:textSize="24sp"
-                    android:hint="@string/lbl_site_id"
-                    android:nextFocusForward="@id/txt_edit_group_id"/>
-            </android.support.design.widget.TextInputLayout>
+                    android:layout_weight="1"
+                    >
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/txt_group_id"
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/txt_edit_site_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:selectAllOnFocus="true"
+                        android:textSize="24sp"
+                        android:hint="@string/lbl_site_id"
+                        android:nextFocusForward="@id/txt_edit_group_id"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/bt_fill_site_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:backgroundTint="@color/transparent"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:src="@drawable/ic_playlist_add_38dp"
+                    android:text="@string/act_choose_existing"
+                    android:tint="@color/colorAccent"
+                    android:nextFocusForward="@id/bt_fill_group_id"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="20dp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 >
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/txt_edit_group_id"
-                    android:layout_width="match_parent"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/txt_group_id"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:selectAllOnFocus="true"
-                    android:textSize="24sp"
-                    android:hint="@string/lbl_group_id"
-                    android:nextFocusForward="@id/txt_edit_subject_age"/>
-            </android.support.design.widget.TextInputLayout>
+                    android:layout_weight="1"
+                    >
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/txt_edit_group_id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:selectAllOnFocus="true"
+                        android:textSize="24sp"
+                        android:hint="@string/lbl_group_id"
+                        android:nextFocusForward="@id/txt_edit_subject_age"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/bt_fill_group_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:backgroundTint="@color/transparent"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:src="@drawable/ic_playlist_add_38dp"
+                    android:text="@string/act_choose_existing"
+                    android:tint="@color/colorAccent"
+                    android:nextFocusForward="@id/bt_fill_site_id"
+                    />
+            </LinearLayout>
 
 
             <LinearLayout

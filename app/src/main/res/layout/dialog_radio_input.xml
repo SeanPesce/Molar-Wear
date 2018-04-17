@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Author: Sean Pesce
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="8dp"
+    >
+
+    <TextView
+        android:id="@+id/dlg_radio_group_lbl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:paddingLeft="32dp"
+        android:paddingStart="32dp"
+        android:paddingRight="32dp"
+        android:paddingEnd="32dp"
+        />
+
+    <RadioGroup
+        android:id="@+id/dlg_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:orientation="vertical"
+        android:paddingLeft="32dp"
+        android:paddingStart="32dp"
+        android:paddingRight="32dp"
+        android:paddingEnd="32dp"
+        >
+    </RadioGroup>
+
+</LinearLayout>

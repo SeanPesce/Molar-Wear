@@ -90,4 +90,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SpinnerPopupMenu" parent="Base.Widget.AppCompat.Light.PopupMenu">
+        <item name="android:background">@drawable/bg_spinner_popup</item>
+        <item name="android:drawableRight">@drawable/ic_remove_transparent_44dp</item>
+        <item name="android:layout_width">wrap_content</item>
+    </style>
+
 </resources>

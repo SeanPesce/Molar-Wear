@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Author: Sean Pesce
+-->
+<mw.molarwear.gui.layout.CheckableLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_listitem_large"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:background="@color/transparent"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:gravity="center"
+    >
+
+    <TextView
+        android:id="@+id/lbl_listitem_checkable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:gravity="center"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textAlignment="center"
+        android:textColor="@color/grayDark"
+        android:textSize="18sp"
+        />
+
+</mw.molarwear.gui.layout.CheckableLinearLayout>

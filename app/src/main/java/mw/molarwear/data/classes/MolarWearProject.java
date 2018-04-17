@@ -3,6 +3,7 @@ package mw.molarwear.data.classes;
 import android.os.Build;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -20,12 +21,17 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.TreeSet;
 
+import mw.molarwear.R;
 import mw.molarwear.data.classes.dental.molar.Surface;
+import mw.molarwear.data.handlers.ProjectHandler;
 import mw.molarwear.gui.fragment.SubjectsListFragment;
 import mw.molarwear.gui.list.SubjectArrayAdapter;
-import mw.molarwear.util.FileUtility;
+import mw.molarwear.util.AppUtil;
+import mw.molarwear.util.FileUtil;
 
 /**
  * This class holds data for a molar wear research project.
@@ -37,13 +43,13 @@ import mw.molarwear.util.FileUtility;
  */
 
 public class MolarWearProject implements Comparable<MolarWearProject>, Serializable {
-  // @TODO: Improve compareTo method and file-related tasks
 
     ///////////////////////////////////////////////////////////////
     ///////////////////////// STATIC DATA /////////////////////////
     ///////////////////////////////////////////////////////////////
 
-    public static String DEFAULT_TITLE = "Untitled Project";
+    public static String  DEFAULT_TITLE = "Untitled Project";
+    public static boolean DEFAULT_GROUP_ID_IGNORE_CASE = true;
 
 
 
@@ -51,9 +57,9 @@ public class MolarWearProject implements Comparable<MolarWearProject>, Serializa
     //////////////////////// INSTANCE DATA ////////////////////////
     ///////////////////////////////////////////////////////////////
 
-    private final ArrayList<MolarWearSubject> _subjects;
-    private       String  _title;
-    private       boolean _saved = true;
+    protected final ArrayList<MolarWearSubject> _subjects;
+    protected       String  _title;
+    protected       boolean _saved = true;
 
 
     //////////// Constructors ////////////
@@ -80,7 +86,7 @@ public class MolarWearProject implements Comparable<MolarWearProject>, Serializa
     }
 
 
-    private void initialize(String title) {
+    protected void initialize(String title) {
         if (title.length() > 0) {
             _title = title;
         } else {
@@ -96,6 +102,72 @@ public class MolarWearProject implements Comparable<MolarWearProject>, Serializa
     public int subjectCount() { return _subjects.size(); }
     public MolarWearSubject getSubject(@IntRange(from=0) int index) { return _subjects.get(index); }
 
+    public List<String> getGroupIds() {
+        return getGroupIds(DEFAULT_GROUP_ID_IGNORE_CASE);
+    }
+
+    public List<String> getGroupIds(boolean ignoreCase) {
+        TreeSet<String>      groups = new TreeSet<>(),
+                        groupsLower = new TreeSet<>(); // For case-insensitive comparisons
+        groups.addAll(ProjectHandler.getDefaultGroupIDs());
+        String s;
+        for (MolarWearSubject subj : _subjects) {
+            s = ignoreCase ? subj.groupId().toLowerCase() : subj.groupId();
+            TreeSet<String> set = ignoreCase ? groupsLower : groups;
+            if ((!s.isEmpty()) && !set.contains(s)) {
+                groups.add(subj.groupId());
+                groupsLower.add(s);
+            }
+        }
+        if (groups.isEmpty()) {
+            return new ArrayList<>();
+        }
+        ArrayList<String> list = new ArrayList<>();
+        list.addAll(groups);
+        Collections.sort(list, String.CASE_INSENSITIVE_ORDER);
+        return list;
+    }
+
+    public List<String> getSiteIds() {
+        return getSiteIds(DEFAULT_GROUP_ID_IGNORE_CASE);
+    }
+
+    public List<String> getSiteIds(boolean ignoreCase) {
+        TreeSet<String>      sites = new TreeSet<>(),
+                        sitesLower = new TreeSet<>(); // For case-insensitive comparisons
+        sites.addAll(ProjectHandler.getDefaultSiteIds());
+        String s;
+        for (MolarWearSubject subj : _subjects) {
+            s = ignoreCase ? subj.siteId().toLowerCase() : subj.siteId();
+            TreeSet<String> set = ignoreCase ? sitesLower : sites;
+            if ((!s.isEmpty()) && !set.contains(s)) {
+                sites.add(subj.siteId());
+                sitesLower.add(s);
+            }
+        }
+        if (sites.isEmpty()) {
+            return new ArrayList<>();
+        }
+        ArrayList<String> list = new ArrayList<>();
+        list.addAll(sites);
+        Collections.sort(list, String.CASE_INSENSITIVE_ORDER);
+        return list;
+    }
+
+    public ArrayList<MolarWearSubject> getGroup(@NonNull String groupName) {
+        return getGroup(groupName, DEFAULT_GROUP_ID_IGNORE_CASE);
+    }
+
+    public ArrayList<MolarWearSubject> getGroup(@NonNull String groupName, boolean ignoreCase) {
+        ArrayList<MolarWearSubject> group = new ArrayList<>();
+        for (MolarWearSubject s : _subjects) {
+            if (((!ignoreCase) && s.groupId().equals(groupName)) || (ignoreCase && s.groupId().equalsIgnoreCase(groupName))) {
+                group.add(s);
+            }
+        }
+        return group;
+    }
+
 
     //////////// Mutators ////////////
 
@@ -110,9 +182,10 @@ public class MolarWearProject implements Comparable<MolarWearProject>, Serializa
     public boolean setSaved(boolean saved) {
         _saved = saved;
         if (_saved) {
-            boolean success = FileUtility.saveSerializable(this, _title + FileUtility.FILE_EXT_SERIALIZED_DATA);
+            boolean success = FileUtil.saveSerializable(this, _title + FileUtil.FILE_EXT_SERIALIZED_DATA);
             if (!success) {
                 // @TODO: Handle save error
+                Log.w(this.getClass().getName(), AppUtil.getResources().getString(R.string.err_file_write_fail));
             }
             return success;
         }
@@ -159,7 +232,7 @@ public class MolarWearProject implements Comparable<MolarWearProject>, Serializa
     }
 
     @Override
-    public int compareTo(MolarWearProject other) {
+    public int compareTo(@NonNull MolarWearProject other) {
         int firstCompRes = _title.compareTo(other.title());
         return (firstCompRes != 0) ? firstCompRes : ((_subjects.size() == other.subjectCount()) ? 0 : (((_subjects.size() > other.subjectCount()) ? -1 : 1)));
     }
@@ -213,8 +286,8 @@ public class MolarWearProject implements Comparable<MolarWearProject>, Serializa
     public static MolarWearProject fromCsv(@NonNull String path) {
         // Reference: https://www.callicoder.com/java-read-write-csv-file-apache-commons-csv/
         String name = new File(path).getName();
-        if (name.endsWith(FileUtility.FILE_EXT_CSV)) {
-            name = name.substring(0, name.lastIndexOf(FileUtility.FILE_EXT_CSV));
+        if (name.endsWith(FileUtil.FILE_EXT_CSV)) {
+            name = name.substring(0, name.lastIndexOf(FileUtil.FILE_EXT_CSV));
         }
         if (name.isEmpty()) {
             name = MolarWearProject.DEFAULT_TITLE;

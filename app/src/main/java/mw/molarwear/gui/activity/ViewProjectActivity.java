@@ -1,12 +1,9 @@
 package mw.molarwear.gui.activity;
 
-import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,7 +12,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
@@ -30,35 +26,34 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import java.io.File;
-import java.util.List;
-
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
+import mw.molarwear.gui.activity.interfaces.DataCachingActivity;
 import mw.molarwear.data.handlers.ProjectHandler;
+import mw.molarwear.gui.dialog.BasicDialog;
 import mw.molarwear.gui.dialog.DialogStringData;
-import mw.molarwear.gui.dialog.TwoButtonDialog;
+import mw.molarwear.gui.dialog.SubjectAnalysisDialog;
 import mw.molarwear.gui.fragment.SubjectBasicInfoFragment;
 import mw.molarwear.gui.fragment.SubjectMolarsViewFragment;
 import mw.molarwear.gui.fragment.SubjectNotesFragment;
 import mw.molarwear.gui.fragment.SubjectsListFragment;
 import mw.molarwear.gui.list.SubjectArrayAdapter;
-import mw.molarwear.util.AppUtility;
-import mw.molarwear.util.FileUtility;
+import mw.molarwear.util.AppUtil;
+import mw.molarwear.util.FileUtil;
 
 /**
  *
  * @author Sean Pesce
  */
 
-public class ViewProjectActivity extends AppCompatActivity {
+public class ViewProjectActivity extends DataCachingActivity {
 
     public static final String PROJECT_INDEX_ARG_KEY = "projectIndex";
     public static final String SUBJECT_INDEX_ARG_KEY = "subjectIndex";
     public static final String SUBJECT_MOLAR_ARG_KEY = "molarId";
 
-    public static final int REQUEST_EXPORT_CSV = 102;
-    public static final int REQUEST_EXPORT_SERIALIZED = 1995;
+
+    private final ViewProjectActivity _this = this;
 
     private int _projectIndex = AdapterView.INVALID_POSITION;
     private MolarWearProject _project = null;
@@ -100,15 +95,15 @@ public class ViewProjectActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppUtility.CONTEXT = this;
-
-        //_previousProjectIndex = AdapterView.INVALID_POSITION;
-        //_previousSubjectIndex = AdapterView.INVALID_POSITION;
 
         setContentView(R.layout.activity_view_project);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } catch (NullPointerException e) {
+            // Failed to update actionbar button
+        }
         _icClose = DrawableCompat.wrap(getResources().getDrawable(R.drawable.ic_close)).mutate();
         DrawableCompat.setTint(_icClose, ContextCompat.getColor(this, R.color.background_light));
         _icBack = DrawableCompat.wrap(getResources().getDrawable(R.drawable.ic_arrow_back)).mutate();
@@ -139,7 +134,7 @@ public class ViewProjectActivity extends AppCompatActivity {
         _lblListHeader    = findViewById(R.id.lbl_subjects_list_header);
         _listHeaderDiv    = findViewById(R.id.border_bottom_subjects_list_header);
 
-        AppUtility.VIEW = _viewSwitcher;
+        AppUtil.VIEW = _viewSwitcher;
 
         _btSaveProject.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,7 +146,7 @@ public class ViewProjectActivity extends AppCompatActivity {
         _btOptions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PopupMenu optionsMenu = new PopupMenu(AppUtility.CONTEXT, view);
+                PopupMenu optionsMenu = new PopupMenu(_this, _this.findViewById(R.id.bt_proj_view_options_top));
                 optionsMenu.setGravity(Gravity.TOP);
                 optionsMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -162,6 +157,9 @@ public class ViewProjectActivity extends AppCompatActivity {
                 });
                 MenuInflater inflater = optionsMenu.getMenuInflater();
                 inflater.inflate(R.menu.options_project, optionsMenu.getMenu());
+                if (showingSubjectsList() && _listFragment.selectionIndex() == AdapterView.INVALID_POSITION) {
+                    optionsMenu.getMenu().removeItem(R.id.bt_analyze_subject);
+                }
                 optionsMenu.show();
             }
         });
@@ -183,7 +181,7 @@ public class ViewProjectActivity extends AppCompatActivity {
 
         setTitle(_project.title());
 
-        _bottomNav = (BottomNavigationView) findViewById(R.id.navigation);
+        _bottomNav = findViewById(R.id.navigation);
         _bottomNav.setOnNavigationItemSelectedListener(_onNavigationItemSelectedListener);
 
         updateNavBar();
@@ -195,7 +193,7 @@ public class ViewProjectActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if ((!getProject().isSaved()) && AppUtility.getPrefAutoSave()) {
+        if ((!getProject().isSaved()) && AppUtil.getPrefAutoSave()) {
             save();
         }
     }
@@ -203,7 +201,6 @@ public class ViewProjectActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        AppUtility.CONTEXT = this;
         updateNavBar();
         updateToolbar();
         updateSaveButton();
@@ -232,24 +229,24 @@ public class ViewProjectActivity extends AppCompatActivity {
             closeSubjectEditor();
         } else {
             if (!getProject().isSaved()) {
-                if (AppUtility.getPrefAutoSave()) {
+                if (AppUtil.getPrefAutoSave()) {
                     save();
                     finish();
                 } else {
-                    final TwoButtonDialog dlg
-                        = new TwoButtonDialog(new DialogStringData(this,
+                    final BasicDialog dlg
+                        = new BasicDialog(new DialogStringData(this,
                         R.string.dlg_title_unsaved_changes,
                         R.string.dlg_msg_unsaved_changes,
                         R.string.dlg_bt_save,
                         R.string.dlg_bt_no_save));
-                    dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+                    dlg.setPosBt(new View.OnClickListener() {
+                        public void onClick(View view) {
                             save();
                             finish();
                         }
                     });
-                    dlg.setNegativeButton(new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+                    dlg.setNegBt(new View.OnClickListener() {
+                        public void onClick(View view) {
                             finish();
                         }
                     });
@@ -405,7 +402,7 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public void openSubjectEditor() {
         if (_viewSwitcher != null && !showingSubjectEditor()) {
-            AppUtility.hideKeyboard(this, _viewSwitcher);
+            AppUtil.hideKeyboard(this, _viewSwitcher);
             updateEditorView();
             _viewSwitcher.showNext();
             updateNavBar();
@@ -415,7 +412,7 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public void closeSubjectEditor() {
         if (_viewSwitcher != null && !showingSubjectsList()) {
-            AppUtility.hideKeyboard(this, _viewSwitcher);
+            AppUtil.hideKeyboard(this, _viewSwitcher);
             _viewSwitcher.showPrevious();
             updateNavBar();
             updateToolbar();
@@ -424,7 +421,7 @@ public class ViewProjectActivity extends AppCompatActivity {
     }
 
     public boolean onBottomNavigationItemSelected(int itemId) {
-        ScrollView scrollView = null;
+        ScrollView scrollView;
         switch (itemId) {
             case R.id.navigation_basic_info:
                 scrollView = findViewById(R.id.scrollview_subject_basic_info);
@@ -470,30 +467,16 @@ public class ViewProjectActivity extends AppCompatActivity {
     public void onOptionsMenuItemClick(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.bt_settings:
-                AppUtility.openPreferencesDialog(this);
+                AppUtil.openPreferencesDialog(this);
                 break;
 
             case R.id.bt_export:
-                final TwoButtonDialog dlg
-                    = new TwoButtonDialog(new DialogStringData(this,
-                    R.string.dlg_title_export_csv_raw,
-                    R.string.dlg_msg_export_csv_raw,
-                    R.string.dlg_bt_csv,
-                    R.string.dlg_bt_raw));
-                final ViewProjectActivity this_ = this;
-                dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // CSV
-                        FileUtility.createDirectoryChooser(this_, REQUEST_EXPORT_CSV);
-                    }
-                });
-                dlg.setNegativeButton(new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Serialized
-                        FileUtility.createDirectoryChooser(this_, REQUEST_EXPORT_SERIALIZED);
-                    }
-                });
-                dlg.show();
+                ProjectHandler.openExportDialog(this);
+                break;
+
+            case R.id.bt_analyze_subject:
+                final SubjectAnalysisDialog dlgAnalyzeSubj = new SubjectAnalysisDialog(this, ProjectHandler.get(_projectIndex).getSubject(_listFragment.selectionIndex()));
+                dlgAnalyzeSubj.show();
                 break;
 
             default:
@@ -503,62 +486,18 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(final int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_EXPORT_CSV || requestCode == REQUEST_EXPORT_SERIALIZED) {
-            if (resultCode == Activity.RESULT_OK) {
-                final List<Uri> files = com.nononsenseapps.filepicker.Utils.getSelectedFilesFromResult(data);
-                if (!files.isEmpty()) {
-                    final MolarWearProject project = ProjectHandler.get(_projectIndex);
-                    final String path = com.nononsenseapps.filepicker.Utils.getFileForUri(files.get(0)).getAbsolutePath();
-                    final String extension = (requestCode == REQUEST_EXPORT_CSV) ? FileUtility.FILE_EXT_CSV : FileUtility.FILE_EXT_SERIALIZED_DATA;
-                    final String filePath = path + File.separator + project.title() + extension;
-                    if (new File(filePath).exists()) {
-                        final TwoButtonDialog dlg
-                            = new TwoButtonDialog(new DialogStringData(this,
-                            getString(R.string.dlg_title_overwrite)
-                                + " (\"" + project.title() + extension + "\")",
-                            R.string.dlg_msg_overwrite,
-                            R.string.dlg_bt_overwrite,
-                            R.string.dlg_bt_cancel));
-                        dlg.setPositiveButton(new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                boolean success = (requestCode == REQUEST_EXPORT_CSV) ? project.toCsv(filePath) : FileUtility.saveSerializableEx(project, filePath);
-                                if (success) {
-                                    AppUtility.printSnackBarMsg(getString(R.string.out_msg_file_saved)
-                                        + ":\n" + filePath);
-                                } else {
-                                    AppUtility.printSnackBarMsg(getString(R.string.err_file_write_fail));
-                                }
-                            }
-                        });
-                        dlg.show();
-                    } else {
-                        boolean success = (requestCode == REQUEST_EXPORT_CSV) ? project.toCsv(filePath) : FileUtility.saveSerializableEx(project, filePath);
-                        if (success) {
-                            AppUtility.printSnackBarMsg(getString(R.string.out_msg_file_saved)
-                                + ":\n" + filePath);
-                        } else {
-                            AppUtility.printSnackBarMsg(getString(R.string.err_file_write_fail));
-                        }
-                    }
-                } else {
-                    AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_dir_sel));
-                }
-                return;
-            } else {
-                AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_dir_sel));
-                return;
-            }
+        if (requestCode == FileUtil.REQUEST_EXPORT_CSV || requestCode == FileUtil.REQUEST_EXPORT_SERIALIZED || requestCode == FileUtil.REQUEST_EXPORT_JSON || requestCode == FileUtil.REQUEST_EXPORT_XML) {
+            ProjectHandler.handleExportRequestResult(this, _projectIndex, requestCode, resultCode, data);
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case FileUtility.REQUEST_CODE_EXT_STORAGE_PERMISSIONS: {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Access granted
-                } else {
-                    AppUtility.printSnackBarMsg(R.string.err_access_denied);
+            case FileUtil.REQUEST_CODE_EXT_STORAGE_PERMISSIONS: {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    // Access denied
+                    AppUtil.printSnackBarMsg(R.string.err_access_denied);
                 }
                 return;
             }
@@ -566,10 +505,15 @@ public class ViewProjectActivity extends AppCompatActivity {
     }
 
     public void updateNavBar() {
-        if (showingSubjectsList()) {
-            getSupportActionBar().setHomeAsUpIndicator(_icClose);
-        } else {
-            getSupportActionBar().setHomeAsUpIndicator(_icBack);
+        try {
+            if (showingSubjectsList()) {
+                getSupportActionBar().setHomeAsUpIndicator(_icClose);
+            } else {
+                getSupportActionBar().setHomeAsUpIndicator(_icBack);
+            }
+        } catch (NullPointerException e) {
+            // Failed to update actionbar button
+            //AppUtil.printSnackBarMsg(R.string.err_update_navbar_fail);
         }
     }
 
@@ -577,7 +521,7 @@ public class ViewProjectActivity extends AppCompatActivity {
         if (showingSubjectsList()) {
             _btNewSubjectTb.setVisibility(View.GONE);
             if (_listFragment.selectionIndex() != AdapterView.INVALID_POSITION) {
-                _btEditSubject.setVisibility(View.VISIBLE);
+                //_btEditSubject.setVisibility(View.VISIBLE);
                 _btDeleteSubject.setVisibility(View.VISIBLE);
             } else {
                 _btEditSubject.setVisibility(View.GONE);
@@ -676,7 +620,7 @@ public class ViewProjectActivity extends AppCompatActivity {
 
     public void hideKeyboardOnEditBasicInfoRadioBtClick(@NonNull View view) {
         // Specified in view_subject_basic_info.xml (used in SubjectBasicInfoFragment)
-        AppUtility.hideKeyboard(this, view);
+        AppUtil.hideKeyboard(this, view);
         final LinearLayout linearLayout = (LinearLayout) view.getParent().getParent().getParent();
         linearLayout.requestFocus();
     }

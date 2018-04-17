@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Author: Sean Pesce
+-->
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingRight="16dp"
+    >
+    <item>
+        <shape
+            android:shape="rectangle">
+            <stroke android:width="2dp" android:color="@color/colorAccent" />
+            <solid android:color="@color/background_light" />
+
+        </shape>
+    </item>
+
+    <item android:bottom="2dp">
+        <shape
+            android:shape="rectangle">
+            <stroke android:width="2dp" android:color="@color/background_light" />
+            <solid android:color="@color/background_light" />
+        </shape>
+    </item>
+    <!--<item>-->
+        <!--<shape-->
+            <!--android:shape="rectangle"-->
+            <!--android:drawableRight="@drawable/ic_arrow_drop_down_color_accent">-->
+
+        <!--</shape>-->
+    <!--</item>-->
+    <item
+        android:drawable="@drawable/ic_arrow_drop_down_color_accent"
+        android:gravity="end|right|center_vertical" />
+    <!--<item-->
+        <!--android:drawable="@drawable/ic_arrow_drop_down_color_accent"-->
+        <!--android:gravity="end|right|center_vertical"-->
+        <!--android:layout_gravity="end|right|center_vertical"-->
+        <!--/>-->
+    <!--<item>-->
+        <!--<bitmap-->
+            <!--app:srcCompat="@drawable/ic_arrow_drop_down_color_accent"-->
+            <!--android:tileMode="repeat" />-->
+    <!--</item>-->
+
+</layer-list>

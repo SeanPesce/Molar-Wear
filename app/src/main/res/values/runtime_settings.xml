@@ -37,11 +37,18 @@
 
     <bool name="rt_cfg_pref_default_auto_save">true</bool>
 
+    <bool name="rt_cfg_pref_default_group_name_ignore_case">false</bool>
+
     <string name="rt_cfg_pref_key_auto_save">AUTO_SAVE</string>
     <string name="rt_cfg_pref_key_use_sys_file_picker">USE_SYS_FILE_PICKER</string>
+    <string name="rt_cfg_pref_key_group_name_ignore_case">GROUP_NAME_IGNORE_CASE</string>
+    <string name="rt_cfg_pref_key_default_site_prefix">DEFAULT_SITE_ID_</string>
+    <string name="rt_cfg_pref_key_default_group_prefix">DEFAULT_GROUP_ID_</string>
 
+    <string name="file_ext_csv">.csv</string>
     <string name="file_ext_serialized_data">.mwsd</string>
-    <string name="file_ext_json_data">.json</string>
+    <string name="file_ext_json">.json</string>
+    <string name="file_ext_xml">.xml</string>
 
 
 </resources>

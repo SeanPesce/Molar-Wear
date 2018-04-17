@@ -21,48 +21,67 @@
 <mw.molarwear.gui.layout.CheckableLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout_listitem_subject"
-    android:orientation="horizontal"
+    android:id="@+id/layout_listitem"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:descendantFocusability="blocksDescendants"
     android:background="@color/transparent"
     android:foreground="?android:attr/selectableItemBackground">
-    <ImageView
-        android:id="@+id/ic_listitem_checkable_1"
-        android:layout_width="56dp"
-        android:layout_height="?android:attr/listPreferredItemHeight"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:paddingStart="0dp"
-        android:paddingLeft="0dp"
-        android:paddingEnd="32dp"
-        android:paddingRight="32dp"
-        android:tint="@color/colorPrimaryDark"
-        app:backgroundTint="@color/transparent"
-        android:src="@drawable/ic_person" />
-    <TextView
-        android:id="@+id/lbl_listitem_checkable_1"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight=".8"
-        android:textAppearance="?android:attr/textAppearanceListItem"
-        android:minHeight="?android:attr/listPreferredItemHeight"
-        android:gravity="center_vertical"
-        android:singleLine="true"
-        android:ellipsize="end"
-        android:text="@string/default_project_title" />
-    <android.support.v7.widget.AppCompatImageButton
-        android:id="@+id/bt_listitem_checkable_1"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight=".2"
+        android:orientation="horizontal"
+        android:descendantFocusability="blocksDescendants"
+        android:background="@color/transparent"
+        android:foreground="?android:attr/selectableItemBackground">
+        <ImageView
+            android:id="@+id/ic_listitem_checkable_1"
+            android:layout_width="56dp"
+            android:layout_height="?android:attr/listPreferredItemHeight"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:paddingStart="0dp"
+            android:paddingLeft="0dp"
+            android:paddingEnd="32dp"
+            android:paddingRight="32dp"
+            android:tint="@color/colorPrimaryDark"
+            app:backgroundTint="@color/transparent"
+            android:src="@drawable/ic_person" />
+        <TextView
+            android:id="@+id/lbl_listitem_checkable_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".8"
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:minHeight="?android:attr/listPreferredItemHeight"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:text="@string/default_project_title" />
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/bt_listitem_checkable_1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight=".2"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:tint="@color/colorPrimaryDark"
+            app:backgroundTint="@color/transparent"
+            android:text="@string/act_open"
+            android:src="@drawable/ic_keyboard_arrow_right"
+            android:foreground="?android:attr/selectableItemBackground" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#ffe1e1e1"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:tint="@color/colorPrimaryDark"
-        app:backgroundTint="@color/transparent"
-        android:text="@string/act_open"
-        android:src="@drawable/ic_keyboard_arrow_right"
-        android:foreground="?android:attr/selectableItemBackground" />
+        android:clickable="false"
+        android:longClickable="false"
+        android:contextClickable="false"
+        android:minHeight="1px"
+        />
 </mw.molarwear.gui.layout.CheckableLinearLayout>

@@ -21,14 +21,21 @@
 <mw.molarwear.gui.layout.CheckableLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout_listitem_subject"
-    android:orientation="horizontal"
+    android:id="@+id/layout_listitem"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true"
     android:descendantFocusability="blocksDescendants"
     android:background="@color/transparent"
     android:foreground="?android:attr/selectableItemBackground">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:descendantFocusability="blocksDescendants"
+        android:background="@color/transparent"
+        android:foreground="?android:attr/selectableItemBackground">
     <TextView
         android:id="@+id/lbl_listitem_checkable_1"
         android:layout_width="0dp"
@@ -54,4 +61,16 @@
         android:text="@string/act_open"
         android:src="@drawable/ic_keyboard_arrow_right"
         android:foreground="?android:attr/selectableItemBackground" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#ffe1e1e1"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:clickable="false"
+        android:longClickable="false"
+        android:contextClickable="false"
+        android:minHeight="1px"
+        />
 </mw.molarwear.gui.layout.CheckableLinearLayout>

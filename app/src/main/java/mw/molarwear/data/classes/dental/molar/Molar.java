@@ -5,9 +5,11 @@ import android.support.annotation.NonNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import mw.molarwear.data.classes.AnalysisData;
 import mw.molarwear.data.classes.dental.Tooth;
 import mw.molarwear.data.classes.dental.enums.ToothMapping;
 import mw.molarwear.data.classes.dental.molar.enums.Wear;
+import mw.molarwear.util.AnalysisUtil;
 
 /**
  * This class is used for recording and editing dental data pertaining to human molar wear.
@@ -33,8 +35,8 @@ public class Molar extends Tooth implements Serializable {
     ///////////////////////////////////////////////////////////////
 
     // Tooth surface consisting of four quadrants
-    private Surface _surface;
-    private  String _notes = "";
+    protected Surface _surface;
+    protected  String _notes = "";
 
 
     //////////// Constructors ////////////
@@ -80,7 +82,7 @@ public class Molar extends Tooth implements Serializable {
     }
 
 
-    private void initialize(Surface surface, String notes) {
+    protected void initialize(Surface surface, String notes) {
         _surface = surface;
         _notes   = notes;
         if (!this.molar()) {
@@ -93,6 +95,24 @@ public class Molar extends Tooth implements Serializable {
 
     public Surface surface() { return _surface; }
     public  String notes()   { return _notes;   }
+
+    public Integer[] wearScoreData() {
+        Integer[] w = new Integer[dataPoints()];
+        int i = 0;
+        if (_surface.q1().wearScore() != Wear.UNKNOWN.score()) {
+            w[i++] = _surface.q1().wearScore();
+        }
+        if (_surface.q2().wearScore() != Wear.UNKNOWN.score()) {
+            w[i++] = _surface.q2().wearScore();
+        }
+        if (_surface.q3().wearScore() != Wear.UNKNOWN.score()) {
+            w[i++] = _surface.q3().wearScore();
+        }
+        if (_surface.q4().wearScore() != Wear.UNKNOWN.score()) {
+            w[i] = _surface.q4().wearScore();
+        }
+        return w;
+    }
 
 
     //////////// Mutators ////////////
@@ -110,6 +130,40 @@ public class Molar extends Tooth implements Serializable {
              + ((_surface.q2().wearScore() != Wear.UNKNOWN.score()) ? 1 : 0)
              + ((_surface.q3().wearScore() != Wear.UNKNOWN.score()) ? 1 : 0)
              + ((_surface.q4().wearScore() != Wear.UNKNOWN.score()) ? 1 : 0);
+    }
+
+    public Integer getWearSum() {
+//        return (dataPoints() == 0) ? null
+//            : ((_surface.q1().wearScore() != Wear.UNKNOWN.score()) ? _surface.q1().wearScore() : 0)
+//            + ((_surface.q2().wearScore() != Wear.UNKNOWN.score()) ? _surface.q2().wearScore() : 0)
+//            + ((_surface.q3().wearScore() != Wear.UNKNOWN.score()) ? _surface.q3().wearScore() : 0)
+//            + ((_surface.q4().wearScore() != Wear.UNKNOWN.score()) ? _surface.q4().wearScore() : 0);
+        return (dataPoints() == 0) ? null : AnalysisUtil.sum(wearScoreData());
+    }
+
+    public Double getWearMean() {
+//        Integer sum = getWearSum();
+//        return (sum == null) ? null : (sum.doubleValue() / dataPoints());
+        return (dataPoints() == 0) ? null : AnalysisUtil.mean(wearScoreData());
+    }
+
+    public Double getWearStandardDev() {
+//        Double mean = getWearMean();
+//        if (mean == null) {
+//            return null;
+//        }
+//        Double value = 0.0;
+//        value += ((_surface.q1().wearScore() != Wear.UNKNOWN.score()) ? Math.pow((_surface.q1().wearScore() - mean), 2) : 0)
+//               + ((_surface.q2().wearScore() != Wear.UNKNOWN.score()) ? Math.pow((_surface.q2().wearScore() - mean), 2) : 0)
+//               + ((_surface.q3().wearScore() != Wear.UNKNOWN.score()) ? Math.pow((_surface.q3().wearScore() - mean), 2) : 0)
+//               + ((_surface.q4().wearScore() != Wear.UNKNOWN.score()) ? Math.pow((_surface.q4().wearScore() - mean), 2) : 0);
+//        value /= dataPoints();
+//        return Math.sqrt(value);
+        return (dataPoints() == 0) ? null : AnalysisUtil.standardDeviation(wearScoreData());
+    }
+
+    public AnalysisData<Integer> analyzeWear() {
+        return (dataPoints() == 0) ? null : AnalysisUtil.analyze(wearScoreData());
     }
 
     public ArrayList<String> toCsvData(int row) {

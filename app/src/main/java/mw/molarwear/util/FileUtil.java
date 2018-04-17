@@ -5,33 +5,54 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.Settings;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
+import mw.molarwear.MolWearApp;
 import mw.molarwear.R;
+import mw.molarwear.data.classes.MolarWearProject;
+import mw.molarwear.data.classes.dental.molar.WearImageCacheMap;
 
 import static java.io.File.separator;
 
@@ -45,22 +66,32 @@ import static java.io.File.separator;
  * @see    Serializable
  */
 
-public class FileUtility {
+public class FileUtil {
+
+    public static class Cache {
+        public static final WearImageCacheMap MOLAR_WEAR_IMAGES = new WearImageCacheMap();
+    }
 
     public static final String FILE_EXT_CSV = ".csv";
-
+    public static final String FILE_EXT_XML = ".xml";
     public static String FILE_EXT_SERIALIZED_DATA = ".mwsd";
     public static String FILE_EXT_JSON_DATA = ".json";
+
+    public static final List<String> PROJECT_FILE_EXTENSIONS = new ArrayList<>();
 
     public static boolean USE_SYSTEM_FILE_CHOOSER = false;
     public static String FILE_CHOOSER_TITLE_DEFAULT = "Choose file";
 
-    // @TODO: JSON support
+    // @TODO: JSON support?
 
     public static final int REQUEST_CODE_READ  = 42;
     public static final int REQUEST_CODE_WRITE = 43;
     public static final int REQUEST_CODE_CHOOSE_DIR = 451;
     public static final int REQUEST_CODE_EXT_STORAGE_PERMISSIONS = 928;
+    public static final int REQUEST_EXPORT_CSV = 102;
+    public static final int REQUEST_EXPORT_SERIALIZED = 1995;
+    public static final int REQUEST_EXPORT_JSON = 1991;
+    public static final int REQUEST_EXPORT_XML = 92891;
 
     // Text filter to disallow whitespace
     public static InputFilter WHITESPACE_FILTER = new InputFilter() {
@@ -95,7 +126,7 @@ public class FileUtility {
      *
      * @return true if the file was successfully saved; else false.
      *
-     * @see   mw.molarwear.util.FileUtility#saveSerializable(Serializable, String, boolean, int)
+     * @see   mw.molarwear.util.FileUtil#saveSerializable(Serializable, String, boolean, int)
      */
     public static <T extends Serializable> boolean saveSerializable(T objectToSave, String fileName) {
         return saveSerializable(objectToSave, fileName, true, Context.MODE_PRIVATE);
@@ -122,11 +153,11 @@ public class FileUtility {
      *
      * @return true if the file was successfully saved; else false.
      *
-     * @see   mw.molarwear.util.FileUtility#saveSerializable(Serializable, String)
+     * @see   mw.molarwear.util.FileUtil#saveSerializable(Serializable, String)
      */
     public static <T extends Serializable> boolean saveSerializable(T objectToSave, String fileName, boolean internal, int flags) {
         try {
-            FileOutputStream fileOutputStream = internal ? AppUtility.CONTEXT.openFileOutput(fileName, flags) : new FileOutputStream(fileName);
+            FileOutputStream fileOutputStream = internal ? AppUtil.CONTEXT.openFileOutput(fileName, flags) : new FileOutputStream(fileName);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
             objectOutputStream.writeObject(objectToSave);
@@ -144,6 +175,30 @@ public class FileUtility {
         return saveSerializable(objectToSave, fileName, false, Context.MODE_PRIVATE);
     }
 
+    public static <T> boolean saveJson(@NonNull T objectToSave, @NonNull String fileName) {
+        ObjectMapper jsonMapper = new ObjectMapper();
+        try {
+            FileUtil.writeText(fileName, jsonMapper.writeValueAsString(objectToSave), false, false);
+        } catch (JsonGenerationException | JsonMappingException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public static <T> T readJson(@NonNull String fileName, @NonNull Class<T> objectType) {
+        ObjectMapper jsonMapper = new ObjectMapper();
+        try {
+            return jsonMapper.readValue(FileUtil.readText(fileName), objectType);
+            //return jsonMapper.readValue(new File(fileName), objectType);
+        } catch (JsonGenerationException | JsonMappingException e) {
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     /**
      * Loads a serializable object from a file in internal storage.
      *
@@ -157,11 +212,12 @@ public class FileUtility {
      *
      * @return the serializable object.
      */
+    @SuppressWarnings("unchecked")
     public static<T extends Serializable> T readInternalSerializable(String fileName) {
         T objectToReturn = null;
 
         try {
-            FileInputStream fileInputStream = AppUtility.CONTEXT.openFileInput(fileName);
+            FileInputStream fileInputStream = AppUtil.CONTEXT.openFileInput(fileName);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             objectToReturn = (T) objectInputStream.readObject();
 
@@ -187,6 +243,7 @@ public class FileUtility {
      *
      * @return the serializable object.
      */
+    @SuppressWarnings("unchecked")
     public static<T extends Serializable> T readExternalSerializable(String fileName) {
         T objectToReturn = null;
 
@@ -207,7 +264,7 @@ public class FileUtility {
     public static boolean writeText(@NonNull String fileName, @NonNull String text, boolean append, boolean internal) {
         try {
             FileOutputStream fileOutputStream = internal ?
-                AppUtility.CONTEXT.openFileOutput(fileName, (append) ? Context.MODE_APPEND : Context.MODE_PRIVATE)
+                MolWearApp.getContext().openFileOutput(fileName, (append) ? Context.MODE_APPEND : Context.MODE_PRIVATE)
                 : new FileOutputStream(fileName, append);
             PrintWriter writer = new PrintWriter(fileOutputStream);
 
@@ -221,6 +278,27 @@ public class FileUtility {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Nullable
+    public static String readText(@NonNull String fileName) {
+        StringBuilder text = new StringBuilder("");
+        try {
+            BufferedReader reader =  new BufferedReader(new FileReader(fileName));
+            String line = reader.readLine();
+            while (line != null) {
+                if (text.length() != 0) {
+                    text.append('\n');
+                }
+                text.append(line);
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch (IOException e) {
+            Log.e("FileUtil.readText", e.getMessage());
+            return null;
+        }
+        return text.toString();
     }
 
     /**
@@ -238,7 +316,7 @@ public class FileUtility {
      * @see   Context#deleteFile(String)
      */
     public static boolean deletePrivate(String filename) {
-        return AppUtility.CONTEXT.deleteFile(filename);
+        return AppUtil.CONTEXT.deleteFile(filename);
     }
 
     /**
@@ -284,7 +362,7 @@ public class FileUtility {
     /**
      * Calls {@link #getFilesInDir(File, boolean, String)} with searchSubDirs=true and fileExtFilter=null.
      *
-     * @see mw.molarwear.util.FileUtility#getFilesInDir(File, boolean, String)
+     * @see mw.molarwear.util.FileUtil#getFilesInDir(File, boolean, String)
      */
     public static ArrayList<File> getFilesInDir(File dir) {
         return getFilesInDir(dir, true, null);
@@ -293,7 +371,7 @@ public class FileUtility {
     /**
      * Calls {@link #getFilesInDir(File, boolean, String)} with fileExtFilter=null.
      *
-     * @see mw.molarwear.util.FileUtility#getFilesInDir(File, boolean, String)
+     * @see mw.molarwear.util.FileUtil#getFilesInDir(File, boolean, String)
      */
     public static ArrayList<File> getFilesInDir(File dir, boolean searchSubDirs) {
         return getFilesInDir(dir, searchSubDirs, null);
@@ -302,7 +380,7 @@ public class FileUtility {
     /**
      * Calls {@link #getFilesInDir(File, boolean, String)} with searchSubDirs=true.
      *
-     * @see mw.molarwear.util.FileUtility#getFilesInDir(File, boolean, String)
+     * @see mw.molarwear.util.FileUtil#getFilesInDir(File, boolean, String)
      */
     public static ArrayList<File> getFilesInDir(File dir, String fileExtFilter) {
         return getFilesInDir(dir, true, fileExtFilter);
@@ -311,7 +389,7 @@ public class FileUtility {
     /**
      * Calls {@link #getFilesInDir(File, boolean, String)} with searchSubDirs=false and fileExtFilter=null.
      *
-     * @see mw.molarwear.util.FileUtility#getFilesInDir(File, boolean, String)
+     * @see mw.molarwear.util.FileUtil#getFilesInDir(File, boolean, String)
      */
     public static ArrayList<File> getFilesInFolder(File dir) {
         return getFilesInDir(dir, false, null);
@@ -320,7 +398,7 @@ public class FileUtility {
     /**
      * Calls {@link #getFilesInDir(File, boolean, String)} with searchSubDirs=false.
      *
-     * @see mw.molarwear.util.FileUtility#getFilesInDir(File, boolean, String)
+     * @see mw.molarwear.util.FileUtil#getFilesInDir(File, boolean, String)
      */
     public static ArrayList<File> getFilesInFolder(File dir, String fileExtFilter) {
         return getFilesInDir(dir, false, fileExtFilter);
@@ -336,9 +414,9 @@ public class FileUtility {
      */
     public static String getInternalPath(String fileName) {
         if (fileName == null || fileName.length() == 0) {
-            return AppUtility.CONTEXT.getFilesDir().toString() + separator;
+            return AppUtil.CONTEXT.getFilesDir().toString() + separator;
         }
-        return AppUtility.CONTEXT.getFilesDir().toString() + separator + fileName;
+        return AppUtil.CONTEXT.getFilesDir().toString() + separator + fileName;
     }
 
     /**
@@ -360,7 +438,7 @@ public class FileUtility {
             return split[1];
         }
         // @TODO: Add support for pre-19 Android builds?
-        AppUtility.printSnackBarMsg("Error: Unsupported Android build");
+        AppUtil.printSnackBarMsg("Error: Unsupported Android build");
         return "";
     }
 
@@ -376,11 +454,11 @@ public class FileUtility {
     }
 
     public static void createDirectoryChooser() {
-        createDirectoryChooser(AppUtility.CONTEXT, REQUEST_CODE_CHOOSE_DIR);
+        createDirectoryChooser(AppUtil.CONTEXT, REQUEST_CODE_CHOOSE_DIR);
     }
 
     public static void createDirectoryChooser(int requestCode) {
-        createDirectoryChooser(AppUtility.CONTEXT, requestCode);
+        createDirectoryChooser(AppUtil.CONTEXT, requestCode);
     }
 
     public static void createDirectoryChooser(@NonNull Activity activity) {
@@ -393,7 +471,7 @@ public class FileUtility {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("*/*");
-            activity.startActivityForResult(intent, FileUtility.REQUEST_CODE_READ);
+            activity.startActivityForResult(intent, FileUtil.REQUEST_CODE_READ);
         } else {
             Intent i = new Intent(activity.getApplicationContext(), FilePickerActivity.class);
             i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
@@ -405,7 +483,7 @@ public class FileUtility {
     }
 
     public static void createFileChooser() {
-        createFileChooser(AppUtility.CONTEXT, REQUEST_CODE_READ);
+        createFileChooser(AppUtil.CONTEXT, REQUEST_CODE_READ);
     }
 
     public static void createFileChooser(@NonNull Activity activity) {
@@ -413,7 +491,7 @@ public class FileUtility {
     }
 
     public static void createFileChooser(int requestCode) {
-        createFileChooser(AppUtility.CONTEXT, requestCode);
+        createFileChooser(AppUtil.CONTEXT, requestCode);
     }
 
     public static void checkExternalStoragePermissions(@NonNull Activity activity) {
@@ -431,11 +509,47 @@ public class FileUtility {
                     REQUEST_CODE_EXT_STORAGE_PERMISSIONS);
             }
         } else {
-            AppUtility.printToast(activity, activity.getString(R.string.err_unsupported_android_version));
+            AppUtil.printToast(activity, activity.getString(R.string.err_unsupported_android_version));
         }
     }
 
     public static void checkExternalStoragePermissions() {
-        checkExternalStoragePermissions(AppUtility.CONTEXT);
+        checkExternalStoragePermissions(AppUtil.CONTEXT);
+    }
+
+
+    public static Drawable resizeImage(@NonNull Context context, @DrawableRes int imageResource, @IntRange(from=0) int newWidthPx) {
+        // Source: https://stackoverflow.com/a/35222639/7891239
+
+        BitmapDrawable bd = (BitmapDrawable) context.getResources().getDrawable(imageResource);
+        double imageHeight = bd.getBitmap().getHeight();
+        double imageWidth = bd.getBitmap().getWidth();
+
+        double ratio = newWidthPx / imageWidth;
+        int newImageHeight = (int) (imageHeight * ratio);
+
+        Bitmap bMap = BitmapFactory.decodeResource(context.getResources(), imageResource);
+        return new BitmapDrawable(context.getResources(), getResizedBitmap(bMap, newImageHeight, newWidthPx));
+    }
+
+    public static Bitmap getResizedBitmap(Bitmap bm, int newHeightPx, int newWidthPx) {
+        // Source: https://stackoverflow.com/a/35222639/7891239
+
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+
+        float scaleWidth = ((float) newWidthPx) / width;
+        float scaleHeight = ((float) newHeightPx) / height;
+
+        // Create a matrix for the manipulation
+        Matrix matrix = new Matrix();
+
+        // Resize the bit map
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // Recreate the new Bitmap
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+
+        return resizedBitmap;
     }
 }

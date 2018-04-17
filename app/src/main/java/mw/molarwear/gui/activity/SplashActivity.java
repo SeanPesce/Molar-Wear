@@ -4,8 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import mw.molarwear.data.handlers.ProjectHandler;
-import mw.molarwear.util.AppUtility;
+import mw.molarwear.gui.activity.interfaces.DataCachingActivity;
 
 /**
  * Splash screen shown when the app is loading.
@@ -22,17 +21,13 @@ import mw.molarwear.util.AppUtility;
  * @see    android.app.Activity
  * @see    AppCompatActivity
  */
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends DataCachingActivity {
 
     protected static int _WAIT_TIME = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppUtility.CONTEXT = this;
-        AppUtility.initializeRuntimeSettings();
-        AppUtility.loadPreferences(this);
-        ProjectHandler.loadProjects();
 
         try {
             Thread.sleep(_WAIT_TIME);
@@ -45,6 +40,10 @@ public class SplashActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 
     public static int  WAIT_TIME    ()             { return _WAIT_TIME;                                    }
     public static void SET_WAIT_TIME(int waitTime) { _WAIT_TIME = (waitTime >= 0) ? waitTime : _WAIT_TIME; }

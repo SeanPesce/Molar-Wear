@@ -1,13 +1,11 @@
 package mw.molarwear.gui.activity;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,17 +14,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.view.View;
 
 import java.util.List;
+import java.util.Locale;
 
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
+import mw.molarwear.gui.activity.interfaces.DataCachingActivity;
 import mw.molarwear.data.handlers.ProjectHandler;
+import mw.molarwear.gui.dialog.DialogStringData;
+import mw.molarwear.gui.dialog.MessageDialog;
 import mw.molarwear.gui.fragment.ProjectsListFragment;
-import mw.molarwear.util.AppUtility;
-import mw.molarwear.util.FileUtility;
+import mw.molarwear.util.AppUtil;
+import mw.molarwear.util.FileUtil;
 
 /**
  * This is the main app activity screen (excluding the loader). This activity page allows
@@ -39,7 +40,7 @@ import mw.molarwear.util.FileUtility;
  * @see    MolarWearProject
  */
 
-public class MolWearMainActivity extends AppCompatActivity
+public class MolWearMainActivity extends DataCachingActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     // GUI
@@ -50,36 +51,47 @@ public class MolWearMainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppUtility.CONTEXT = this;
 
         setContentView(R.layout.activity_main);
 
-        _toolbarNav = (Toolbar) findViewById(R.id.toolbar_nav);
+        _toolbarNav = findViewById(R.id.toolbar_nav);
         setSupportActionBar(_toolbarNav);
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
             this, drawer, _toolbarNav, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        if (ProjectHandler.projectCount() == 0) {
-            ProjectHandler.loadProjects();
-        }
 
         _fragProjects = (ProjectsListFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_list_projects);
 
-        AppUtility.VIEW = findViewById(R.id.content_main);
+        AppUtil.VIEW = findViewById(R.id.content_main);
         setTitle(getResources().getString(R.string.title_choose_proj));
-        if (AppUtility.LOAD_ERROR_COUNT() > 0) {
-            AppUtility.printSnackBarMsg(String.format(getString(R.string.err_startup_proj_load), AppUtility.LOAD_ERROR_COUNT()));
+        if (AppUtil.LOAD_ERROR_COUNT() > 0) {
+            AppUtil.printSnackBarMsg(String.format(getString(R.string.err_startup_proj_load), AppUtil.LOAD_ERROR_COUNT()));
+            final MessageDialog dlg =
+                    new MessageDialog(
+                        new DialogStringData(
+                            this,
+                            String.format(Locale.ENGLISH, "Failed to load %d projects", AppUtil.LOAD_ERROR_COUNT()),
+                            "Delete problematic project files?",
+                            R.string.act_delete,
+                            R.string.dlg_bt_cancel));
+            dlg.usePosBt(true).useNegBt(true);
+            dlg.setPosBt(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ProjectHandler.loadProjects(true);
+                }
+            });
+            dlg.show();
         }
 
-        FileUtility.checkExternalStoragePermissions(this);
+        FileUtil.checkExternalStoragePermissions(this);
 
         if (savedInstanceState == null) {
 
@@ -91,17 +103,13 @@ public class MolWearMainActivity extends AppCompatActivity
     @Override
     public void onResume() {
         super.onResume();
-        AppUtility.CONTEXT = this;
-        AppUtility.VIEW = findViewById(R.id.content_main);
-        if (ProjectHandler.projectCount() == 0) {
-            ProjectHandler.loadProjects();
-        }
+        AppUtil.VIEW = findViewById(R.id.content_main);
         _fragProjects.updateToolbar();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -125,7 +133,7 @@ public class MolWearMainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            AppUtility.openPreferencesDialog(this);
+            AppUtil.openPreferencesDialog(this);
             return true;
         } else if (id == R.id.bt_import) {
             importProject();
@@ -136,20 +144,23 @@ public class MolWearMainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle subject_editor_navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_import_project) {
             importProject();
         } else if (id == R.id.nav_share) {
-            AppUtility.featureNotImplementedYet();
+            AppUtil.featureNotImplementedYet();
         } else if (id == R.id.nav_github) {
             Uri githubRepo = Uri.parse(getResources().getString(R.string.github));
             startActivity(new Intent(Intent.ACTION_VIEW, githubRepo));
+        } else if (id == R.id.nav_issue) {
+            Uri githubIssues = Uri.parse(getResources().getString(R.string.github) + "/issues");
+            startActivity(new Intent(Intent.ACTION_VIEW, githubIssues));
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -157,28 +168,30 @@ public class MolWearMainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Reference: https://github.com/android-ide/platform_development/blob/master/samples/ApiDemos/src/com/example/android/apis/content/DocumentsSample.java
-        final ContentResolver resolver = getContentResolver();
+        //final ContentResolver resolver = getContentResolver();
 
-        if (requestCode == FileUtility.REQUEST_CODE_READ) {
-            if (FileUtility.USE_SYSTEM_FILE_CHOOSER) {
+        if (requestCode == FileUtil.REQUEST_EXPORT_CSV || requestCode == FileUtil.REQUEST_EXPORT_SERIALIZED || requestCode == FileUtil.REQUEST_EXPORT_JSON || requestCode == FileUtil.REQUEST_EXPORT_XML) {
+            ProjectHandler.handleExportRequestResult(this, _fragProjects.selectionIndex(), requestCode, resultCode, data);
+        } else if (requestCode == FileUtil.REQUEST_CODE_READ) {
+            if (FileUtil.USE_SYSTEM_FILE_CHOOSER) {
                 final Uri uri = data != null ? data.getData() : null;
                 if (uri == null) {
                     // No file was selected
-                    AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
+                    AppUtil.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
                     return;
                 }
-                ProjectHandler.importProject(FileUtility.getPathFromURI(uri));
+                ProjectHandler.importProject(FileUtil.getPathFromURI(uri));
             } else {
                 if (resultCode == Activity.RESULT_OK) {
                     final List<Uri> files = com.nononsenseapps.filepicker.Utils.getSelectedFilesFromResult(data);
                     if (!files.isEmpty()) {
                         ProjectHandler.importProject(com.nononsenseapps.filepicker.Utils.getFileForUri(files.get(0)).getAbsolutePath());
                     } else {
-                        AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
+                        AppUtil.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
                         return;
                     }
                 } else {
-                    AppUtility.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
+                    AppUtil.printSnackBarMsg(getString(R.string.out_msg_no_file_sel));
                     return;
                 }
             }
@@ -186,21 +199,20 @@ public class MolWearMainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case FileUtility.REQUEST_CODE_EXT_STORAGE_PERMISSIONS: {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Access granted
-                } else {
-                    AppUtility.printSnackBarMsg(R.string.err_access_denied);
+            case FileUtil.REQUEST_CODE_EXT_STORAGE_PERMISSIONS: {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    // Access denied
+                    AppUtil.printSnackBarMsg(R.string.err_access_denied);
                 }
                 return;
             }
         }
-        AppUtility.printToast(this, "Test");
+        AppUtil.printToast(this, "Test");
     }
 
     public void importProject() {
-        FileUtility.createFileChooser(this, FileUtility.REQUEST_CODE_READ);
+        FileUtil.createFileChooser(this, FileUtil.REQUEST_CODE_READ);
     }
 }

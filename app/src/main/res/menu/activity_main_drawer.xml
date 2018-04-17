@@ -22,8 +22,9 @@
             <!--android:title="Tools" />-->
     <!--</group>-->
 
-    <item android:title="@string/app_name">
-        <menu>
+    <!--<item android:title="@string/app_name">-->
+    <group android:checkableBehavior="none">
+        <!--<menu>-->
             <item
                 android:id="@+id/nav_import_project"
                 android:icon="@drawable/ic_folder"
@@ -31,12 +32,17 @@
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="@string/act_share" />
             <item
                 android:id="@+id/nav_github"
                 android:icon="@drawable/ic_github"
                 android:title="@string/github_view" />
-        </menu>
-    </item>
+            <item
+                android:id="@+id/nav_issue"
+                android:icon="@drawable/ic_report_problem"
+                android:title="@string/act_report_issue" />
+        <!--</menu>-->
+    </group>
+    <!--</item>-->
 
 </menu>

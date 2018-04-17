@@ -31,7 +31,7 @@ public class Surface implements Serializable {
     ///////////////////////////////////////////////////////////////
 
     // Tooth surface quadrants
-    private SurfaceQuadrant _q1, _q2, _q3, _q4;
+    protected SurfaceQuadrant _q1, _q2, _q3, _q4;
 
 
     //////////// Constructors ////////////
@@ -43,14 +43,14 @@ public class Surface implements Serializable {
     public Surface(int q1Wear, int q2Wear, int q3Wear, int q4Wear) { this.initialize(q1Wear, q2Wear, q3Wear, q4Wear); }
 
 
-    private void initialize(Wear q1, Wear q2, Wear q3, Wear q4) {
+    protected void initialize(Wear q1, Wear q2, Wear q3, Wear q4) {
         _q1 = new SurfaceQuadrant(Quadrant.Q1, q1);
         _q2 = new SurfaceQuadrant(Quadrant.Q2, q2);
         _q3 = new SurfaceQuadrant(Quadrant.Q3, q3);
         _q4 = new SurfaceQuadrant(Quadrant.Q4, q4);
     }
 
-    private void initialize(int q1Wear, int q2Wear, int q3Wear, int q4Wear) {
+    protected void initialize(int q1Wear, int q2Wear, int q3Wear, int q4Wear) {
         _q1 = new SurfaceQuadrant(Quadrant.Q1, q1Wear);
         _q2 = new SurfaceQuadrant(Quadrant.Q2, q2Wear);
         _q3 = new SurfaceQuadrant(Quadrant.Q3, q3Wear);
@@ -66,7 +66,7 @@ public class Surface implements Serializable {
     public SurfaceQuadrant q4() { return _q4; }
     public List<SurfaceQuadrant> quadrants() {
         return Arrays.asList(_q1, _q2, _q3, _q4);
-    };
+    }
 
     public Wear q1Wear() { return _q1.wear(); }
     public Wear q2Wear() { return _q2.wear(); }
@@ -74,7 +74,7 @@ public class Surface implements Serializable {
     public Wear q4Wear() { return _q4.wear(); }
     public List<Wear> quadrantScores() {
         return Arrays.asList(_q1.wear(), _q2.wear(), _q3.wear(), _q4.wear());
-    };
+    }
 
 
     //////////// Mutators ////////////

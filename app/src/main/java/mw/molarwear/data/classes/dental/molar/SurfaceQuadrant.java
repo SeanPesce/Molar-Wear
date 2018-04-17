@@ -23,8 +23,8 @@ public class SurfaceQuadrant implements Serializable {
     //////////////////////// INSTANCE DATA ////////////////////////
     ///////////////////////////////////////////////////////////////
 
-    private final Quadrant _quadrant;
-    private           Wear _wear;
+    protected final Quadrant _quadrant;
+    protected           Wear _wear;
 
 
     //////////// Constructors ////////////
