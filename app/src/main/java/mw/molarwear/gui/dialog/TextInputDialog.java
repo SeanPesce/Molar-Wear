@@ -28,6 +28,8 @@ public class TextInputDialog extends BasicDialog {
 
     public static String DEFAULT_TEXT_INPUT_HINT = "";
 
+    protected boolean _closeOnEnterKeyPress = true;
+
     // GUI
     protected final EditText _textInput;
 
@@ -124,9 +126,10 @@ public class TextInputDialog extends BasicDialog {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    //AppUtil.hideKeyboard(_activity, v);
-                    _btPos.requestFocus();
-                    AppUtil.sendKeyPress(KeyEvent.KEYCODE_ENTER);
+                    if (_closeOnEnterKeyPress) {
+                        _btPos.requestFocus();
+                        AppUtil.sendKeyPress(KeyEvent.KEYCODE_ENTER);
+                    }
                     return true;
                 } else {
                     return false;
@@ -151,10 +154,11 @@ public class TextInputDialog extends BasicDialog {
 
     //////////// Accessors ////////////
 
-    public       String text()          { return _textInput.getText().toString(); }
-    public     EditText textInput()     { return _textInput;                      }
-    public       String textInputHint() { return _textInputHint;                  }
-    public LinearLayout linearLayout()  { return _body;                           }
+    public       String text()                 { return _textInput.getText().toString(); }
+    public     EditText textInput()            { return _textInput;                      }
+    public       String textInputHint()        { return _textInputHint;                  }
+    public LinearLayout linearLayout()         { return _body;                           }
+    public      boolean closeOnEnterKeyPress() { return _closeOnEnterKeyPress;           }
 
 
     //////////// Mutators ////////////
@@ -192,6 +196,11 @@ public class TextInputDialog extends BasicDialog {
         } catch (Resources.NotFoundException e) {
             Log.w(this.getClass().getName(), _activity.getResources().getString(R.string.err_resource_not_found));
         }
+    }
+
+    public TextInputDialog setCloseOnEnterKeyPress(boolean close) {
+        _closeOnEnterKeyPress = close;
+        return this;
     }
 
     @Override

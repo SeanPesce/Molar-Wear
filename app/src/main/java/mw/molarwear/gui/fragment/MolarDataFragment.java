@@ -378,7 +378,8 @@ public class MolarDataFragment extends Fragment {
 
                     DisplayMetrics screenDimens = new DisplayMetrics();
                     getActivity().getWindowManager().getDefaultDisplay().getMetrics(screenDimens);
-                    dlg.setMinWidthPx((int)(screenDimens.widthPixels*0.8));
+                    dlg.setCloseOnEnterKeyPress(false)
+                       .setMinWidthPx((int)(screenDimens.widthPixels*0.8));
 
                     dlg.textInput().setInputType(InputType.TYPE_CLASS_TEXT);
                     dlg.textInput().setSingleLine(false);

@@ -82,8 +82,6 @@ public class FileUtil {
     public static boolean USE_SYSTEM_FILE_CHOOSER = false;
     public static String FILE_CHOOSER_TITLE_DEFAULT = "Choose file";
 
-    // @TODO: JSON support?
-
     public static final int REQUEST_CODE_READ  = 42;
     public static final int REQUEST_CODE_WRITE = 43;
     public static final int REQUEST_CODE_CHOOSE_DIR = 451;
