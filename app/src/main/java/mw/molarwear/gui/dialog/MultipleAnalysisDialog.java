@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -22,7 +24,7 @@ import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearSubject;
 import mw.molarwear.data.classes.dental.molar.enums.Wear;
 import mw.molarwear.gui.chart.AnalysisChart;
-import mw.molarwear.gui.chart.SubjectAnalysisChart;
+import mw.molarwear.gui.chart.MultipleAnalysisChart;
 import mw.molarwear.util.AppUtil;
 
 /**
@@ -31,45 +33,78 @@ import mw.molarwear.util.AppUtil;
  * @author Sean Pesce
  *
  * @see    BasicDialog
- * @see    mw.molarwear.data.classes.MolarWearSubject
- * @see    SubjectAnalysisChart
+ * @see    MultipleAnalysisChart
+ * @see    MolarWearSubject
  * @see    Wear
  */
 
-public class SubjectAnalysisDialog extends BasicDialog {
+public class MultipleAnalysisDialog extends BasicDialog {
 
-    private static final int      _TITLE_ID = R.string.dlg_title_subject_analysis;
-    private static final int        _MSG_ID = R.string.dlg_msg_subject_analysis;
+    private static final int      _TITLE_ID = R.string.dlg_title_multiple_analysis;
+    private static final int        _MSG_ID = R.string.dlg_msg_multiple_analysis;
     private static final int _POS_BT_TXT_ID = R.string.act_export;
     private static final int _NEG_BT_TXT_ID = R.string.dlg_bt_close;
 
     @LayoutRes
-    private static final int _LAYOUT = R.layout.dialog_subject_analysis;
+    private static final int _LAYOUT = R.layout.dialog_multiple_analysis;
 
-    private SubjectAnalysisChart _chart;
-    private     MolarWearSubject _subject;
+    private MultipleAnalysisChart _chart;
+    private List<MolarWearSubject> _subjects;
 
-    public SubjectAnalysisDialog(@NonNull AppCompatActivity activity) {
+    public MultipleAnalysisDialog(@NonNull AppCompatActivity activity) {
         super(new DialogStringData(activity, _TITLE_ID, _MSG_ID, _POS_BT_TXT_ID, _NEG_BT_TXT_ID), _LAYOUT);
+        _subjects = new ArrayList<>();
         initialize();
     }
 
-    public SubjectAnalysisDialog(@NonNull AppCompatActivity activity, @NonNull MolarWearSubject subject) {
+//    @SuppressWarnings("ConstantConditions")
+//    public MultipleAnalysisDialog(@NonNull AppCompatActivity activity, @NonNull MolarWearSubject subject) {
+//        super(new DialogStringData(activity, _TITLE_ID, _MSG_ID, _POS_BT_TXT_ID, _NEG_BT_TXT_ID), _LAYOUT);
+//        _subjects = new ArrayList<>();
+//        if (subject != null) {
+//            _subjects.add(subject);
+//        }
+//        initialize();
+//    }
+
+    @SuppressWarnings("ConstantConditions")
+    public MultipleAnalysisDialog(@NonNull AppCompatActivity activity, @NonNull MolarWearSubject[] subjects) {
         super(new DialogStringData(activity, _TITLE_ID, _MSG_ID, _POS_BT_TXT_ID, _NEG_BT_TXT_ID), _LAYOUT);
-        _subject = subject;
+        _subjects = new ArrayList<>();
+        if (subjects != null && subjects.length > 0) {
+            _subjects.addAll(Arrays.asList(subjects));
+        }
+        initialize();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public MultipleAnalysisDialog(@NonNull AppCompatActivity activity, @NonNull List<MolarWearSubject> subjects) {
+        super(new DialogStringData(activity, _TITLE_ID, _MSG_ID, _POS_BT_TXT_ID, _NEG_BT_TXT_ID), _LAYOUT);
+        if (subjects != null) {
+            _subjects = subjects;
+        } else {
+            _subjects = new ArrayList<>();
+        }
+        initialize();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public MultipleAnalysisDialog(@NonNull AppCompatActivity activity, @NonNull Collection<MolarWearSubject> subjects) {
+        super(new DialogStringData(activity, _TITLE_ID, _MSG_ID, _POS_BT_TXT_ID, _NEG_BT_TXT_ID), _LAYOUT);
+        _subjects = new ArrayList<>();
+        if (subjects != null && subjects.size() > 0) {
+            _subjects.addAll(subjects);
+        }
         initialize();
     }
 
 
     protected void initialize() {
 
-//        RadioGroup rgDisplay = _layout.findViewById(R.id.radio_group_subj_analysis_display);
-
         AppCompatSpinner dataSetSpinner = _body.findViewById(R.id.spinner_subj_analysis_display);
         dataSetSpinner.setAdapter(new ArrayAdapter<>(_activity,
                                               R.layout.support_simple_spinner_dropdown_item,
                                               AnalysisChart.MolarSet.DESCRIPTION));
-
         dataSetSpinner.setSelection((_chart != null) ? _chart.getDisplayDataSet() : AnalysisChart.MolarSet.DEFAULT);
 
         dataSetSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -83,57 +118,29 @@ public class SubjectAnalysisDialog extends BasicDialog {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-//        switch ((_chart != null) ? _chart.getDisplayDataSet() : SubjectAnalysisChart.DEFAULT_DATA_SET) {
-//            case SubjectAnalysisChart.MolarSet.BOTH:
-//                rgDisplay.check(R.id.radio_display_both);
-//                break;
-//            case SubjectAnalysisChart.MolarSet.LEFT:
-//                rgDisplay.check(R.id.radio_display_left);
-//                break;
-//            case SubjectAnalysisChart.MolarSet.RIGHT:
-//                rgDisplay.check(R.id.radio_display_right);
-//                break;
-//            case SubjectAnalysisChart.MolarSet.PREF:
-//                rgDisplay.check(R.id.radio_display_preferred);
-//                break;
-//            default:
-//                break;
-//        }
-//
-//        rgDisplay.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup rg, int checkedId) {
-//                if (checkedId == R.id.radio_display_left) {
-//                    if (_chart != null) {
-//                        _chart.setDisplayDataSet(SubjectAnalysisChart.MolarSet.LEFT);
-//                    }
-//                } else if (checkedId == R.id.radio_display_right) {
-//                    if (_chart != null) {
-//                        _chart.setDisplayDataSet(SubjectAnalysisChart.MolarSet.RIGHT);
-//                    }
-//                } else if (checkedId == R.id.radio_display_both) {
-//                    if (_chart != null) {
-//                        _chart.setDisplayDataSet(SubjectAnalysisChart.MolarSet.BOTH);
-//                    }
-//                } else if (checkedId == R.id.radio_display_preferred) {
-//                    if (_chart != null) {
-//                        _chart.setDisplayDataSet(SubjectAnalysisChart.MolarSet.PREF);
-//                    }
-//                } else {
-//                    if (_chart != null) {
-//                        _chart.setDisplayDataSet(SubjectAnalysisChart.DEFAULT_DATA_SET);
-//                    }
-//                }
-//            }
-//        });
+        AppCompatSpinner groupingSpinner = _body.findViewById(R.id.spinner_analysis_group_by);
+        groupingSpinner.setAdapter(new ArrayAdapter<>(_activity,
+                                    R.layout.support_simple_spinner_dropdown_item,
+                                    MultipleAnalysisChart.Grouping.DESCRIPTION));
+        groupingSpinner.setSelection((_chart != null) ? _chart.getGrouping() : MultipleAnalysisChart.Grouping.DEFAULT);
 
+        groupingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (_chart != null) {
+                    _chart.setGrouping(position);
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         setPosBt(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (_chart != null) {
                     final String fileName    = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(new Date()),
-                                 subFolder   = SubjectAnalysisChart.getGallerySubfolder(_activity),
+                                 subFolder   = MultipleAnalysisChart.getGallerySubfolder(_activity),
                                  description = getExportDescription();
 
                     final Bitmap.CompressFormat[] formats = Bitmap.CompressFormat.values();
@@ -161,7 +168,7 @@ public class SubjectAnalysisDialog extends BasicDialog {
                                         R.string.err_export_chart_failed,
                                         R.string.dlg_bt_ok,
                                         R.string.dlg_bt_cancel));
-                                errDlg.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                errDlg.setOnDismissListener(new OnDismissListener() {
                                     @Override
                                     public void onDismiss(DialogInterface dialog) { show(); }
                                 });
@@ -185,16 +192,12 @@ public class SubjectAnalysisDialog extends BasicDialog {
 
     //////////// Accessors ////////////
 
-    public MolarWearSubject subject() { return _subject; }
+    public List<MolarWearSubject> subjects() { return _subjects; }
 
     public String getExportDescription() {
-        return   _activity.getString(R.string.dlg_title_subject_analysis)
+        return   _activity.getString(R.string.dlg_title_multiple_analysis)
                + System.getProperty("line.separator")
-               + _activity.getString(R.string.lbl_subject_id) + ": " + _subject.id()
-               + System.getProperty("line.separator")
-               + _activity.getString(R.string.lbl_site_id) + ": " + _subject.siteId()
-               + System.getProperty("line.separator")
-               + _activity.getString(R.string.lbl_group_id) + ": " + _subject.groupId();
+               + "N = " + _subjects.size();
     }
 
 
@@ -204,29 +207,13 @@ public class SubjectAnalysisDialog extends BasicDialog {
         if (_chart != null) {
             ((LinearLayout)_body).removeView(_chart);
         }
-        if (_subject != null) {
-            _chart = new SubjectAnalysisChart(_activity, _subject);
+        if (_subjects != null) {
+            _chart = new MultipleAnalysisChart(_activity, _subjects);
             _chart.setPadding(AppUtil.dpToPixels(_activity, 8), _chart.getPaddingTop(), AppUtil.dpToPixels(_activity, 8), _chart.getPaddingBottom());
-            AppCompatSpinner spinner = _body.findViewById(R.id.spinner_subj_analysis_display);
-            _chart.setDisplayDataSet(spinner.getSelectedItemPosition());
-//            RadioGroup rgDisplay = _layout.findViewById(R.id.radio_group_subj_analysis_display);
-//            switch (rgDisplay.getCheckedRadioButtonId()) {
-//                case R.id.radio_display_both:
-//                    _chart.setDisplayDataSet(SubjectAnalysisChart.MolarSet.BOTH);
-//                    break;
-//                case R.id.radio_display_left:
-//                    _chart.setDisplayDataSet(SubjectAnalysisChart.MolarSet.LEFT);
-//                    break;
-//                case R.id.radio_display_right:
-//                    _chart.setDisplayDataSet(SubjectAnalysisChart.MolarSet.RIGHT);
-//                    break;
-//                case R.id.radio_display_preferred:
-//                    _chart.setDisplayDataSet(SubjectAnalysisChart.MolarSet.PREF);
-//                    break;
-//                default:
-//                    _chart.setDisplayDataSet(SubjectAnalysisChart.DEFAULT_DATA_SET);
-//                    break;
-//            }
+            AppCompatSpinner dataSetSpinner = _body.findViewById(R.id.spinner_subj_analysis_display);
+            _chart.setDisplayDataSet(dataSetSpinner.getSelectedItemPosition());
+            AppCompatSpinner groupingSpinner = _body.findViewById(R.id.spinner_analysis_group_by);
+            _chart.setGrouping(groupingSpinner.getSelectedItemPosition());
 
             ((LinearLayout)_body).addView(_chart);
 //            if (_subject.dataPoints() == 0) {

@@ -26,8 +26,8 @@ android {
         applicationId "mw.molarwear"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 180417
-        versionName "2018.04.17"
+        versionCode 180424
+        versionName "2018.04.24"
 //        versionCode format: YYMMDD
         setProperty("archivesBaseName", "molwear-$versionName")
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -61,13 +61,13 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    compile 'com.android.support:cardview-v7:27.1.0'
-    compile 'biz.kasual:materialnumberpicker:1.2.1'
-    compile 'org.apache.commons:commons-csv:1.5'
-    compile 'com.gu:option:1.3'
-    compile 'com.nononsenseapps:filepicker:4.1.0'
+    implementation 'com.android.support:cardview-v7:27.1.0'
+    implementation 'biz.kasual:materialnumberpicker:1.2.1'
+    implementation 'org.apache.commons:commons-csv:1.5'
+    implementation 'com.gu:option:1.3'
+    implementation 'com.nononsenseapps:filepicker:4.1.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
-    compile 'com.fasterxml.jackson.core:jackson-core:2.7.3'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.3'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.7.3'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.7.3'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
 }

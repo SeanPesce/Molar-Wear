@@ -121,9 +121,11 @@
 
     <string name="charts">Charts</string>
     <string name="individuals">Individuals</string>
+    <string name="multiple">Multiple</string>
 
     <!--<string name="lbl_subj_analysis_display">Choose which set of molars to analyze:</string>-->
-    <string name="lbl_subj_analysis_display">Choose data set:</string>
+    <string name="lbl_subj_analysis_display">Data set:</string>
+    <string name="lbl_analysis_group_by">Split by:</string>
     <!-- _______________________________________________________________________________________ -->
 
 
@@ -219,6 +221,9 @@
 
     <string name="dlg_title_subject_analysis">Analysis (Individual)</string>
     <string name="dlg_msg_subject_analysis"></string>
+
+    <string name="dlg_title_multiple_analysis">Analysis (Multiple)</string>
+    <string name="dlg_msg_multiple_analysis"></string>
 
     <string name="dlg_title_export_chart">Export Chart</string>
     <string name="dlg_msg_export_chart">File type:</string>

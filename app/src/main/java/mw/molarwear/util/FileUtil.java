@@ -21,7 +21,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.Log;
@@ -37,12 +36,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -51,7 +49,6 @@ import java.util.Queue;
 
 import mw.molarwear.MolWearApp;
 import mw.molarwear.R;
-import mw.molarwear.data.classes.MolarWearProject;
 import mw.molarwear.data.classes.dental.molar.WearImageCacheMap;
 
 import static java.io.File.separator;
@@ -174,9 +171,13 @@ public class FileUtil {
     }
 
     public static <T> boolean saveJson(@NonNull T objectToSave, @NonNull String fileName) {
+        return saveJson(objectToSave, fileName, false);
+    }
+
+    public static <T> boolean saveJson(@NonNull T objectToSave, @NonNull String fileName, boolean internal) {
         ObjectMapper jsonMapper = new ObjectMapper();
         try {
-            FileUtil.writeText(fileName, jsonMapper.writeValueAsString(objectToSave), false, false);
+            FileUtil.writeText(fileName, jsonMapper.writeValueAsString(objectToSave), false, internal);
         } catch (JsonGenerationException | JsonMappingException e) {
             return false;
         } catch (IOException e) {
@@ -262,7 +263,7 @@ public class FileUtil {
     public static boolean writeText(@NonNull String fileName, @NonNull String text, boolean append, boolean internal) {
         try {
             FileOutputStream fileOutputStream = internal ?
-                MolWearApp.getContext().openFileOutput(fileName, (append) ? Context.MODE_APPEND : Context.MODE_PRIVATE)
+                MolWearApp.getContext().openFileOutput(fileName, append ? Context.MODE_APPEND : Context.MODE_PRIVATE)
                 : new FileOutputStream(fileName, append);
             PrintWriter writer = new PrintWriter(fileOutputStream);
 
@@ -280,9 +281,19 @@ public class FileUtil {
 
     @Nullable
     public static String readText(@NonNull String fileName) {
+        return readText(fileName, false);
+    }
+
+    @Nullable
+    public static String readText(@NonNull String fileName, boolean internal) {
         StringBuilder text = new StringBuilder("");
         try {
-            BufferedReader reader =  new BufferedReader(new FileReader(fileName));
+            BufferedReader reader;
+            if (!internal) {
+                reader = new BufferedReader(new FileReader(fileName));
+            } else {
+                reader = new BufferedReader(new InputStreamReader(MolWearApp.getContext().openFileInput(fileName)));
+            }
             String line = reader.readLine();
             while (line != null) {
                 if (text.length() != 0) {

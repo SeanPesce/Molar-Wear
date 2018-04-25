@@ -1,4 +1,4 @@
-package mw.molarwear.data.classes;
+package mw.molarwear.data.analysis;
 
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
@@ -27,7 +27,7 @@ public class AnalysisData<T extends Number> {
     }
 
     @SuppressWarnings("unchecked")
-    private AnalysisData(@NonNull T[] data) {
+    protected AnalysisData(@NonNull T[] data) {
         _data = data.clone();
         if (data.length > 0) {
             if (data[0].getClass() == Integer.class) {

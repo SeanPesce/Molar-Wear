@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import mw.molarwear.data.analysis.AnalysisData;
 import mw.molarwear.data.classes.dental.enums.ToothMapping;
 import mw.molarwear.data.classes.dental.molar.Molar;
 import mw.molarwear.data.classes.dental.molar.Surface;

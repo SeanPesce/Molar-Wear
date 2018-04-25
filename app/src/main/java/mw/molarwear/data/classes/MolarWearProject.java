@@ -21,15 +21,14 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.TreeSet;
 
 import mw.molarwear.R;
 import mw.molarwear.data.classes.dental.molar.Surface;
 import mw.molarwear.data.handlers.ProjectHandler;
 import mw.molarwear.gui.fragment.SubjectsListFragment;
 import mw.molarwear.gui.list.SubjectArrayAdapter;
+import mw.molarwear.util.AnalysisUtil;
 import mw.molarwear.util.AppUtil;
 import mw.molarwear.util.FileUtil;
 
@@ -107,25 +106,7 @@ public class MolarWearProject implements Comparable<MolarWearProject>, Serializa
     }
 
     public List<String> getGroupIds(boolean ignoreCase) {
-        TreeSet<String>      groups = new TreeSet<>(),
-                        groupsLower = new TreeSet<>(); // For case-insensitive comparisons
-        groups.addAll(ProjectHandler.getDefaultGroupIDs());
-        String s;
-        for (MolarWearSubject subj : _subjects) {
-            s = ignoreCase ? subj.groupId().toLowerCase() : subj.groupId();
-            TreeSet<String> set = ignoreCase ? groupsLower : groups;
-            if ((!s.isEmpty()) && !set.contains(s)) {
-                groups.add(subj.groupId());
-                groupsLower.add(s);
-            }
-        }
-        if (groups.isEmpty()) {
-            return new ArrayList<>();
-        }
-        ArrayList<String> list = new ArrayList<>();
-        list.addAll(groups);
-        Collections.sort(list, String.CASE_INSENSITIVE_ORDER);
-        return list;
+        return AnalysisUtil.getGroupIds(_subjects.toArray(new MolarWearSubject[_subjects.size()]), ignoreCase, true, false);
     }
 
     public List<String> getSiteIds() {
@@ -133,25 +114,7 @@ public class MolarWearProject implements Comparable<MolarWearProject>, Serializa
     }
 
     public List<String> getSiteIds(boolean ignoreCase) {
-        TreeSet<String>      sites = new TreeSet<>(),
-                        sitesLower = new TreeSet<>(); // For case-insensitive comparisons
-        sites.addAll(ProjectHandler.getDefaultSiteIds());
-        String s;
-        for (MolarWearSubject subj : _subjects) {
-            s = ignoreCase ? subj.siteId().toLowerCase() : subj.siteId();
-            TreeSet<String> set = ignoreCase ? sitesLower : sites;
-            if ((!s.isEmpty()) && !set.contains(s)) {
-                sites.add(subj.siteId());
-                sitesLower.add(s);
-            }
-        }
-        if (sites.isEmpty()) {
-            return new ArrayList<>();
-        }
-        ArrayList<String> list = new ArrayList<>();
-        list.addAll(sites);
-        Collections.sort(list, String.CASE_INSENSITIVE_ORDER);
-        return list;
+        return AnalysisUtil.getSiteIds(_subjects.toArray(new MolarWearSubject[_subjects.size()]), ignoreCase, true, false);
     }
 
     public ArrayList<MolarWearSubject> getGroup(@NonNull String groupName) {
@@ -182,7 +145,7 @@ public class MolarWearProject implements Comparable<MolarWearProject>, Serializa
     public boolean setSaved(boolean saved) {
         _saved = saved;
         if (_saved) {
-            boolean success = FileUtil.saveSerializable(this, _title + FileUtil.FILE_EXT_SERIALIZED_DATA);
+            boolean success = ProjectHandler.exportJson(this, this.title() + FileUtil.FILE_EXT_JSON_DATA, true);
             if (!success) {
                 // @TODO: Handle save error
                 Log.w(this.getClass().getName(), AppUtil.getResources().getString(R.string.err_file_write_fail));

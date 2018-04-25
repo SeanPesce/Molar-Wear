@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -173,8 +172,8 @@ public class AppUtil {
                      defaultGroupPrefix = STRING(R.string.rt_cfg_pref_key_default_group_prefix);
 
         ProjectHandler.clearDefaultIds();
-        ProjectHandler.addDefaultGroupId(STRING(R.string.desc_sex_f));
-        ProjectHandler.addDefaultGroupId(STRING(R.string.desc_sex_m));
+//        ProjectHandler.addDefaultGroupId(STRING(R.string.desc_sex_f));
+//        ProjectHandler.addDefaultGroupId(STRING(R.string.desc_sex_m));
         for (String p : prefMap.keySet()) {
             Log.i("", p);
             if (p.startsWith(defaultSitePrefix)) {

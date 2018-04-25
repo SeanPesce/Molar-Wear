@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Author: Sean Pesce
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dlg_root"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:id="@+id/layout_dialog_subj_analysis"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp"
+        android:defaultFocusHighlightEnabled="false"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        >
+
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/lbl_subj_analysis_display"-->
+            <!--android:paddingLeft="8dp"-->
+            <!--android:paddingRight="8dp"-->
+            <!--android:paddingStart="8dp"-->
+            <!--android:paddingEnd="8dp"-->
+            <!--/>-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:paddingRight="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="16dp"
+            android:gravity="center"
+            >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/lbl_subj_analysis_display"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="2dp"
+                    android:paddingStart="2dp"
+                    />
+
+                <android.support.v7.widget.AppCompatSpinner
+                    android:id="@+id/spinner_subj_analysis_display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                    app:backgroundTint="@color/colorAccent"
+                    android:dropDownVerticalOffset="-56dp"
+                    app:overlapAnchor="false"
+                    app:popupTheme="@style/SpinnerPopupMenu"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="32dp"
+                android:paddingStart="32dp"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/lbl_analysis_group_by"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="2dp"
+                    android:paddingStart="2dp"
+                    />
+
+                <android.support.v7.widget.AppCompatSpinner
+                    android:id="@+id/spinner_analysis_group_by"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+                    style="@style/Base.Widget.AppCompat.Spinner.Underlined"
+                    app:backgroundTint="@color/colorAccent"
+                    android:dropDownVerticalOffset="-56dp"
+                    app:overlapAnchor="false"
+                    app:popupTheme="@style/SpinnerPopupMenu"
+                    />
+
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/radio_group_subj_analysis_display"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                >
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/radio_display_left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/left"
+                    android:paddingRight="16dp"
+                    android:paddingEnd="16dp"
+                    />
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/radio_display_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/right"
+                    android:paddingRight="16dp"
+                    android:paddingEnd="16dp"
+                    />
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/radio_display_both"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/both"
+                    android:paddingRight="16dp"
+                    android:paddingEnd="16dp"
+                    />
+
+                <android.support.v7.widget.AppCompatRadioButton
+                    android:id="@+id/radio_display_preferred"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/max_n"
+                    />
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

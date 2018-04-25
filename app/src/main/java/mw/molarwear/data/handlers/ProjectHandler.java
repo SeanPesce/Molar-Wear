@@ -21,12 +21,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.TreeSet;
 
 import mw.molarwear.MolWearApp;
 import mw.molarwear.R;
 import mw.molarwear.data.classes.MolarWearProject;
-import mw.molarwear.data.classes.MolarWearSubject;
 import mw.molarwear.data.classes.ProjectDeserializer;
 import mw.molarwear.data.classes.ProjectSerializer;
 import mw.molarwear.gui.dialog.BasicDialog;
@@ -77,28 +75,7 @@ public class ProjectHandler {
     }
 
     public static List<String> getGroupIds(boolean ignoreCase) {
-        TreeSet<String>      groups = new TreeSet<>(),
-                        groupsLower = new TreeSet<>(); // For case-insensitive comparisons
-        groups.addAll(DEFAULT_GROUPS);
-        String s;
-        for (MolarWearProject p : PROJECTS) {
-            for (int i = 0; i < p.subjectCount(); i++) {
-                MolarWearSubject subj = p.getSubject(i);
-                s = ignoreCase ? subj.groupId().toLowerCase() : subj.groupId();
-                TreeSet<String> set = ignoreCase ? groupsLower : groups;
-                if ((!s.isEmpty()) && !set.contains(s)) {
-                    groups.add(subj.groupId());
-                    groupsLower.add(s);
-                }
-            }
-        }
-        if (groups.isEmpty()) {
-            return new ArrayList<>();
-        }
-        ArrayList<String> list = new ArrayList<>();
-        list.addAll(groups);
-        Collections.sort(list, String.CASE_INSENSITIVE_ORDER);
-        return list;
+        return AnalysisUtil.getGroupIds(PROJECTS.toArray(new MolarWearProject[PROJECTS.size()]), ignoreCase, true, false);
     }
 
     public static ArrayList<String> getDefaultSiteIds() { return DEFAULT_SITES; }
@@ -109,28 +86,7 @@ public class ProjectHandler {
     }
 
     public static List<String> getSiteIds(boolean ignoreCase) {
-        TreeSet<String>      sites = new TreeSet<>(),
-                        sitesLower = new TreeSet<>(); // For case-insensitive comparisons
-        sites.addAll(DEFAULT_SITES);
-        String s;
-        for (MolarWearProject p : PROJECTS) {
-            for (int i = 0; i < p.subjectCount(); i++) {
-                MolarWearSubject subj = p.getSubject(i);
-                s = ignoreCase ? subj.siteId().toLowerCase() : subj.siteId();
-                TreeSet<String> set = ignoreCase ? sitesLower : sites;
-                if ((!s.isEmpty()) && !set.contains(s)) {
-                    sites.add(subj.siteId());
-                    sitesLower.add(s);
-                }
-            }
-        }
-        if (sites.isEmpty()) {
-            return new ArrayList<>();
-        }
-        ArrayList<String> list = new ArrayList<>();
-        list.addAll(sites);
-        Collections.sort(list, String.CASE_INSENSITIVE_ORDER);
-        return list;
+        return AnalysisUtil.getSiteIds(PROJECTS.toArray(new MolarWearProject[PROJECTS.size()]), ignoreCase, true, false);
     }
 
 
@@ -202,7 +158,7 @@ public class ProjectHandler {
             AppUtil.printSnackBarMsg(AppUtil.getResources().getString(R.string.err_file_read_fail) + ":\n" + filePath);
             return false;
         } else {
-            final String internalPath = FileUtil.getInternalPath(p.title() + FileUtil.FILE_EXT_SERIALIZED_DATA);
+            final String internalPath = FileUtil.getInternalPath(p.title() + FileUtil.FILE_EXT_JSON_DATA);
             if (new File(internalPath).exists()) {
                 final TextInputDialog dlgEdit = new TextInputDialog(
                     new DialogStringData(AppUtil.CONTEXT,
@@ -217,9 +173,8 @@ public class ProjectHandler {
                 dlgEdit.setPosBt(new View.OnClickListener() {
                     public void onClick(View view) {
                         // User clicked "Submit" button
-                        //AppUtil.hideKeyboard(AppUtil.CONTEXT, dlgEdit.linearLayout());
                         if (dlgEdit.text().length() > 0) {
-                            if (new File(FileUtil.getInternalPath(dlgEdit.text() + FileUtil.FILE_EXT_SERIALIZED_DATA)).exists()) {
+                            if (new File(FileUtil.getInternalPath(dlgEdit.text() + FileUtil.FILE_EXT_JSON_DATA)).exists()) {
                                 // Another project with the specified title already exists
                                 dlgEdit.show();
                                 dlgEdit.textInput().setError(AppUtil.CONTEXT.getString(R.string.err_proj_create_fail_exists));
@@ -273,12 +228,12 @@ public class ProjectHandler {
     }
 
     public static boolean createProject(MolarWearProject newProject) {
-        String fileName = newProject.title() + FileUtil.FILE_EXT_SERIALIZED_DATA;
-        if (new File(AppUtil.CONTEXT.getFilesDir().toString() + separator + fileName).exists()) {
+        String fileName = newProject.title() + FileUtil.FILE_EXT_JSON_DATA;
+        if (new File(FileUtil.getInternalPath(fileName)).exists()) {
             // Failed to create project (one with same name already exists)
             return false;
         }
-        if (FileUtil.saveSerializable(newProject, fileName)) {
+        if (exportJson(newProject, fileName, true)) {
             addProject(newProject);
             projectsFragment.clearSelection();
             projectsFragment.selectItem(PROJECTS.size()-1);
@@ -292,7 +247,7 @@ public class ProjectHandler {
     }
 
     public static void removeProject(int index) {
-        if (FileUtil.deletePrivate(PROJECTS.get(index).title() + FileUtil.FILE_EXT_SERIALIZED_DATA)) {
+        if (FileUtil.deletePrivate(PROJECTS.get(index).title() + FileUtil.FILE_EXT_JSON_DATA)) {
             if (projectsFragment.selectionIndex() >= (PROJECTS.size()-1)) {
                 projectsFragment.clearSelection();
             }
@@ -356,7 +311,7 @@ public class ProjectHandler {
                 // User clicked "Submit" button
                 //AppUtil.hideKeyboard(AppUtil.CONTEXT, dlgEdit.linearLayout());
                 if (dlgEdit.text().length() > 0 && !dlgEdit.text().equals(dlgEdit.textInputHint())) {
-                    if (new File(FileUtil.getInternalPath(dlgEdit.text() + FileUtil.FILE_EXT_SERIALIZED_DATA)).exists()) {
+                    if (new File(FileUtil.getInternalPath(dlgEdit.text() + FileUtil.FILE_EXT_JSON_DATA)).exists()) {
                         // Another project with the specified title already exists
                         dlgEdit.show();
                         dlgEdit.textInput().setError(AppUtil.CONTEXT.getString(R.string.err_proj_edit_title_fail_exists));
@@ -385,10 +340,10 @@ public class ProjectHandler {
         if (!oldTitle.equals(title)) {
             PROJECTS.get(index).setTitle(title);
             File projFile = new File(FileUtil.getInternalPath(oldTitle
-                + FileUtil.FILE_EXT_SERIALIZED_DATA));
+                + FileUtil.FILE_EXT_JSON_DATA));
 
             String newPath = FileUtil.getInternalPath(PROJECTS.get(index).title()
-                + FileUtil.FILE_EXT_SERIALIZED_DATA);
+                + FileUtil.FILE_EXT_JSON_DATA);
             boolean success = projFile.renameTo(new File(newPath));
             if (success) {
                 success = saveProject(index);
@@ -424,8 +379,8 @@ public class ProjectHandler {
             public void onClick(View view) {
                 // User clicked "Create" button
                 //AppUtil.hideKeyboard(AppUtil.CONTEXT, dlg.linearLayout());
-                String fileName = ((!dlg.text().isEmpty()) ? dlg.text() : dlg.textInputHint()) + FileUtil.FILE_EXT_SERIALIZED_DATA;
-                if (new File(AppUtil.CONTEXT.getFilesDir().toString() + separator + fileName).exists()) {
+                String fileName = ((!dlg.text().isEmpty()) ? dlg.text() : dlg.textInputHint()) + FileUtil.FILE_EXT_JSON_DATA;
+                if (new File(FileUtil.getInternalPath(fileName)).exists()) {
                     // Failed to create project (one with same name already exists)
                     dlg.show();
                     dlg.textInput().setError(AppUtil.CONTEXT.getString(R.string.err_proj_create_fail_exists));
@@ -446,12 +401,12 @@ public class ProjectHandler {
         String baseFileName = AppUtil.CONTEXT.getFilesDir().toString()
                               + separator
                               + AppUtil.getResources().getString(R.string.dlg_hint_new_project);
-        File checkExists = new File(baseFileName + FileUtil.FILE_EXT_SERIALIZED_DATA);
+        File checkExists = new File(baseFileName + FileUtil.FILE_EXT_JSON_DATA);
         if (checkExists.exists()) {
             int i = 1;
-            checkExists = new File(baseFileName + "(" + i + ")" + FileUtil.FILE_EXT_SERIALIZED_DATA);
+            checkExists = new File(baseFileName + "(" + i + ")" + FileUtil.FILE_EXT_JSON_DATA);
             while (checkExists.exists()) {
-                checkExists = new File(baseFileName + "(" + ++i + ")" + FileUtil.FILE_EXT_SERIALIZED_DATA);
+                checkExists = new File(baseFileName + "(" + ++i + ")" + FileUtil.FILE_EXT_JSON_DATA);
             }
             dlg.setTextInputHint(AppUtil.getResources().getString(R.string.dlg_hint_new_project) + "(" + i + ")");
             dlg.setText(AppUtil.getResources().getString(R.string.dlg_hint_new_project) + "(" + i + ")");
@@ -527,7 +482,9 @@ public class ProjectHandler {
                     });
                     dlg.show();
                 } else {
-                    boolean success = (requestCode == FileUtil.REQUEST_EXPORT_CSV) ? project.toCsv(filePath) : FileUtil.saveSerializableEx(project, filePath);
+                    boolean success = (requestCode == FileUtil.REQUEST_EXPORT_CSV) ? project.toCsv(filePath) :
+                                      (requestCode == FileUtil.REQUEST_EXPORT_SERIALIZED) ? FileUtil.saveSerializableEx(project, filePath) :
+                                      ProjectHandler.exportJson(project, filePath);
                     if (success) {
                         AppUtil.printToast(activity, activity.getString(R.string.out_msg_file_saved) + ":\n" + filePath);
                         //new MessageDialog(activity, activity.getString(R.string.out_msg_file_saved) + ":\n" + filePath);
@@ -560,8 +517,8 @@ public class ProjectHandler {
         }
         String [] projs = MolWearApp.getContext().fileList();
         for (String s : projs) {
-            if (s.endsWith(FileUtil.FILE_EXT_SERIALIZED_DATA)) {
-                MolarWearProject p = FileUtil.readInternalSerializable(s);
+            if (s.endsWith(FileUtil.FILE_EXT_JSON_DATA)) {
+                MolarWearProject p = ProjectHandler.importJson(s, true);
                 if (p == null) {
                     if (deleteBadProjectFiles) {
                         FileUtil.deletePrivate(s);
@@ -581,7 +538,12 @@ public class ProjectHandler {
 
     @Nullable
     public static MolarWearProject importJson(@NonNull String fileName) {
-        final String jsonData = FileUtil.readText(fileName);
+        return importJson(fileName, false);
+    }
+
+    @Nullable
+    public static MolarWearProject importJson(@NonNull String fileName, boolean internal) {
+        final String jsonData = FileUtil.readText(fileName, internal);
         if (jsonData != null && !jsonData.isEmpty()) {
             ObjectMapper mapper = new ObjectMapper();
             SimpleModule module = new SimpleModule();
@@ -598,6 +560,10 @@ public class ProjectHandler {
     }
 
     public static boolean exportJson(@NonNull MolarWearProject project, @NonNull String fileName) {
+        return exportJson(project, fileName, false);
+    }
+
+    public static boolean exportJson(@NonNull MolarWearProject project, @NonNull String fileName, boolean internal) {
         try {
             SimpleModule module = new SimpleModule();
             module.addSerializer(new ProjectSerializer(MolarWearProject.class));
@@ -609,7 +575,7 @@ public class ProjectHandler {
                     return false;
                 }
             }
-            return FileUtil.writeText(fileName, jsonResult, false, false);
+            return FileUtil.writeText(fileName, jsonResult, false, internal);
         } catch (JsonProcessingException e) {
             //e.printStackTrace();
             //AppUtil.printToast(e.toString());

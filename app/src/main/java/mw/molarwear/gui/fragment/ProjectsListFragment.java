@@ -16,11 +16,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import mw.molarwear.R;
+import mw.molarwear.data.classes.MolarWearSubject;
 import mw.molarwear.data.handlers.ProjectHandler;
 import mw.molarwear.gui.activity.MolWearMainActivity;
 import mw.molarwear.gui.activity.ViewProjectActivity;
 import mw.molarwear.gui.dialog.BasicDialog;
 import mw.molarwear.gui.dialog.DialogStringData;
+import mw.molarwear.gui.dialog.MultipleAnalysisDialog;
 import mw.molarwear.gui.dialog.PopupListDialog;
 import mw.molarwear.gui.list.ProjectArrayAdapter;
 import mw.molarwear.util.AppUtil;
@@ -118,13 +120,18 @@ public class ProjectsListFragment extends ListFragment {
                         public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
                             switch (pos) {
                                 case OPTION_OPEN:
-                                    Intent i = new Intent(getActivity().getApplicationContext(), ViewProjectActivity.class);
-                                    i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                    i.putExtra(ViewProjectActivity.PROJECT_INDEX_ARG_KEY, _selectionIndex);
-                                    getActivity().startActivity(i);
+                                    Intent intent = new Intent(getActivity().getApplicationContext(), ViewProjectActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                    intent.putExtra(ViewProjectActivity.PROJECT_INDEX_ARG_KEY, _selectionIndex);
+                                    getActivity().startActivity(intent);
                                     break;
                                 case OPTION_ANALYZE:
-                                    AppUtil.featureNotImplementedYet();
+                                    final MolarWearSubject[] subjects = new MolarWearSubject[ProjectHandler.get(_selectionIndex).subjectCount()];
+                                    for (int i = 0; i < ProjectHandler.get(_selectionIndex).subjectCount(); i++) {
+                                        subjects[i] = ProjectHandler.get(_selectionIndex).getSubject(i);
+                                    }
+                                    final MultipleAnalysisDialog dlgAnalyze = new MultipleAnalysisDialog(getActivityDerived(), subjects);
+                                    dlgAnalyze.show();
                                     break;
                                 case OPTION_EXPORT:
                                     ProjectHandler.openExportDialog(getActivityDerived());
