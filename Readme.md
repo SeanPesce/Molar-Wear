@@ -3,6 +3,12 @@
 MolWear is an Android app that aims to simplify the recording and sharing of observational/descriptive data about dental wear on molars for anthropological research purposes.  
 
 
+# 2021 Update  
+The article for this method is now available **[here](https://doi.org/10.1002/ajpa.24238)**.  
+
+The Android app version of MolWear dates to 2018 and does not include all 9 stages mentioned in the 2021 article. Newer versions of MolWear will be available as an R package and web app. Development and updates can be found [here](https://github.com/ehrlichd/molweaR)**.
+
+
 ## Built With  
 
  * **[Android SDK](https://developer.android.com/studio/index.html)** - Official development kit for Android  
